@@ -1,0 +1,1743 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Speed GT Brasil</title>
+  <meta name="description" content="Comunidade de Gran Turismo 7 com mais de 100 pilotos, divisões por nível, ranking via SimGrid e campeonatos organizados pra quem leva a corrida a sério.">
+  <meta property="og:site_name" content="Speed GT Brasil">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Speed GT Brasil">
+  <meta property="og:description" content="Comunidade de Gran Turismo 7 com mais de 100 pilotos, divisões por nível, ranking via SimGrid e campeonatos organizados pra quem leva a corrida a sério.">
+  <meta property="og:url" content="https://speedgtbrasil.pages.dev/">
+  <meta property="og:image" content="https://raw.githubusercontent.com/fabianopassianoto/speedgtbrasil/main/logo06.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Speed GT Brasil">
+  <meta name="twitter:image" content="https://raw.githubusercontent.com/fabianopassianoto/speedgtbrasil/main/logo06.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Saira:wght@700;800;900&family=Saira+Stencil+One&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+  
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          asfalto: '#0B0B0E',
+          'asfalto-2': '#15151A',
+          'linha-branca': '#F4F1EA',
+          cromo: '#C4C4C4',
+          'cromo-dark': '#6B6B70',
+          'verde-grid': '#00A859',
+          'amarelo-bandeirola': '#FFCB00',
+          'dourado-pole': '#C9A86A',
+          'vermelho-flag': '#E63946',
+        },
+        fontFamily: {
+          display: ['Saira', 'sans-serif'],
+          body: ['"Public Sans"', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'monospace'],
+          accent: ['"Saira Stencil One"', 'sans-serif'],
+        },
+        maxWidth: { container: '1280px' },
+      },
+    },
+  };
+  
+  </script>
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body class="font-body bg-asfalto text-linha-branca antialiased">
+  <!-- ============ NAV ============ -->
+  <header class='fixed top-0 inset-x-0 z-50 transition-all duration-300' id='site-header'>
+    <div class='max-w-container mx-auto px-4 md:px-8 py-4 flex items-center justify-between'>
+      <a class='flex items-center gap-3' href='/'>
+        <img alt='Speed GT Brasil' class='h-10 w-auto' src='https://raw.githubusercontent.com/fabianopassianoto/speedgtbrasil/main/logo06.png'>
+        <span class='font-display font-black text-lg tracking-tight hidden sm:inline'>SPEED GT BRASIL</span>
+      </a>
+
+      <nav class='hidden md:flex items-center gap-5 text-sm font-medium' aria-label='Navegação principal'>
+        <a class='nav-link text-cromo hover:text-linha-branca' href='/#por-que'>Por que</a>
+        <a class='nav-link text-cromo hover:text-linha-branca' href='/#comece-aqui'>Comece aqui</a>
+        <div class='rules-menu'>
+          <button aria-expanded='false' aria-haspopup='true' class='nav-link rules-toggle' id='rules-toggle' type='button'>Regras</button>
+          <div aria-label='Opções de regras' class='rules-dropdown' id='rules-dropdown'>
+            <a href='/#regras'>Regras da Comunidade</a>
+            <a href='/#temporada-3'>Regras da Temporada 3</a>
+          </div>
+        </div>
+        <a class='nav-link text-cromo hover:text-linha-branca' href='/#hall-da-fama'>Hall da Fama</a>
+        <a class='nav-link text-cromo hover:text-linha-branca' href='/#equipe'>Organizadores</a>
+        <a class='nav-link text-cromo hover:text-linha-branca' href='/#apoie'>Apoie</a>
+        <a class='nav-link text-cromo hover:text-linha-branca' href='https://speedgtbr.atlassian.net/servicedesk/customer/portal/1/group/2/create/4' rel='noopener' target='_blank'>Recursos</a>
+        <a class='nav-link text-cromo hover:text-linha-branca' href='/#depoimentos'>Depoimentos</a>
+      </nav>
+
+      <a class='hidden md:inline-flex cta-primary items-center gap-2 px-5 py-2.5 font-display font-bold text-xs tracking-label uppercase' href='https://chat.whatsapp.com/Jz9Zg4z1q302rXOlaI8KKk' rel='noopener' target='_blank'>
+        <span aria-hidden='true'>🏁</span>
+        Entrar no grupo
+      </a>
+
+      <button aria-expanded='false' aria-label='Menu' class='md:hidden p-2 text-linha-branca' id='nav-toggle'>
+        <i class='w-6 h-6' data-lucide='menu' id='nav-icon-menu'></i>
+        <i class='w-6 h-6' data-lucide='x' id='nav-icon-close' style='display:none'></i>
+      </button>
+    </div>
+
+    <div class='mobile-drawer md:hidden bg-asfalto-2 border-t border-cromo-dark/30' id='mobile-drawer'>
+      <nav class='flex flex-col p-4 gap-1'>
+        <a class='py-3 px-2 text-cromo border-b border-cromo-dark/20' href='/#por-que'>Por que</a>
+        <a class='py-3 px-2 text-cromo border-b border-cromo-dark/20' href='/#comece-aqui'>Comece aqui</a>
+        <div class='rules-mobile'>
+          <button aria-expanded='false' class='rules-mobile-toggle py-3 px-2' id='rules-mobile-toggle' type='button'>Regras</button>
+          <div class='rules-mobile-sub'>
+            <a href='/#regras'>Regras da Comunidade</a>
+            <a href='/#temporada-3'>Regras da Temporada 3</a>
+          </div>
+        </div>
+        <a class='py-3 px-2 text-cromo border-b border-cromo-dark/20' href='/#hall-da-fama'>Hall da Fama</a>
+        <a class='py-3 px-2 text-cromo border-b border-cromo-dark/20' href='/#equipe'>Organizadores</a>
+        <a class='py-3 px-2 text-cromo border-b border-cromo-dark/20' href='/#apoie'>Apoie</a>
+        <a class='py-3 px-2 text-cromo border-b border-cromo-dark/20' href='https://speedgtbr.atlassian.net/servicedesk/customer/portal/1/group/2/create/4' rel='noopener' target='_blank'>Recursos</a>
+        <a class='py-3 px-2 text-cromo' href='/#depoimentos'>Depoimentos</a>
+        <a class='cta-primary mt-4 inline-flex items-center justify-center gap-2 px-5 py-3 font-display font-bold tracking-label uppercase' href='https://chat.whatsapp.com/Jz9Zg4z1q302rXOlaI8KKk' rel='noopener' target='_blank'>
+          <span aria-hidden='true'>🏁</span>
+          Entrar no grupo
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class='relative z-10 pt-20' id='top'>
+
+
+      <!-- 1. HERO -->
+      <section class='hero-mesh relative overflow-hidden border-b border-cromo-dark/30'>
+        <div class='max-w-container mx-auto px-4 md:px-8 py-16 md:py-24 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center'>
+          <div class='lg:col-span-7 reveal order-2 lg:order-1' style='animation-delay: 80ms'>
+            <p class='font-display font-bold text-xs sm:text-sm tracking-label uppercase text-cromo-dark mb-6'>
+              Comunidade GT7 &#183; PS5 &#183; Brasil
+            </p>
+            <h1 class='font-display font-black text-hero text-linha-branca mb-5'>
+              Corridas online com <span class='text-verde-grid'>amizades, rivalidades</span> e <span class='text-verde-grid'>evolução real</span> dentro do GT7.
+            </h1>
+            <p class='font-display font-bold text-h3 text-cromo mb-6' style='letter-spacing: -0.01em;'>
+              Campeonato de amigos. Regulamento de federação.
+            </p>
+            <p class='text-body text-cromo max-w-[560px] mb-8'>
+              Participe de uma comunidade com mais de 100 pilotos, divisões por nível, ranking oficial via SimGrid e campeonatos organizados para quem leva a corrida a sério.
+            </p>
+
+            <ul class='grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 mb-8 max-w-xl'>
+              <li class='flex items-center text-sm text-linha-branca'><span class='bullet-check'><i data-lucide='check'></i></span>Mais de 100 pilotos ativos</li>
+              <li class='flex items-center text-sm text-linha-branca'><span class='bullet-check'><i data-lucide='check'></i></span>Campeonatos gratuitos</li>
+              <li class='flex items-center text-sm text-linha-branca'><span class='bullet-check'><i data-lucide='check'></i></span>Divisões A, B e C</li>
+              <li class='flex items-center text-sm text-linha-branca'><span class='bullet-check'><i data-lucide='check'></i></span>Ranking oficial SimGrid</li>
+              <li class='flex items-center text-sm text-linha-branca'><span class='bullet-check'><i data-lucide='check'></i></span>Regulamento transparente</li>
+              <li class='flex items-center text-sm text-linha-branca'><span class='bullet-check'><i data-lucide='check'></i></span>Comunidade ativa no WhatsApp</li>
+            </ul>
+
+            <div class='flex flex-wrap gap-4'>
+              <a class='cta-primary inline-flex items-center gap-2 px-6 py-3.5 font-display font-bold text-sm tracking-label uppercase' href='https://chat.whatsapp.com/Jz9Zg4z1q302rXOlaI8KKk' rel='noopener' target='_blank'>
+                <span aria-hidden='true' class='text-base'>🏁</span>
+                Entrar no grupo do WhatsApp
+              </a>
+              <a class='inline-flex items-center gap-2 px-6 py-3.5 font-display font-bold text-sm tracking-label uppercase border border-cromo text-cromo hover:text-linha-branca hover:border-linha-branca transition-colors' href='/#comece-aqui'>
+                Comece por aqui
+                <i class='w-5 h-5' data-lucide='arrow-right'></i>
+              </a>
+            </div>
+          </div>
+
+          <div class='lg:col-span-5 relative reveal order-1 lg:order-2 flex justify-center' style='animation-delay: 240ms'>
+            <div class='relative w-full max-w-sm md:max-w-md lg:max-w-lg'>
+              <img alt='Speed GT Brasil' class='w-full h-auto logo-glow' src='https://raw.githubusercontent.com/fabianopassianoto/speedgtbrasil/main/logo06.png'>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. POR QUE EXISTIMOS -->
+      <section class='py-20 md:py-28 bg-asfalto' id='por-que'>
+        <div class='max-w-container mx-auto px-4 md:px-8'>
+          <div class='max-w-6xl mx-auto scroll-reveal'>
+
+            <div class='grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8'>
+
+              <div class='bg-asfalto-2 border border-cromo-dark/30 accent-top p-8 md:p-10 relative flex flex-col'>
+                <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-6'>Por que existimos</p>
+                <div class='font-display font-extrabold text-narrative text-linha-branca flex-1'>
+                  <span class='narrative-line' style='animation-delay:50ms'>Você entra em uma corrida.</span>
+                  <span class='narrative-line' style='animation-delay:200ms'>Faz uma classificação perfeita.</span>
+                  <span class='narrative-line' style='animation-delay:350ms'>Larga bem.</span>
+                  <span class='narrative-line text-cromo' style='animation-delay:500ms'>E na primeira curva alguém usa <span class='text-vermelho-flag'>seu carro como freio</span>.</span>
+                </div>
+              </div>
+
+              <div class='bg-asfalto-2 border border-cromo-dark/30 p-8 md:p-10 relative flex flex-col' style='border-top: 4px solid #E63946;'>
+                <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-6'>O resultado</p>
+                <ul class='font-display font-bold text-h3 text-cromo space-y-3 flex-1'>
+                  <li class='flex items-start gap-3'><span class='text-vermelho-flag mt-1'>&#8212;</span><span>Mais uma corrida arruinada.</span></li>
+                  <li class='flex items-start gap-3'><span class='text-vermelho-flag mt-1'>&#8212;</span><span>Mais uma noite perdida.</span></li>
+                  <li class='flex items-start gap-3'><span class='text-vermelho-flag mt-1'>&#8212;</span><span>Mais uma sensação de que seu esforço não valeu a pena.</span></li>
+                </ul>
+              </div>
+
+            </div>
+
+            <div class='mt-10 md:mt-14 text-center max-w-3xl mx-auto'>
+              <p class='font-display font-extrabold text-h2 text-linha-branca'>
+                Foi exatamente para resolver isso que nasceu a <span class='text-verde-grid'>Speed GT Brasil</span>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. VOCÊ SE IDENTIFICA -->
+      <section class='py-16 md:py-24 bg-asfalto-2/40 border-y border-cromo-dark/30'>
+        <div class='max-w-container mx-auto px-4 md:px-8 scroll-reveal'>
+          <div class='max-w-3xl mx-auto'>
+            <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-4 text-center'>Pra quem é</p>
+            <h2 class='font-display font-black text-h1 text-linha-branca text-center mb-12'>
+              Você se identifica?
+            </h2>
+
+            <ul class='grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 max-w-2xl mx-auto'>
+              <li class='flex items-start text-linha-branca'><span class='bullet-check'><i data-lucide='check'></i></span><span>Você está cansado do caos do Sport Mode</span></li>
+              <li class='flex items-start text-linha-branca'><span class='bullet-check'><i data-lucide='check'></i></span><span>Quer competir sem panelinhas</span></li>
+              <li class='flex items-start text-linha-branca'><span class='bullet-check'><i data-lucide='check'></i></span><span>Procura corridas limpas</span></li>
+              <li class='flex items-start text-linha-branca'><span class='bullet-check'><i data-lucide='check'></i></span><span>Quer evoluir como piloto</span></li>
+              <li class='flex items-start text-linha-branca'><span class='bullet-check'><i data-lucide='check'></i></span><span>Busca uma comunidade ativa</span></li>
+              <li class='flex items-start text-linha-branca'><span class='bullet-check'><i data-lucide='check'></i></span><span>É iniciante e quer aprender</span></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. 3 PILARES -->
+      <section class='py-16 md:py-24'>
+        <div class='max-w-container mx-auto px-4 md:px-8'>
+          <div class='max-w-3xl mb-12 scroll-reveal'>
+            <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-4'>O que a Speed GT é</p>
+            <h2 class='font-display font-black text-h1 text-linha-branca'>
+              Três coisas que separam isso de um Lobby aleatório.
+            </h2>
+          </div>
+
+          <div class='grid grid-cols-1 md:grid-cols-3 gap-6 scroll-reveal'>
+            <article class='pilar-card bg-asfalto-2 p-8'>
+              <i class='w-7 h-7 text-verde-grid mb-6' data-lucide='book-marked'></i>
+              <h3 class='font-display font-bold text-h3 text-linha-branca mb-4'>Regulamento escrito</h3>
+              <p class='text-cromo text-body mb-6'>
+                Não é regra do organizador na hora. É documento. Pontuação de 20 pontos pra baixo, descarte de 1 corrida, sistema de punições por reincidência. Quando dá problema, tem para onde olhar.
+              </p>
+              <a class='inline-flex items-center gap-2 font-display font-bold text-xs tracking-label uppercase text-verde-grid hover:gap-3 transition-all' href='/#regras'>
+                Ler as regras
+                <i class='w-4 h-4' data-lucide='arrow-right'></i>
+              </a>
+            </article>
+
+            <article class='pilar-card bg-asfalto-2 p-8'>
+              <i class='w-7 h-7 text-verde-grid mb-6' data-lucide='layers-3'></i>
+              <h3 class='font-display font-bold text-h3 text-linha-branca mb-4'>Divisões reais</h3>
+              <p class='text-cromo text-body mb-6'>
+                Séries A, B e C com rebaixamento e promoção via SimGrid. O cara mediano não corre contra alien. Cada um briga contra gente do nível dele e tem caminho real pra subir.
+              </p>
+              <a class='inline-flex items-center gap-2 font-display font-bold text-xs tracking-label uppercase text-verde-grid hover:gap-3 transition-all' href='/#como-funciona'>
+                Como funciona
+                <i class='w-4 h-4' data-lucide='arrow-right'></i>
+              </a>
+            </article>
+
+            <article class='pilar-card bg-asfalto-2 p-8'>
+              <i class='w-7 h-7 text-verde-grid mb-6' data-lucide='users'></i>
+              <h3 class='font-display font-bold text-h3 text-linha-branca mb-4'>Comunidade sem fins lucrativos</h3>
+              <p class='text-cromo text-body mb-6'>
+                Pix opcional pra quem quiser fortalecer a comunidade &#8212; , nunca pressionado. Aqui se entra pelo cadastro e se corre pelo SimGrid.
+              </p>
+              <a class='inline-flex items-center gap-2 font-display font-bold text-xs tracking-label uppercase text-verde-grid hover:gap-3 transition-all' href='https://chat.whatsapp.com/Jz9Zg4z1q302rXOlaI8KKk' rel='noopener' target='_blank'>
+                Entrar no grupo
+                <i class='w-4 h-4' data-lucide='arrow-right'></i>
+              </a>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. NÚMEROS -->
+      <section class='py-16 md:py-24 bg-asfalto-2/40 border-y border-cromo-dark/30'>
+        <div class='max-w-container mx-auto px-4 md:px-8 scroll-reveal'>
+          <div class='grid grid-cols-2 md:grid-cols-4 gap-y-12 md:gap-y-0 md:divide-x divide-cromo-dark/40'>
+            <div class='text-center md:px-6'>
+              <div class='font-display font-black text-stat text-linha-branca mb-3'>100+</div>
+              <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark'>Pilotos<br/>ativos</p>
+            </div>
+            <div class='text-center md:px-6'>
+              <div class='font-display font-black text-stat text-linha-branca mb-3'>2</div>
+              <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark'>Campeonatos<br/>concluídos</p>
+            </div>
+            <div class='text-center md:px-6'>
+              <div class='font-display font-black text-stat text-linha-branca mb-3'>3</div>
+              <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark'>Divisões por<br/>desempenho</p>
+            </div>
+            <div class='text-center md:px-6'>
+              <div class='font-display font-black text-stat text-linha-branca mb-3'>100%</div>
+              <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark'>Gratuito</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. COMO FUNCIONA -->
+      <section class='py-16 md:py-24' id='como-funciona'>
+        <div class='max-w-container mx-auto px-4 md:px-8'>
+          <div class='max-w-3xl mx-auto mb-12 scroll-reveal text-center'>
+            <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-4'>Em 5 passos</p>
+            <h2 class='font-display font-black text-h1 text-linha-branca'>Como funciona</h2>
+            <p class='text-cromo mt-3 max-w-xl mx-auto'>Do cadastro ao primeiro pódio. Sem mistério, sem letra miúda.</p>
+          </div>
+
+          <ol class='max-w-2xl mx-auto scroll-reveal'>
+
+            <li class='bg-asfalto-2 border border-cromo-dark/40 p-6 md:p-8 flex items-start gap-6 hover:border-verde-grid/50 transition-colors'>
+              <span class='step-num'>01</span>
+              <div class='flex-1'>
+                <h3 class='font-display font-bold text-h3 text-linha-branca mb-2'>Entre no grupo do WhatsApp</h3>
+                <p class='text-cromo text-sm mb-4'>Primeiro contato com a galera. Você cai no grupo oficial da Speed GT Brasil, conhece os pilotos e vê como tudo funciona por dentro.</p>
+                <a class='inline-flex items-center gap-2 font-display font-bold text-xs tracking-label uppercase text-verde-grid hover:gap-3 transition-all' href='https://chat.whatsapp.com/Jz9Zg4z1q302rXOlaI8KKk' rel='noopener' target='_blank'>
+                  Entrar no grupo
+                  <i class='w-4 h-4' data-lucide='arrow-up-right'></i>
+                </a>
+              </div>
+            </li>
+
+            <div class='step-arrow'></div>
+
+            <li class='bg-asfalto-2 border border-cromo-dark/40 p-6 md:p-8 flex items-start gap-6'>
+              <span class='step-num'>02</span>
+              <div class='flex-1'>
+                <h3 class='font-display font-bold text-h3 text-linha-branca mb-2'>Preencha seu cadastro</h3>
+                <p class='text-cromo text-sm mb-4'>Formulário rápido com seu PSN, divisão pretendida e se você corre no controle ou no volante. Tudo na página de onboarding.</p>
+                <a class='inline-flex items-center gap-2 font-display font-bold text-xs tracking-label uppercase text-verde-grid hover:gap-3 transition-all' href='/#comece-aqui'>
+                  Abrir cadastro
+                  <i class='w-4 h-4' data-lucide='arrow-right'></i>
+                </a>
+              </div>
+            </li>
+
+            <div class='step-arrow'></div>
+
+            <li class='bg-asfalto-2 border border-cromo-dark/40 p-6 md:p-8 flex items-start gap-6'>
+              <span class='step-num'>03</span>
+              <div class='flex-1'>
+                <h3 class='font-display font-bold text-h3 text-linha-branca mb-2'>Cadastre-se no SimGrid</h3>
+                <p class='text-cromo text-sm mb-4'>É no SimGrid que você se inscreve nas etapas, vê o calendário, os grids, os resultados e o ranking oficial. Tutorial completo na página de onboarding.</p>
+                <a class='inline-flex items-center gap-2 font-display font-bold text-xs tracking-label uppercase text-verde-grid hover:gap-3 transition-all' href='/#simgrid'>
+                  Ver tutorial
+                  <i class='w-4 h-4' data-lucide='arrow-right'></i>
+                </a>
+              </div>
+            </li>
+
+            <div class='step-arrow'></div>
+
+            <li class='bg-asfalto-2 border border-cromo-dark/40 p-6 md:p-8 flex items-start gap-6'>
+              <span class='step-num'>04</span>
+              <div class='flex-1'>
+                <h3 class='font-display font-bold text-h3 text-linha-branca mb-2'>Entre na sua divisão</h3>
+                <p class='text-cromo text-sm'>Você começa na Série C, a categoria de entrada, e pode subir de divisão conforme o desempenho. O ranking SimGrid decide promoção e rebaixamento ao final da temporada.</p>
+              </div>
+            </li>
+
+            <div class='step-arrow'></div>
+
+            <li class='bg-asfalto-2 border border-cromo-dark/40 p-6 md:p-8 flex items-start gap-6'>
+              <span class='step-num'>05</span>
+              <div class='flex-1'>
+                <h3 class='font-display font-bold text-h3 text-linha-branca mb-2'>Corra e evolua no ranking</h3>
+                <p class='text-cromo text-sm'>Etapas semanais com regulamento escrito, briefing antes da largada e comitê pra resolver toque suspeito. Acumule pontos, descarte o pior resultado, suba de divisão.</p>
+              </div>
+            </li>
+
+          </ol>
+        </div>
+      </section>
+
+      <!-- 7. PRÓXIMA CORRIDA -->
+      <section class='py-16 md:py-24 bg-asfalto-2/40 border-y border-cromo-dark/30'>
+        <div class='max-w-container mx-auto px-4 md:px-8 scroll-reveal'>
+          <div class='bg-asfalto-2 accent-top p-6 md:p-10 relative' data-countdown='2026-07-06T20:00:00-03:00'>
+
+            <div class='flex flex-wrap items-start justify-between gap-4 mb-8'>
+              <div class='flex items-center gap-3 flex-wrap'>
+                <span class='stencil-badge font-accent text-xs tracking-label px-3 py-1.5' style='background: rgba(201,168,106,0.15); color: #C9A86A;'>
+                  ETAPA 1 &#183; TEMPORADAS
+                </span>
+                <span class='font-display font-bold text-xs tracking-label uppercase text-verde-grid flex items-center gap-1.5'>
+                  <span class='w-1.5 h-1.5 rounded-full bg-verde-grid animate-pulse'></span>
+                  Próxima corrida
+                </span>
+              </div>
+              <i class='w-6 h-6 text-cromo-dark' data-lucide='flag'></i>
+            </div>
+
+            <div class='grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-end'>
+              <div>
+                <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-2'>Circuito</p>
+                <h2 class='font-display font-black text-h2 mb-1 text-linha-branca'>Circuito a confirmar</h2>
+                <p class='text-cromo text-sm'>Comitê define até a abertura da inscrição</p>
+
+                <div class='ficha-divider my-6'></div>
+
+                <div class='flex flex-wrap gap-8'>
+                  <div>
+                    <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-1'>Série B e C</p>
+                    <p class='font-mono text-lg text-linha-branca tracking-mono'>06/07/2026</p>
+                  </div>
+                  <div>
+                    <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-1'>Série A</p>
+                    <p class='font-mono text-lg text-linha-branca tracking-mono'>07/07/2026</p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-3'>Tempo até a largada</p>
+                <div class='grid grid-cols-4 gap-2 md:gap-3'>
+                  <div class='text-center bg-asfalto py-4 border border-cromo-dark/30'>
+                    <div class='font-mono text-2xl md:text-4xl font-medium text-amarelo-bandeirola tracking-mono' data-cd='d'>--</div>
+                    <div class='text-[0.65rem] uppercase text-cromo-dark tracking-label mt-1'>dias</div>
+                  </div>
+                  <div class='text-center bg-asfalto py-4 border border-cromo-dark/30'>
+                    <div class='font-mono text-2xl md:text-4xl font-medium text-amarelo-bandeirola tracking-mono' data-cd='h'>--</div>
+                    <div class='text-[0.65rem] uppercase text-cromo-dark tracking-label mt-1'>hrs</div>
+                  </div>
+                  <div class='text-center bg-asfalto py-4 border border-cromo-dark/30'>
+                    <div class='font-mono text-2xl md:text-4xl font-medium text-amarelo-bandeirola tracking-mono' data-cd='m'>--</div>
+                    <div class='text-[0.65rem] uppercase text-cromo-dark tracking-label mt-1'>min</div>
+                  </div>
+                  <div class='text-center bg-asfalto py-4 border border-cromo-dark/30'>
+                    <div class='font-mono text-2xl md:text-4xl font-medium text-amarelo-bandeirola tracking-mono' data-cd='s'>--</div>
+                    <div class='text-[0.65rem] uppercase text-cromo-dark tracking-label mt-1'>seg</div>
+                  </div>
+                </div>
+
+                <div class='flex flex-wrap gap-3 mt-6'>
+                  <a class='cta-primary inline-flex items-center gap-2 px-5 py-3 font-display font-bold text-xs tracking-label uppercase' href='https://chat.whatsapp.com/Jz9Zg4z1q302rXOlaI8KKk' rel='noopener' target='_blank'>
+                    Entrar no grupo
+                    <i class='w-4 h-4' data-lucide='arrow-right'></i>
+                  </a>
+                  <a class='inline-flex items-center gap-2 px-5 py-3 font-display font-bold text-xs tracking-label uppercase border border-cromo text-cromo hover:text-linha-branca hover:border-linha-branca transition-colors' href='https://www.thesimgrid.com/communities/speed-gt-brasil' rel='noopener' target='_blank'>
+                    Ver no SimGrid
+                    <i class='w-4 h-4' data-lucide='arrow-up-right'></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. SIMGRID -->
+      <section class='py-16 md:py-24' id='simgrid'>
+        <div class='max-w-container mx-auto px-4 md:px-8'>
+          <div class='max-w-4xl mx-auto scroll-reveal'>
+            <div class='mb-10 text-center'>
+              <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-4'>Calendário &#183; Inscrições &#183; Resultados</p>
+              <h2 class='font-display font-black text-h1 text-linha-branca'>Tudo isso roda no SimGrid</h2>
+              <p class='text-cromo mt-3 max-w-2xl mx-auto'>A Speed GT Brasil usa o SimGrid como plataforma oficial. Lá você acompanha o calendário completo da temporada, se inscreve nas etapas, vê grids, resultados e o ranking ao vivo.</p>
+            </div>
+
+            <a class='block bg-asfalto-2 border border-cromo-dark/40 hover:border-verde-grid/60 transition-all accent-top p-8 md:p-10 group' href='https://www.thesimgrid.com/communities/speed-gt-brasil' rel='noopener' target='_blank'>
+              <div class='flex flex-wrap items-center gap-6 justify-between'>
+                <div class='flex-1 min-w-0'>
+                  <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-2'>Comunidade oficial</p>
+                  <h3 class='font-display font-black text-h2 text-linha-branca'>SPEED GT BRASIL</h3>
+                  <p class='text-cromo mt-2 text-sm'>Calendário &#183; Inscrições &#183; Grids &#183; Resultados &#183; Ranking</p>
+                </div>
+                <div class='cta-primary inline-flex items-center gap-2 px-6 py-3.5 font-display font-bold text-xs tracking-label uppercase whitespace-nowrap'>
+                  Abrir no SimGrid
+                  <i class='w-4 h-4' data-lucide='arrow-up-right'></i>
+                </div>
+              </div>
+            </a>
+
+            <p class='text-cromo-dark text-sm text-center mt-6'>Primeira vez no SimGrid? <a class='text-verde-grid hover:underline' href='/#simgrid'>Ver tutorial passo a passo</a></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 9. ORIGEM -->
+      <section class='py-20 md:py-32 bg-asfalto-2/40 border-y border-cromo-dark/30'>
+        <div class='max-w-container mx-auto px-4 md:px-8'>
+          <div class='max-w-3xl mx-auto scroll-reveal'>
+            <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-6 text-center'>Origem</p>
+            <h2 class='font-display font-black text-h1 text-linha-branca text-center mb-12'>
+              Uma liga construída por pilotos, para pilotos.
+            </h2>
+
+            <div class='space-y-6 text-body text-cromo leading-relaxed'>
+              <p>A <span class='text-linha-branca font-medium'>Speed GT Brasil</span> nasceu da iniciativa de um grupo de pilotos virtuais experientes que acreditava que o simracing poderia oferecer muito mais do que corridas online: poderia criar uma verdadeira comunidade.</p>
+              <p>Fundada em 2026, a liga foi construída sobre pilares simples, mas essenciais: <span class='text-verde-grid'>organização, respeito, competitividade e fair play</span>. Desde então, vem reunindo pilotos de diferentes níveis em campeonatos estruturados, com regulamentos claros e um ambiente voltado para a evolução dentro e fora das pistas.</p>
+              <p>Mais do que disputar posições, a Speed GT Brasil busca proporcionar uma experiência onde cada piloto se sinta parte de algo maior: uma comunidade apaixonada por automobilismo virtual e comprometida em elevar o nível das corridas online.</p>
+            </div>
+
+            <div class='mt-12 pull-quote text-h3 text-linha-branca'>
+              Porque correr é importante. Mas correr no lugar certo faz toda a diferença.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 10. PROVA SOCIAL -->
+      <section class='py-16 md:py-24' id='depoimentos'>
+        <div class='max-w-container mx-auto px-4 md:px-8'>
+          <div class='max-w-3xl mx-auto mb-12 scroll-reveal text-center'>
+            <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-4'>Depoimentos</p>
+            <h2 class='font-display font-black text-h1 text-linha-branca'>O que os pilotos estão dizendo</h2>
+            <p class='text-cromo mt-3 max-w-xl mx-auto'>Mensagens reais do grupo de WhatsApp, depois das corridas. Nomes preservados.</p>
+          </div>
+
+          <div class='grid grid-cols-1 md:grid-cols-2 gap-5 scroll-reveal max-w-5xl mx-auto'>
+
+            <figure class='testimonial-card p-6 md:p-7 md:col-span-2'>
+              <div class='flex items-start gap-3 mb-4'>
+                <span class='testimonial-avatar'>P1</span>
+                <div>
+                  <p class='font-display font-bold text-linha-branca text-sm leading-tight'>Piloto da comunidade</p>
+                  <p class='text-[0.7rem] text-cromo-dark font-mono tracking-mono'>WhatsApp &#183; 13:45</p>
+                </div>
+              </div>
+              <blockquote class='text-cromo text-sm md:text-base leading-relaxed space-y-3'>
+                <p class='text-cromo-dark italic border-l-2 border-cromo-dark/40 pl-3 text-xs'>
+                  &quot;Kkkk corrida de homem sério foi toda no respeito!!! Parabéns, essas são as boas, brigamos sem...&quot;
+                </p>
+                <p>
+                  Exato&#8230; eu é que agradeço pela disputa 🙏🙏. É que a gente perde o amigo, mas não perde a zueira nunca, né&#8230; mas no nível saudável 😅
+                </p>
+              </blockquote>
+            </figure>
+
+            <figure class='testimonial-card p-6 md:p-7'>
+              <div class='flex items-start gap-3 mb-4'>
+                <span class='testimonial-avatar'>P2</span>
+                <div>
+                  <p class='font-display font-bold text-linha-branca text-sm leading-tight'>Piloto da comunidade</p>
+                  <p class='text-[0.7rem] text-cromo-dark font-mono tracking-mono'>WhatsApp &#183; 00:49</p>
+                </div>
+              </div>
+              <blockquote class='text-cromo text-sm leading-relaxed'>
+                Pessoal, venho agradecer abertamente por essa primeira temporada desse campeonato &#8212; foi realmente muito bom. Parabéns ao campeão pela conquista do título e a todos que participaram das corridas, treinos e resenhas. Espero melhorar cada vez mais e ultrapassar o meu limite pilotando com vocês. Se alguém precisar de ajuda com qualquer coisa relacionada ao game, estou disposto a ajudar! Que venha a próxima temporada 🔥
+              </blockquote>
+            </figure>
+
+            <figure class='testimonial-card p-6 md:p-7'>
+              <div class='flex items-start gap-3 mb-4'>
+                <span class='testimonial-avatar'>P3</span>
+                <div>
+                  <p class='font-display font-bold text-linha-branca text-sm leading-tight'>Piloto da comunidade</p>
+                  <p class='text-[0.7rem] text-cromo-dark font-mono tracking-mono'>WhatsApp &#183; 22:51</p>
+                </div>
+              </div>
+              <blockquote class='text-cromo text-sm leading-relaxed'>
+                Agradecer a todos do grupo pela disputa limpa e acirrada, igualmente com o lpbarros e o herbert! Boas disputas &#8212; por isso que esse grupo é diferenciado, sempre jogando limpo, e às vezes em uns erros que acabam interferindo no colega o pessoal devolve a posição. A briga limpa e a disputa saudável e sempre técnica é o que faz esse grupo diferente. Parabéns a todos! 🏆
+              </blockquote>
+            </figure>
+
+            <figure class='testimonial-card p-6 md:p-7 md:col-span-2'>
+              <div class='flex items-start gap-3 mb-4'>
+                <span class='testimonial-avatar'>P4</span>
+                <div>
+                  <p class='font-display font-bold text-linha-branca text-sm leading-tight'>Piloto da comunidade</p>
+                  <p class='text-[0.7rem] text-cromo-dark font-mono tracking-mono'>WhatsApp &#183; 10:08</p>
+                </div>
+              </div>
+              <blockquote class='text-cromo text-sm leading-relaxed space-y-3'>
+                <p>Eu também queria expressar o meu agradecimento a toda a galera aqui do grupo e a toda a organização que vem se empenhando muito em fazer tudo isto acontecer.</p>
+                <p>Claro que disputar é legal, ganhar então nem se fala, mas estar num ambiente onde podemos interagir com as pessoas e fortalecer as amizades, simplesmente é impagável.</p>
+                <p>Gratidão pelos ensinamentos do nosso &#8220;venezuelano voador&#8221;, que preza não só a evolução dele e a si próprio, mas a de outros também. E agradecimento pela disputa até a última volta &#8212; valeu pela parceria nos treinos e a TODOS que fazem da nossa segunda-feira um dia diferenciado.</p>
+                <p>Peço desculpas também a todos os companheiros que sem querer prejudiquei ao longo do campeonato. Não deu nem pra comemorar sabendo que prejudiquei um amigo numa disputa de posição. Bom dia a todos!</p>
+              </blockquote>
+            </figure>
+
+            <figure class='testimonial-card p-6 md:p-7 md:col-span-2'>
+              <div class='flex items-start gap-3 mb-4'>
+                <span class='testimonial-avatar'>P5</span>
+                <div>
+                  <p class='font-display font-bold text-linha-branca text-sm leading-tight'>Piloto iniciante</p>
+                  <p class='text-[0.7rem] text-cromo-dark font-mono tracking-mono'>WhatsApp &#183; 08:40</p>
+                </div>
+              </div>
+              <blockquote class='text-cromo text-sm leading-relaxed space-y-3'>
+                <p>Bom dia amigos pilotos! Muito feliz em ter participado do meu primeiro campeonato com vocês e ter aprendido a cada curva e a cada divisão. Agradeço demais a paciência de todos que dividiram sala e puderam transmitir um pouco do conhecimento.</p>
+                <p>Os três representantes do grupo, fantásticos pilotos da Série B, me proporcionaram disputas incríveis durante todo o campeonato. Peço perdão se em algum momento errei &#8212; como iniciante, sempre tremia ao dividir cada curva com vocês.</p>
+                <p>Cheguei sem saber fazer uma curva direito e hoje, mesmo com minhas limitações, ainda jogando no modo automático, pude travar boas brigas e evoluir. Minha gratidão à organização, que conduziu bem toda essa estrutura, criando um ambiente de amizade e aprendizagem constante. Agora sigo no novo desafio de migrar pro câmbio manual e continuar sempre evoluindo. A todos, meu <span class='text-linha-branca font-medium'>MUITO OBRIGADO!</span></p>
+              </blockquote>
+            </figure>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- 10b. VÍDEOS &#8212; YOUTUBE -->
+      <section class='py-16 md:py-24 bg-asfalto-2/40 border-y border-cromo-dark/30' id='videos'>
+        <div class='max-w-container mx-auto px-4 md:px-8'>
+          <div class='max-w-3xl mx-auto mb-10 scroll-reveal text-center'>
+            <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-4'>Vídeos</p>
+            <h2 class='font-display font-black text-h1 text-linha-branca'>Final da temporada anterior &#8212; Série A</h2>
+            <p class='text-cromo mt-3 max-w-xl mx-auto'>A última batalha pelo título da divisão de elite. Assista na íntegra.</p>
+          </div>
+
+          <div class='max-w-4xl mx-auto scroll-reveal'>
+            <div class='relative w-full bg-asfalto border border-cromo-dark/30 accent-top overflow-hidden' style='aspect-ratio: 16 / 9;'>
+              <iframe allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' allowfullscreen='allowfullscreen' class='absolute inset-0 w-full h-full' frameborder='0' height='315' referrerpolicy='strict-origin-when-cross-origin' src='https://www.youtube.com/embed/o6013wBeiTw?si=8HjhghAq4jYyp8vc' title='YouTube video player' width='560'></iframe>
+            </div>
+
+            <a class='mt-6 block bg-asfalto-2 border border-cromo-dark/40 hover:border-vermelho-flag/60 transition-all p-6 md:p-7 group' href='https://youtube.com/@SpeedGTBr' rel='noopener' target='_blank'>
+              <div class='flex flex-wrap items-center gap-5 justify-between'>
+                <div class='flex items-center gap-4 flex-1 min-w-0'>
+                  <span class='flex-shrink-0 inline-flex items-center justify-center w-14 h-14 rounded-full' style='background:#FF0000;'>
+                    <svg aria-hidden='true' class='w-7 h-7' fill='#fff' viewBox='0 0 24 24'><path d='M8 5v14l11-7z'></path></svg>
+                  </span>
+                  <div class='min-w-0'>
+                    <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark'>Canal oficial</p>
+                    <p class='font-display font-black text-h3 text-linha-branca'>@SpeedGTBr</p>
+                    <p class='text-cromo text-sm'>Lives das corridas, replays e melhores momentos.</p>
+                  </div>
+                </div>
+                <div class='inline-flex items-center gap-2 font-display font-bold text-xs tracking-label uppercase text-cromo group-hover:text-linha-branca transition-colors whitespace-nowrap'>
+                  Ir para o canal
+                  <i class='w-4 h-4' data-lucide='arrow-up-right'></i>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- 10c. INSTAGRAM -->
+      <section class='py-16 md:py-24' id='instagram'>
+        <div class='max-w-container mx-auto px-4 md:px-8'>
+          <div class='max-w-3xl mx-auto mb-10 scroll-reveal text-center'>
+            <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-4'>Rede social</p>
+            <h2 class='font-display font-black text-h1 text-linha-branca'>@speedgtbr no Instagram</h2>
+            <p class='text-cromo mt-3 max-w-xl mx-auto'>Fotos do paddock, divulgação das etapas, clipes rápidos e os melhores momentos das nossas corridas.</p>
+          </div>
+
+          <div class='max-w-4xl mx-auto scroll-reveal'>
+            <a class='block bg-asfalto-2 border border-cromo-dark/40 hover:border-verde-grid/60 transition-all p-8 md:p-10 group' href='https://instagram.com/speedgtbr' rel='noopener' target='_blank'>
+              <div class='flex flex-wrap items-center gap-6 justify-between'>
+                <div class='flex items-center gap-5 flex-1 min-w-0'>
+                  <span class='flex-shrink-0 inline-flex items-center justify-center w-16 h-16 rounded-2xl' style='background: linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);'>
+                    <svg aria-hidden='true' class='w-8 h-8' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24'><rect height='20' rx='5' ry='5' width='20' x='2' y='2'/><path d='M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z'></path><line x1='17.5' x2='17.51' y1='6.5' y2='6.5'></line></svg>
+                  </span>
+                  <div class='min-w-0'>
+                    <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark'>Perfil oficial</p>
+                    <p class='font-display font-black text-h2 text-linha-branca'>@speedgtbr</p>
+                    <p class='text-cromo text-sm mt-1'>Siga pra não perder nada.</p>
+                  </div>
+                </div>
+                <div class='inline-flex items-center gap-2 font-display font-bold text-xs tracking-label uppercase text-cromo group-hover:text-linha-branca transition-colors whitespace-nowrap'>
+                  Seguir
+                  <i class='w-4 h-4' data-lucide='arrow-up-right'></i>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- 11. OBJEÇÕES -->
+      <section class='py-16 md:py-24 bg-asfalto-2/40 border-y border-cromo-dark/30'>
+        <div class='max-w-container mx-auto px-4 md:px-8'>
+          <div class='max-w-3xl mx-auto mb-12 scroll-reveal text-center'>
+            <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-4'>Antes de você fechar a aba</p>
+            <h2 class='font-display font-black text-h1 text-linha-branca'>Talvez você esteja pensando&#8230;</h2>
+          </div>
+
+          <div class='grid grid-cols-1 md:grid-cols-3 gap-5 scroll-reveal max-w-5xl mx-auto'>
+
+            <article class='bg-asfalto p-6 md:p-8 border border-cromo-dark/40'>
+              <p class='objection-q text-h3 mb-4'>&quot;Vou ser o pior do grid&quot;</p>
+              <p class='text-cromo text-body mb-3'><span class='font-display font-black text-verde-grid text-2xl'>Não.</span></p>
+              <p class='text-cromo text-body'>As divisões existem justamente para que cada piloto corra contra pessoas do seu nível.</p>
+            </article>
+
+            <article class='bg-asfalto p-6 md:p-8 border border-cromo-dark/40'>
+              <p class='objection-q text-h3 mb-4'>&quot;Não tenho volante&quot;</p>
+              <p class='text-cromo text-body'><span class='font-display font-black text-verde-grid text-2xl'>Pode correr no controle.</span></p>
+              <p class='text-cromo text-body mt-3'>Aqui é PS5 e GT7. Volante é bem-vindo, controle também.</p>
+            </article>
+
+            <article class='bg-asfalto p-6 md:p-8 border border-cromo-dark/40'>
+              <p class='objection-q text-h3 mb-4'>&quot;Vai virar panelinha&quot;</p>
+              <p class='text-cromo text-body'><span class='font-display font-black text-verde-grid text-2xl'>A Speed GT nasceu justamente para evitar isso.</span></p>
+              <p class='text-cromo text-body mt-3'>Regulamento escrito, comitê de validação e divisão por mérito. Não tem espaço pra clube de amigos do organizador.</p>
+            </article>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- 12. FECHAMENTO + CTA -->
+      <section class='py-24 md:py-32 bg-asfalto relative overflow-hidden'>
+        <div class='absolute inset-0 hero-mesh'></div>
+        <div class='max-w-container mx-auto px-4 md:px-8 relative text-center scroll-reveal'>
+          <h2 class='font-display font-extrabold text-h1 text-linha-branca mb-6 max-w-3xl mx-auto'>
+            Ganha quem corre melhor.<br/>
+            <span class='text-cromo'>Não quem bate mais forte.</span>
+          </h2>
+          <p class='text-cromo max-w-xl mx-auto mb-10 text-body'>
+            Respeito e fair play não são opcionais. São a regra principal. A primeira etapa da Temporada é em 6 de julho.
+          </p>
+          <a class='cta-primary inline-flex items-center gap-3 px-8 py-5 font-display font-bold text-sm md:text-base tracking-label uppercase' href='https://chat.whatsapp.com/Jz9Zg4z1q302rXOlaI8KKk' rel='noopener' target='_blank'>
+            <span aria-hidden='true'>🏁</span>
+            Entrar no grupo do WhatsApp
+          </a>
+        </div>
+      </section>
+
+
+      <!-- ============ PÁGINA EMBUTIDA: COMECE-AQUI ============ -->
+      <section class='py-16 md:py-24 border-t border-cromo-dark/30' id='comece-aqui'>
+        <div class='max-w-3xl mx-auto px-4 md:px-8'>
+          <div class='mb-10 scroll-reveal'>
+            <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-4'>Onboarding</p>
+            <h2 class='font-display font-black text-h1 text-linha-branca'>Comece aqui</h2>
+          </div>
+          <div class='post-body scroll-reveal'>
+<p class='font-display font-bold' style='font-size:1.35rem; color:#F4F1EA; line-height:1.3;'>Bem-vindo. Tudo que você precisa pra começar a correr com a gente está nesta página.</p>
+
+    <p>São 4 passos simples. Em uns 10 minutos você está no grid.</p>
+
+    <!-- Quick anchors -->
+    <div class='flex flex-wrap gap-2 my-8'>
+      <a class='btn-pill inline-flex items-center gap-2 px-4 py-2 text-xs font-display font-bold tracking-label uppercase' href='#whatsapp'>1 &#183; WhatsApp</a>
+      <a class='btn-pill inline-flex items-center gap-2 px-4 py-2 text-xs font-display font-bold tracking-label uppercase' href='#simgrid'>2 &#183; SimGrid</a>
+      <a class='btn-pill inline-flex items-center gap-2 px-4 py-2 text-xs font-display font-bold tracking-label uppercase' href='#cadastro'>3 &#183; Cadastro</a>
+      <a class='btn-pill inline-flex items-center gap-2 px-4 py-2 text-xs font-display font-bold tracking-label uppercase' href='#comece-apoie'>4 &#183; Apoie</a>
+    </div>
+
+    <hr/>
+
+    <!-- ============ 1. WHATSAPP ============ -->
+    <h2 id='whatsapp'>1 &#183; Entre no grupo do WhatsApp</h2>
+    <p>É o canal oficial da comunidade. É lá que rolam as conversas, dúvidas sobre etapas, briefings antes da largada, debates pós-corrida, marcação de treinos e a resenha em geral.</p>
+
+    <div class='bg-asfalto-2 border border-cromo-dark/40 accent-top p-6 md:p-8 my-6'>
+      <div class='flex items-start gap-5 flex-wrap'>
+        <span class='step-num'>01</span>
+        <div class='flex-1 min-w-0'>
+          <h3 style='margin-top:0; margin-bottom:.5rem;'>Grupo oficial Speed GT Brasil</h3>
+          <p style='margin:0 0 1.25rem; font-size:.95rem; color:#C4C4C4;'>Clique no botão abaixo e aceite a entrada no grupo. Sem fila, sem entrevista.</p>
+          <a class='cta-primary inline-flex items-center gap-2 px-6 py-3 font-display font-bold text-xs tracking-label uppercase' href='https://chat.whatsapp.com/Jz9Zg4z1q302rXOlaI8KKk' rel='noopener' target='_blank'>
+            🏁 Entrar no grupo do WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <hr/>
+
+    <!-- ============ 2. SIMGRID ============ -->
+    <h2 id='simgrid'>2 &#183; Cadastre-se no SimGrid</h2>
+    <p>O <strong>SimGrid</strong> é a plataforma onde toda a parte oficial da Speed GT Brasil acontece: calendário, inscrição nas etapas, grids, resultados, classificação geral e ranking de pilotos. Sem SimGrid, você não consegue se inscrever nas corridas.</p>
+
+    <div class='grid grid-cols-1 md:grid-cols-2 gap-4 my-8'>
+
+      <div class='bg-asfalto-2 border border-cromo-dark/40 p-6'>
+        <div class='flex items-start gap-4 mb-3'>
+          <span style='font-family:&apos;Saira Stencil One&apos;,sans-serif; font-size:1.75rem; color:#00A859; line-height:1;'>A</span>
+          <h3 style='margin:0;'>Crie sua conta</h3>
+        </div>
+        <p style='margin:.5rem 0; font-size:.95rem;'>Acesse <a href='https://www.thesimgrid.com' rel='noopener' target='_blank'>thesimgrid.com</a> e clique em <strong>Sign up</strong>. Use seu email ou logue com Google. Confirme o email recebido.</p>
+      </div>
+
+      <div class='bg-asfalto-2 border border-cromo-dark/40 p-6'>
+        <div class='flex items-start gap-4 mb-3'>
+          <span style='font-family:&apos;Saira Stencil One&apos;,sans-serif; font-size:1.75rem; color:#00A859; line-height:1;'>B</span>
+          <h3 style='margin:0;'>Complete o perfil</h3>
+        </div>
+        <p style='margin:.5rem 0; font-size:.95rem;'>Defina nickname, país (Brazil) e adicione seu <strong>PSN ID</strong> exatamente como aparece no PS5. Plataforma: <strong>PlayStation 5</strong>. Jogo: <strong>Gran Turismo 7</strong>.</p>
+      </div>
+
+      <div class='bg-asfalto-2 border border-cromo-dark/40 p-6'>
+        <div class='flex items-start gap-4 mb-3'>
+          <span style='font-family:&apos;Saira Stencil One&apos;,sans-serif; font-size:1.75rem; color:#00A859; line-height:1;'>C</span>
+          <h3 style='margin:0;'>Entre na nossa comunidade</h3>
+        </div>
+        <p style='margin:.5rem 0; font-size:.95rem;'>Abra <a href='https://www.thesimgrid.com/communities/speed-gt-brasil' rel='noopener' target='_blank'>a página da Speed GT Brasil no SimGrid</a> e clique em <strong>Join community</strong>. Aguarde a aprovação (rápido, normalmente no mesmo dia).</p>
+      </div>
+
+      <div class='bg-asfalto-2 border border-cromo-dark/40 p-6'>
+        <div class='flex items-start gap-4 mb-3'>
+          <span style='font-family:&apos;Saira Stencil One&apos;,sans-serif; font-size:1.75rem; color:#00A859; line-height:1;'>D</span>
+          <h3 style='margin:0;'>Inscreva-se nas etapas</h3>
+        </div>
+        <p style='margin:.5rem 0; font-size:.95rem;'>Na aba <strong>Championships</strong> da comunidade você vê os campeonatos abertos. Clique em <strong>Sign up</strong> na sua série (A, B ou C) e confirme. Pronto &#8212; você aparece no grid.</p>
+      </div>
+
+    </div>
+
+    <div class='my-8'>
+      <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark' style='margin:0 0 .75rem;'>Vídeo tutorial &#183; Como criar sua conta no SimGrid</p>
+      <div style='position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border:1px solid rgba(196,196,196,0.2);'>
+        <iframe allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' allowfullscreen='allowfullscreen' frameborder='0' referrerpolicy='strict-origin-when-cross-origin' src='https://www.youtube.com/embed/dI8-pXOOAvc' style='position:absolute; top:0; left:0; width:100%; height:100%;' title='Tutorial SimGrid'></iframe>
+      </div>
+    </div>
+
+    <div class='bg-asfalto-2 border-l-4 border-amarelo-bandeirola p-5 my-8'>
+      <p class='font-display font-bold text-linha-branca' style='margin:0 0 .5rem;'>Dica importante</p>
+      <p style='margin:0; font-size:.95rem;'>Use o <strong>mesmo PSN ID</strong> no SimGrid e no formulário de cadastro do próximo passo. É como o time identifica que você é a mesma pessoa nas duas plataformas.</p>
+    </div>
+
+    <div class='my-8'>
+      <a class='cta-primary inline-flex items-center gap-2 px-6 py-3 font-display font-bold text-xs tracking-label uppercase' href='https://www.thesimgrid.com/communities/speed-gt-brasil' rel='noopener' target='_blank'>
+        Abrir comunidade no SimGrid
+      </a>
+    </div>
+
+    <hr/>
+
+    <!-- ============ 3. CADASTRO ============ -->
+    <h2 id='cadastro'>3 &#183; Preencha seu cadastro</h2>
+    <p>Formulário rápido pra organização saber quem você é. Caso tenhamos que lhe enviar premiações, já temos seus dados &#8212; que serão sigilosos e apenas para uso interno.</p>
+
+    <div class='bg-asfalto-2 border border-cromo-dark/40 accent-top p-6 md:p-8 my-6'>
+      <div class='flex items-start gap-5 flex-wrap'>
+        <span class='step-num'>03</span>
+        <div class='flex-1 min-w-0'>
+          <h3 style='margin-top:0; margin-bottom:.5rem;'>Formulário de cadastro</h3>
+          <p style='margin:0 0 1.25rem; font-size:.95rem; color:#C4C4C4;'>Pode preencher direto aqui em baixo, ou abrir em uma nova aba.</p>
+          <a class='cta-primary inline-flex items-center gap-2 px-6 py-3 font-display font-bold text-xs tracking-label uppercase' href='https://forms.gle/odXmknDnye8BJ7HL6' rel='noopener' target='_blank'>
+            Abrir formulário em nova aba
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <hr/>
+
+
+    <!-- ============ 4. APOIE ============ -->
+    <h2 id='comece-apoie'>4 &#183; Apoie a comunidade (opcional)</h2>
+    <p>A Speed GT Brasil <strong>não tem fins lucrativos</strong> &#8212; . Mas manter um campeonato organizado tem custos pequenos, mas reais (plano pago do SimGrid, premiações simbólicas, ferramentas). Quem quiser ajudar pode mandar um Pix de qualquer valor, voluntariamente.</p>
+
+    <div class='bg-asfalto border border-verde-grid/40 accent-top p-6 md:p-8 my-6'>
+      <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark' style='margin:0 0 .5rem;'>Chave Pix &#183; E-mail</p>
+      <p class='font-mono tracking-mono' style='font-size:1.5rem; color:#00A859; margin:0; word-break:break-all;'>speedgtbr@gmail.com</p>
+      <p class='text-sm text-cromo-dark' style='margin:1rem 0 0;'>Beneficiário: Speed GT Brasil &#183; <a href='/#apoie'>ver detalhes na página de apoio</a></p>
+    </div>
+
+    <p class='text-sm text-cromo-dark'>Quem contribui não tem assento reservado, divisão garantida ou tratamento diferenciado. As regras valem igual pra todo mundo. Sempre.</p>
+
+    <hr/>
+
+    <!-- ============ LINKS ÚTEIS ============ -->
+    <h2>Links rápidos</h2>
+
+    <div class='grid grid-cols-1 md:grid-cols-3 gap-4 my-6'>
+      <a class='block bg-asfalto-2 border border-cromo-dark/40 hover:border-verde-grid/60 transition-all p-5' href='/#regulamento'>
+        <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark' style='margin:0 0 .25rem;'>Regras</p>
+        <p class='font-display font-bold text-linha-branca' style='margin:0; font-size:1.1rem;'>Regulamento de corridas</p>
+        <p style='margin:.5rem 0 0; font-size:.85rem; color:#C4C4C4;'>Formato, categorias, pontuação, etapas e descarte.</p>
+      </a>
+
+      <a class='block bg-asfalto-2 border border-cromo-dark/40 hover:border-verde-grid/60 transition-all p-5' href='/#regras'>
+        <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark' style='margin:0 0 .25rem;'>Regras</p>
+        <p class='font-display font-bold text-linha-branca' style='margin:0; font-size:1.1rem;'>Conduta e comunidade</p>
+        <p style='margin:.5rem 0 0; font-size:.85rem; color:#C4C4C4;'>Conduta em pista, punições, protestos, vagas, equipe e princípios.</p>
+      </a>
+      <a class='block bg-asfalto-2 border border-cromo-dark/40 hover:border-verde-grid/60 transition-all p-5' href='/#hall-da-fama'>
+        <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark' style='margin:0 0 .25rem;'>Histórico</p>
+        <p class='font-display font-bold text-linha-branca' style='margin:0; font-size:1.1rem;'>Hall da Fama</p>
+        <p style='margin:.5rem 0 0; font-size:.85rem; color:#C4C4C4;'>Pódios dos últimos campeonatos e os pilotos que fizeram história.</p>
+      </a>
+
+      <a class='block bg-asfalto-2 border border-cromo-dark/40 hover:border-verde-grid/60 transition-all p-5' href='/#apoie'>
+        <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark' style='margin:0 0 .25rem;'>Comunidade</p>
+        <p class='font-display font-bold text-linha-branca' style='margin:0; font-size:1.1rem;'>Apoie a comunidade</p>
+        <p style='margin:.5rem 0 0; font-size:.85rem; color:#C4C4C4;'>Pix, para onde vai o dinheiro, outras formas de ajudar.</p>
+      </a>
+    </div>
+
+    <hr/>
+
+    <p class='text-sm text-cromo-dark text-center'>Dúvidas? Mande mensagem no grupo do WhatsApp ou no email <a href='mailto:speedgtbr@gmail.com'>speedgtbr@gmail.com</a>.</p>
+
+    <div class='mt-10 flex flex-wrap justify-center gap-3'>
+      <a class='btn-secondary inline-flex items-center gap-2 px-5 py-3 font-display font-bold text-xs tracking-label uppercase' href='/'>Voltar para o início</a>
+      <a class='cta-primary inline-flex items-center gap-2 px-5 py-3 font-display font-bold text-xs tracking-label uppercase' href='https://chat.whatsapp.com/Jz9Zg4z1q302rXOlaI8KKk' rel='noopener' target='_blank'>🏁 Entrar no grupo</a>
+    </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ============ PÁGINA EMBUTIDA: REGRAS ============ -->
+      <section class='py-16 md:py-24 border-t border-cromo-dark/30' id='regras'>
+        <div class='max-w-3xl mx-auto px-4 md:px-8'>
+          <div class='mb-10'>
+            <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-4'>Documento</p>
+            <h2 class='font-display font-black text-h1 text-linha-branca'>Regras</h2>
+            <div class='flex flex-wrap gap-2 mt-6'>
+              <a class='btn-pill inline-flex items-center gap-2 px-4 py-2 text-xs font-display font-bold tracking-label uppercase' href='#regulamento'>Regulamento geral</a>
+              <a class='btn-pill inline-flex items-center gap-2 px-4 py-2 text-xs font-display font-bold tracking-label uppercase' href='#temporada-3'>Temporada 3</a>
+              <a class='btn-pill inline-flex items-center gap-2 px-4 py-2 text-xs font-display font-bold tracking-label uppercase' href='#punicoes'>Punições</a>
+            </div>
+          </div>
+          <div class='post-body'>
+<p><strong>Tudo num só lugar.</strong> Este documento reúne o <strong>regulamento de corridas</strong> e as <strong>regras de comunidade e conduta</strong> da Speed GT Brasil. Foi escrito antes da temporada começar e qualquer alteração passa pelo Comitê de Validação. Quando dá problema, é aqui que se olha.</p>
+
+    <div class='grid grid-cols-2 md:grid-cols-4 gap-3 my-10'>
+      <div class='bg-asfalto-2 border border-cromo-dark/40 p-4 text-center'>
+        <div class='font-display font-black text-2xl text-linha-branca'>6</div>
+        <div class='text-xs uppercase tracking-label text-cromo-dark mt-1'>Etapas</div>
+      </div>
+      <div class='bg-asfalto-2 border border-cromo-dark/40 p-4 text-center'>
+        <div class='font-display font-black text-2xl text-linha-branca'>1</div>
+        <div class='text-xs uppercase tracking-label text-cromo-dark mt-1'>Descarte</div>
+      </div>
+      <div class='bg-asfalto-2 border border-cromo-dark/40 p-4 text-center'>
+        <div class='font-display font-black text-2xl text-linha-branca'>5</div>
+        <div class='text-xs uppercase tracking-label text-cromo-dark mt-1'>Carros GT3</div>
+      </div>
+      <div class='bg-asfalto-2 border border-cromo-dark/40 p-4 text-center'>
+        <div class='font-display font-black text-2xl text-linha-branca'>51%</div>
+        <div class='text-xs uppercase tracking-label text-cromo-dark mt-1'>Assiduidade</div>
+      </div>
+    </div>
+
+    <h2 id='regulamento'>🏎&#65039; Formato do campeonato</h2>
+    <ul>
+      <li><strong>6 etapas</strong> realizadas semanalmente.</li>
+      <li>Cada piloto possui <strong>1 descarte obrigatório</strong> (pior resultado ou ausência).</li>
+      <li>Classificação final baseada na <strong>soma dos 5 melhores resultados</strong>.</li>
+      <li>Séries B e C correm às <strong>segundas-feiras</strong>; Série A corre às <strong>terças-feiras</strong>.</li>
+    </ul>
+
+    <h2>🗂&#65039; Categorias</h2>
+    <h3>Estrutura</h3>
+    <ul>
+      <li><strong>Série A</strong> &#8212; Pilotos melhor classificados da temporada anterior.</li>
+      <li><strong>Série B</strong> &#8212; Pilotos titulares assíduos da comunidade.</li>
+      <li><strong>Série C</strong> &#8212; Categoria de entrada e divisão competitiva para pilotos que não integram as categorias superiores.</li>
+    </ul>
+    <h3>Características</h3>
+    <ul>
+      <li>As séries correm separadamente, em dias diferentes, com pontuação independente.</li>
+      <li>Cada série tem seu próprio campeão.</li>
+      <li>Grid preferencial de <strong>15 pilotos por categoria</strong> (ajustável conforme inscritos).</li>
+      <li>Promoção e rebaixamento entre as séries ao final de cada campeonato (ver seção própria abaixo).</li>
+    </ul>
+
+    <h2>🔢 Sistema de pontuação</h2>
+    <div class='overflow-x-auto my-6'>
+      <table class='w-full text-sm border-collapse'>
+        <thead>
+          <tr class='border-b border-cromo-dark/40'>
+            <th class='text-left py-3 px-3 font-display uppercase tracking-label text-xs text-cromo-dark'>Posição</th>
+            <th class='text-right py-3 px-3 font-display uppercase tracking-label text-xs text-cromo-dark'>Pontos</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>1º</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>20</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>2º</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>18</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>3º</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>16</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>4º</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>14</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>5º</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>12</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>6º</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>10</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>7º</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>9</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>8º</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>8</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>9º</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>7</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>10º</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>6</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>11º</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>5</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>12º</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>4</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>13º</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>3</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>14º</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>2</td></tr>
+          <tr><td class='py-2 px-3'>15º</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>1</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class='text-sm text-cromo-dark'>Volta mais rápida pode somar pontos extras quando definido no briefing da etapa.</p>
+
+    <h2>🏁 Etapas</h2>
+    <h3>Etapas GT3 (5 etapas)</h3>
+    <ul>
+      <li>Cada piloto utiliza <strong>5 carros diferentes</strong> ao longo das 5 etapas GT3.</li>
+      <li>Repetição de carro resulta em <strong style='color:#E63946'>desclassificação</strong> da etapa.</li>
+      <li>Carros iguais entre pilotos diferentes são permitidos.</li>
+    </ul>
+    <h3>Etapa Festival (1 etapa)</h3>
+    <ul>
+      <li>Regulamento próprio definido previamente pelo Comitê.</li>
+      <li>Formatos possíveis: Gr.4, clássicos, one-make.</li>
+      <li>Condições especiais possíveis: chuva, noite, sprint, grid invertido.</li>
+    </ul>
+
+    <h2>&#9851;&#65039; Descarte</h2>
+    <p>Cada piloto descarta automaticamente seu <strong>pior resultado ou ausência</strong>. Não é necessário declarar o descarte &#8212; o sistema desconsidera a pior pontuação no fechamento da temporada.</p>
+
+    <h2>&#9940; Desclassificação e assiduidade</h2>
+    <div class='bg-asfalto-2 border-l-4 border-vermelho-flag p-5 my-6'>
+      <p class='font-display font-bold text-linha-branca mt-0 mb-2'>Requisitos para o campeonato ser considerado válido:</p>
+      <ul class='my-2'>
+        <li>Assiduidade mínima de <strong>51% das corridas</strong>.</li>
+        <li>Não atingir a meta resulta em <strong style='color:#E63946'>rebaixamento</strong>.</li>
+        <li>Novas temporadas exigem confirmação dos titulares.</li>
+      </ul>
+    </div>
+
+    <hr/>
+
+    <p><strong>A Speed GT Brasil tem regras claras.</strong> Não pra burocratizar &#8212; pra que ninguém precise inventar regra na hora. O ambiente é focado no campeonato e no automobilismo virtual.</p>
+
+    <h2>📌 Regras da comunidade</h2>
+    <p>As regras de comunidade são gerais e permanentes, aplicáveis a todos os membros, independentemente da série ou nível técnico.</p>
+
+    <h3>&#9878;&#65039; Nivelamento de pilotos fora da curva</h3>
+    <p>A Speed GT Brasil é uma comunidade voltada principalmente para pilotos <strong>amadores</strong>, com foco em competição saudável, amizade, evolução e diversão. Por isso, pilotos com nível técnico excepcional, classificação <strong>A+</strong>, experiência profissional ou desempenho claramente fora do padrão da comunidade podem estar sujeitos a um <strong>nivelamento competitivo</strong> para preservar a competitividade e evitar desmotivação dos demais participantes.</p>
+    <ul>
+      <li>A medida é definida pela <strong>administração</strong>, em conjunto com o piloto envolvido.</li>
+      <li>O formato do nivelamento pode ser <strong>negociado</strong> conforme o caso, levando em conta o nível do piloto e o impacto de seu desempenho sobre a comunidade.</li>
+      <li>Podem ser adotadas medidas como restrições esportivas, condições especiais de corrida ou participação em formato não classificatório, desde que previamente acordadas.</li>
+      <li>O acordo deve ser <strong>explícito e público no grupo oficial da comunidade</strong>, antes de produzir efeitos. Não existem acordos disciplinares ou de nivelamento secretos.</li>
+      <li>O objetivo não é punir o piloto por ser rápido, mas <strong>preservar o propósito da comunidade</strong>: proporcionar disputas competitivas e motivadoras para a maioria dos participantes.</li>
+      <li>As condições definidas para o piloto valem enquanto estiverem vigentes e podem ser revistas pela administração caso o nível da competição ou a situação do piloto se altere.</li>
+    </ul>
+    <p class='text-sm text-cromo-dark'>A participação de um piloto fora da curva não garante tratamento especial nem cria direito adquirido a determinada condição de nivelamento. A medida é excepcional, transparente e orientada ao equilíbrio da comunidade.</p>
+
+    <p>Proibições no ambiente Speed GT Brasil (WhatsApp, lobbies, SimGrid):</p>
+
+    <div class='grid grid-cols-1 md:grid-cols-2 gap-3 my-6'>
+      <div class='bg-asfalto-2 border border-vermelho-flag/30 p-4'>
+        <p class='font-display font-bold text-sm my-0' style='color:#E63946'>&#10007; Spam, propaganda ou divulgação de outros grupos</p>
+      </div>
+      <div class='bg-asfalto-2 border border-vermelho-flag/30 p-4'>
+        <p class='font-display font-bold text-sm my-0' style='color:#E63946'>&#10007; Links ou vídeos de corridas de outras comunidades</p>
+      </div>
+      <div class='bg-asfalto-2 border border-vermelho-flag/30 p-4'>
+        <p class='font-display font-bold text-sm my-0' style='color:#E63946'>&#10007; Conteúdo ofensivo, ilegal, assédio ou ataques</p>
+      </div>
+      <div class='bg-asfalto-2 border border-vermelho-flag/30 p-4'>
+        <p class='font-display font-bold text-sm my-0' style='color:#E63946'>&#10007; Discussões políticas ou ideológicas</p>
+      </div>
+    </div>
+
+    <p>A administração mantém <strong>gestão ativa</strong>. Conteúdo em desacordo é removido; a reincidência resulta em <strong style='color:#E63946'>exclusão permanente</strong> da liga e do grupo.</p>
+
+    <h2>🚗 Conduta em pista</h2>
+    <p>Diferenciamos <strong>incidente</strong> (contato leve e acidental) de <strong>infração</strong> (ato evitável ou deliberado).</p>
+    <ul>
+      <li><strong style='color:#E63946'>Bloqueio intencional (weaving)</strong> &#8212; movimento brusco de mudança de direção para bloquear o oponente é proibido.</li>
+      <li><strong style='color:#E63946'>Colisões deliberadas</strong> &#8212; contato forçado para tirar o oponente da pista gera punição severa.</li>
+      <li><strong style='color:#E63946'>Bump drafting (contato tático)</strong> &#8212; proibido usar o carro à frente como apoio de frenagem ou para ganhar vantagem. O piloto de trás é responsável pela distância segura.</li>
+      <li><strong>Incidentes de corrida</strong> &#8212; contatos leves e acidentais, sem comprometer a corrida alheia.</li>
+      <li><strong>Ultrapassagem</strong> &#8212; responsabilidade de quem ataca. O defensor tem direito à trajetória, desde que não bloqueie após o início da manobra.</li>
+    </ul>
+
+    <h3>Bandeira azul</h3>
+    <p>O retardatário deve facilitar a ultrapassagem de forma previsível e segura. Não precisa sair da pista &#8212; apenas evitar manobras defensivas na primeira reta disponível. O líder tem prioridade; ignorar gera punição por obstrução.</p>
+
+    <h2 id='punicoes'>🚦 Sistema de punições</h2>
+    <p>Monitoramento via replays oficiais. Cada piloto possui um <strong>Histórico de Conduta</strong> individual. A Speed GT Brasil adota um <strong>sistema progressivo de 5 níveis</strong>, destinado a preservar a segurança, a competitividade, a esportividade e a integridade dos campeonatos.</p>
+    <p>A punição é determinada considerando, em conjunto:</p>
+    <ul>
+      <li>a <strong>gravidade</strong> da infração;</li>
+      <li>o <strong>impacto</strong> causado na corrida;</li>
+      <li>eventual <strong>vantagem obtida</strong>;</li>
+      <li>a <strong>reincidência</strong>;</li>
+      <li><strong>intencionalidade ou negligência</strong>;</li>
+      <li>o <strong>comportamento posterior</strong> do piloto;</li>
+      <li>o <strong>histórico disciplinar</strong>.</li>
+    </ul>
+    <p class='text-sm text-cromo-dark'>A administração não é obrigada a aplicar automaticamente a punição imediatamente superior apenas por haver reincidência. A reincidência é <strong>fator agravante</strong> na definição da penalidade &#8212; não um gatilho automático.</p>
+
+    <div class='bg-asfalto-2 border-l-4 border-amarelo-bandeirola p-5 my-6'>
+      <p class='font-display font-bold mt-0 mb-2' style='color:#FFCB00'>1ª &#8212; Advertência</p>
+      <p class='my-2'>Infrações de baixo impacto, especialmente quando não houver vantagem relevante ou prejuízo significativo a outro piloto.</p>
+      <p class='text-sm text-cromo-dark mt-3 mb-1'>Exemplos:</p>
+      <ul class='my-0 text-sm'>
+        <li>toque leve e acidental;</li>
+        <li>erro de frenagem sem consequência relevante;</li>
+        <li>pequena obstrução não intencional;</li>
+        <li>primeira ocorrência de conduta inadequada;</li>
+        <li>descumprimento pontual de procedimento sem impacto esportivo.</li>
+      </ul>
+      <p class='text-sm mt-3 mb-0'><strong>Penalidade:</strong> advertência formal registrada no Histórico de Conduta. Não altera a pontuação da etapa.</p>
+    </div>
+
+    <div class='bg-asfalto-2 border-l-4 border-[#FF8C00] p-5 my-6'>
+      <p class='font-display font-bold mt-0 mb-2' style='color:#FF8C00'>2ª &#8212; Penalidade esportiva</p>
+      <p class='my-2'>Infração que causa perda de posição, prejuízo relevante a outro piloto ou vantagem esportiva, mas que não justifica a retirada do resultado.</p>
+      <p class='text-sm text-cromo-dark mt-3 mb-1'>Exemplos:</p>
+      <ul class='my-0 text-sm'>
+        <li>colisão evitável causando perda de posição;</li>
+        <li>bump drafting;</li>
+        <li>bloqueio indevido;</li>
+        <li>desrespeito à bandeira azul;</li>
+        <li>retorno inseguro à pista;</li>
+        <li>defesa excessivamente agressiva;</li>
+        <li>ganho de posição mediante contato evitável.</li>
+      </ul>
+      <p class='text-sm text-cromo-dark mt-3 mb-1'>Penalidades possíveis:</p>
+      <ul class='my-0 text-sm'>
+        <li>acréscimo de 10 segundos ao tempo final;</li>
+        <li>acréscimo de 20 segundos em infrações de maior impacto;</li>
+        <li>perda de posições equivalentes ao benefício obtido;</li>
+        <li>perda de posição no resultado oficial.</li>
+      </ul>
+      <p class='text-sm mt-3 mb-0 text-cromo-dark'>A administração indica expressamente no julgamento qual penalidade foi aplicada e por quê.</p>
+    </div>
+
+    <div class='bg-asfalto-2 border-l-4 border-[#E85D04] p-5 my-6'>
+      <p class='font-display font-bold mt-0 mb-2' style='color:#E85D04'>3ª &#8212; Penalidade severa</p>
+      <p class='my-2'>Infração que provoca prejuízo significativo à corrida de outro piloto ou vantagem esportiva relevante.</p>
+      <p class='text-sm text-cromo-dark mt-3 mb-1'>Exemplos:</p>
+      <ul class='my-0 text-sm'>
+        <li>colisão evitável que provoque abandono ou perda significativa de posições;</li>
+        <li>reincidência de infrações de nível 2;</li>
+        <li>bloqueio deliberado;</li>
+        <li>manobra claramente irresponsável;</li>
+        <li>comportamento antidesportivo com impacto direto no resultado;</li>
+        <li>repetição de condutas que demonstrem negligência com as regras.</li>
+      </ul>
+      <p class='text-sm text-cromo-dark mt-3 mb-1'>Penalidades possíveis:</p>
+      <ul class='my-0 text-sm'>
+        <li>30 segundos de acréscimo;</li>
+        <li>perda de posições no resultado;</li>
+        <li>perda de pontos da etapa;</li>
+        <li>largada em último na etapa seguinte;</li>
+        <li>combinação de duas ou mais penalidades anteriores, quando necessária.</li>
+      </ul>
+    </div>
+
+    <div class='bg-asfalto-2 border-l-4 border-vermelho-flag p-5 my-6'>
+      <p class='font-display font-bold mt-0 mb-2' style='color:#E63946'>4ª &#8212; Desclassificação</p>
+      <p class='my-2'>Infração grave, deliberada ou que comprometa diretamente a integridade esportiva da competição.</p>
+      <p class='text-sm text-cromo-dark mt-3 mb-1'>Exemplos:</p>
+      <ul class='my-0 text-sm'>
+        <li>colisão deliberada;</li>
+        <li>utilização intencional de outro piloto para obter vantagem;</li>
+        <li>reincidência grave após punições anteriores;</li>
+        <li>ignorar deliberadamente uma punição ou determinação da organização;</li>
+        <li>uso deliberado de atalhos ou muretas para obter vantagem, quando caracterizado ganho esportivo relevante;</li>
+        <li>comportamento antidesportivo grave.</li>
+      </ul>
+      <p class='text-sm text-cromo-dark mt-3 mb-1'>Penalidade:</p>
+      <ul class='my-0 text-sm'>
+        <li>desclassificação da etapa;</li>
+        <li>0 ponto na etapa;</li>
+        <li>perda de eventuais bônus obtidos na etapa;</li>
+        <li>registro da ocorrência no Histórico de Conduta.</li>
+      </ul>
+      <p class='text-sm mt-3 mb-0 text-cromo-dark'>A desclassificação não pode ser utilizada para transformar automaticamente uma ausência em descarte, quando isso resultar em benefício indevido ao piloto: o resultado é tratado como desclassificação, não como ausência.</p>
+    </div>
+
+    <div class='bg-asfalto-2 border-l-4 border-vermelho-flag p-5 my-6' style='background-color:rgba(230,57,70,0.08)'>
+      <p class='font-display font-bold mt-0 mb-2' style='color:#E63946'>5ª &#8212; Suspensão ou exclusão</p>
+      <p class='my-2'>Condutas gravíssimas, deliberadas ou incompatíveis com a permanência na competição.</p>
+      <p class='text-sm text-cromo-dark mt-3 mb-1'>Exemplos:</p>
+      <ul class='my-0 text-sm'>
+        <li>reincidência em condutas que já tenham resultado em desclassificação;</li>
+        <li>colisões deliberadas e reiteradas;</li>
+        <li>manipulação intencional de resultados;</li>
+        <li>combinação de resultados;</li>
+        <li>tentativa deliberada de prejudicar outro piloto ou campeonato;</li>
+        <li>utilização consciente de falhas, exploits ou recursos proibidos para obter vantagem;</li>
+        <li>fraude em evidências ou informações apresentadas à organização;</li>
+        <li>comportamento extremamente antidesportivo ou ofensivo relacionado à competição.</li>
+      </ul>
+      <p class='text-sm text-cromo-dark mt-3 mb-1'>Penalidades possíveis:</p>
+      <ul class='my-0 text-sm'>
+        <li>suspensão por 1 ou mais etapas;</li>
+        <li>perda de pontos de uma ou mais etapas;</li>
+        <li>rebaixamento de categoria;</li>
+        <li>exclusão do campeonato vigente;</li>
+        <li>em casos extremos, <strong style='color:#E63946'>exclusão da Speed GT Brasil</strong>.</li>
+      </ul>
+      <p class='text-sm mt-3 mb-0 text-cromo-dark'>A exclusão permanente da comunidade permanece sujeita às regras gerais de conduta da Speed GT Brasil.</p>
+    </div>
+
+    <div class='bg-asfalto-2 border-l-4 border-vermelho-flag p-5 my-6' style='background-color:rgba(230,57,70,0.08)'>
+      <p class='font-display font-bold mt-0 mb-2' style='color:#E63946'>Quit proposital e desconexões durante a corrida</p>
+      <p class='my-2'>O piloto que abandonar deliberadamente uma corrida por meio de <strong>quit</strong> estará sujeito às punições do sistema disciplinar da comunidade. O quit proposital é considerado <strong>conduta antidesportiva deliberada</strong> e, quando caracterizado, será enquadrado como <strong>nível 4 &#8212; Desclassificação</strong>, podendo ser agravado para o <strong>nível 5</strong> em caso de reincidência ou quando houver tentativa deliberada de obter vantagem, prejudicar o campeonato ou burlar alguma regra.</p>
+      <p class='my-2'>A organização reconhece que uma saída da sala pode ocorrer por <strong>queda do piloto, falha de internet, queda da PSN ou outro problema técnico individual</strong>. Esses casos não serão tratados automaticamente como quit proposital.</p>
+      <p class='my-2'>Quando não houver elementos suficientes para caracterizar o quit proposital, o <strong>Comitê de Validação</strong> fará uma análise subjetiva do caso, considerando as circunstâncias da queda, a reincidência e o <strong>histórico de conduta e comportamento anterior do piloto</strong>. O objetivo é diferenciar uma desconexão legítima de um padrão de abandono deliberado.</p>
+      <p class='text-sm text-cromo-dark mt-3 mb-1'><strong>Quando a queda não for caracterizada como quit proposital:</strong></p>
+      <ul class='my-0 text-sm'>
+        <li><strong>Queda antes de completar 50% da corrida:</strong> resultado registrado como <strong>DNS</strong>. O piloto será considerado como não participante da etapa e poderá reutilizar o carro/equipamento caso exista regra de restrição de reutilização.</li>
+        <li><strong>Queda após completar mais de 50% da corrida:</strong> resultado registrado como <strong>DNF</strong>. O carro/equipamento utilizado será considerado consumido para fins de qualquer regra de restrição de reutilização.</li>
+        <li><strong>Pontuação em caso de DNF:</strong> se a posição ocupada pelo piloto após a queda ainda lhe garantir uma colocação pontuável no encerramento oficial da corrida, ele receberá normalmente a pontuação correspondente à posição final atribuída a ele.</li>
+      </ul>
+      <p class='text-sm text-cromo-dark mt-3 mb-0'>Exemplo: se o piloto cair na 27ª volta de uma corrida de 30 voltas e, no encerramento, sua posição oficial ainda for a 9ª colocação, ele receberá normalmente os pontos correspondentes ao 9º lugar, mesmo com o resultado registrado como DNF.</p>
+    </div>
+
+    <h3>🔎 Critério de reincidência</h3>
+    <p>A reincidência é considerada agravante, mas não é aplicada de maneira automática. O Comitê tem liberdade para diferenciar <strong>erro de corrida</strong> de <strong>padrão de comportamento</strong>. Exemplo:</p>
+    <ul>
+      <li>Toque leve &#8594; advertência.</li>
+      <li>Outro toque leve semanas depois &#8594; pode continuar sendo advertência.</li>
+      <li>Toque leve &#8594; advertência &#8594; comportamento agressivo recorrente &#8594; penalidade maior.</li>
+    </ul>
+    <p class='text-sm text-cromo-dark'>Infrações distintas ocorridas na mesma etapa podem ser analisadas em conjunto, podendo resultar em uma única penalidade agravada quando houver relação entre os fatos &#8212; evitando que várias infrações na mesma corrida gerem punições isoladas e sem coerência entre si.</p>
+
+    <div class='bg-asfalto-2 border-l-4 border-vermelho-flag p-5 my-6'>
+      <p class='font-display font-bold text-linha-branca mt-0 mb-2'>Atalhos e uso de muretas &#8212; Tolerância Zero</p>
+      <p class='my-0'>Ganho de tempo por atalhos ou muretas pode gerar <strong style='color:#E63946'>desclassificação direta (nível 4)</strong>, independente da escala progressiva. Uso deliberado e reiterado é enquadrado no <strong style='color:#E63946'>nível 5</strong> e leva à exclusão definitiva.</p>
+    </div>
+
+    <p class='text-sm text-cromo-dark'>A análise de intencionalidade diferencia erros de corrida de atos deliberados. Toda punição é notificada com seu motivo, garantindo transparência.</p>
+
+    <h2>📝 Protesto e análise</h2>
+    <p>O <strong>Comitê de Validação</strong> busca decisões justas, transparentes e isentas. Os recursos devem ser registrados exclusivamente pela <strong>Central de Recursos</strong>, disponível pelo link abaixo e também pelo menu da comunidade.</p>
+    <div class='bg-asfalto-2 border-l-4 border-amarelo-bandeirola p-5 my-6'>
+      <ul class='my-0'>
+        <li><strong>Prazo:</strong> a corrida deve ter ocorrido nos <strong>últimos 2 dias</strong>. A data e hora de abertura do ticket serão comparadas com a data da corrida relacionada.</li>
+        <li><strong>Canal obrigatório:</strong> o recurso deve ser aberto pela <strong>Central de Recursos</strong>, e não por mensagem privada a administradores.</li>
+        <li><strong>Identificação:</strong> na descrição, informe a <strong>corrida (pista, data ocorrida e número da volta para revisão)</strong>.</li>
+        <li><strong>Evidência:</strong> anexe o vídeo da corrida ou informe o link quando o vídeo estiver disponível apenas em disco virtual.</li>
+        <li><strong>Vídeo obrigatório:</strong> não serão aceitos vídeos gravados da televisão. O material deve ser da própria corrida e mostrar <strong>pelo menos dois ângulos diferentes</strong> do ocorrido.</li>
+        <li><strong>Abrangência:</strong> toques, bloqueios, cortes de pista, uso de muros/muretas e demais infrações previstas neste regulamento.</li>
+        <li><strong>Impedimento:</strong> membros do Comitê envolvidos diretamente no recurso ficam impedidos de participar da votação.</li>
+        <li><strong>Análise:</strong> o recurso será avaliado pelo Comitê de Validação. Sem evidência mínima exigida, o recurso não será validado para análise.</li>
+      </ul>
+    </div>
+    <a class='cta-primary inline-flex items-center gap-2 px-6 py-3 font-display font-bold text-xs tracking-label uppercase' href='https://speedgtbr.atlassian.net/servicedesk/customer/portal/1/group/2/create/4' rel='noopener' target='_blank'>
+      📝 Abrir recurso na Central de Recursos
+    </a>
+
+    <h2>📡 Queda de servidor/host</h2>
+    <div class='overflow-x-auto my-6'>
+      <table class='w-full text-sm border-collapse'>
+        <thead>
+          <tr class='border-b border-cromo-dark/40'>
+            <th class='text-left py-3 px-3 font-display uppercase tracking-label text-xs text-cromo-dark'>Momento da corrida</th>
+            <th class='text-left py-3 px-3 font-display uppercase tracking-label text-xs text-cromo-dark'>Ação</th>
+            <th class='text-left py-3 px-3 font-display uppercase tracking-label text-xs text-cromo-dark'>Pontuação</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>Até 25%</td><td class='py-2 px-3 text-linha-branca'>Reinício obrigatório do zero (grid pela classificação do dia)</td><td class='py-2 px-3 font-mono'>&#8212;</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>Entre 25% e 50%</td><td class='py-2 px-3 text-linha-branca'>Corrida encerrada</td><td class='py-2 px-3 font-mono text-linha-branca'>50% dos pontos</td></tr>
+          <tr><td class='py-2 px-3'>Após 50%</td><td class='py-2 px-3 text-linha-branca'>Corrida encerrada</td><td class='py-2 px-3 font-mono text-linha-branca'>Pontuação integral</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class='text-sm text-cromo-dark'>No reinício, pilotos devem usar o mesmo modelo de carro; troca resulta em largada do fim do grid. Corridas encerradas têm resultado consolidado pela administração via histórico da transmissão.</p>
+
+    <h2>&#9989; Confirmação e gestão de vagas <span class='text-cromo-dark'>(Série C)</span></h2>
+    <p>Quando há suplentes aguardando vaga na <strong>Série C</strong>, a confirmação de presença torna-se obrigatória para todos os titulares.</p>
+    <div class='bg-asfalto-2 border-l-4 border-verde-grid p-5 my-6'>
+      <ul class='my-0'>
+        <li>Lista enviada no grupo <strong>todo sábado às 12h</strong>, para a corrida de segunda.</li>
+        <li>Prazo de confirmação dos titulares: <strong>domingo às 20h</strong>.</li>
+        <li>Vaga de etapa: suplentes convocados por <strong>ordem de confirmação</strong>.</li>
+        <li>Vaga fixa: preenchida por <strong>ordem de inscrição no campeonato</strong>.</li>
+        <li>Convocado entra na sala às <strong>20h</strong>; sem aviso até <strong>20h15</strong>, a vaga passa ao próximo.</li>
+        <li>Titulares na dúvida podem marcar &#8220;na dúvida&#8221;, mas devem avisar a desistência o quanto antes.</li>
+        <li><strong style='color:#E63946'>2 etapas seguidas de ausência</strong> = perda da vaga fixa, transferida pela ordem de inscrição.</li>
+      </ul>
+    </div>
+
+    <h2>🔼 Promoção e rebaixamento</h2>
+    <p>Ao final de cada campeonato, para garantir competitividade entre as séries:</p>
+    <div class='grid grid-cols-1 md:grid-cols-2 gap-3 my-6'>
+      <div class='bg-asfalto-2 border border-cromo-dark/40 p-4'>
+        <p class='font-display font-bold text-sm my-0 text-linha-branca'>Série A</p>
+        <p class='text-sm my-0 text-cromo'>5 últimos &#8595; descem para a B.</p>
+      </div>
+      <div class='bg-asfalto-2 border border-cromo-dark/40 p-4'>
+        <p class='font-display font-bold text-sm my-0 text-linha-branca'>Série B</p>
+        <p class='text-sm my-0 text-cromo'>5 primeiros &#8593; sobem para A; 5 últimos &#8595; descem para C.</p>
+      </div>
+      <div class='bg-asfalto-2 border border-cromo-dark/40 p-4'>
+        <p class='font-display font-bold text-sm my-0 text-linha-branca'>Série C</p>
+        <p class='text-sm my-0 text-cromo'>5 primeiros &#8593; sobem para B; não há rebaixamento automático para outra série.</p>
+      </div>
+    </div>
+    <p class='text-sm text-cromo-dark'>Para completar o grid de 15 por categoria, a administração pode convocar pilotos além dos 5, seguindo a ordem de classificação.</p>
+
+    <h2>🏁 Critérios de desempate</h2>
+    <ol>
+      <li>Maior número de vitórias.</li>
+      <li>Maior número de segundos lugares (depois terceiros, e assim por diante).</li>
+      <li>Maior número de pole positions.</li>
+      <li>Melhor resultado na última etapa disputada.</li>
+    </ol>
+
+    <h2>🛞 Estratégia de pneus <span class='text-cromo-dark'>(Séries A e B)</span></h2>
+    <div class='bg-asfalto-2 border-l-4 border-amarelo-bandeirola p-5 my-6'>
+      <p class='mt-0 mb-3'>Para promover maior equilíbrio competitivo nas Séries A e B, os <strong>três primeiros colocados</strong> de cada corrida deverão obrigatoriamente classificar-se e largar utilizando <strong>pneus duros (brancos)</strong> na etapa seguinte.</p>
+      <ul class='my-0'>
+        <li><strong>Vigência</strong> &#8212; Esta regra é válida a partir da primeira etapa do campeonato vigente, considerando o resultado final da última etapa do campeonato anterior para a definição dos pneus na prova de abertura.</li>
+        <li><strong>Dinâmica</strong> &#8212; Após cada corrida, o pódio (1º, 2º e 3º lugares) terá a obrigatoriedade do uso de pneus duros na etapa subsequente.</li>
+        <li><strong>Abrangência</strong> &#8212; A obrigatoriedade do uso de pneus duros recai exclusivamente sobre os três primeiros colocados da etapa anterior.</li>
+        <li><strong>Outros Compostos</strong> &#8212; A obrigatoriedade de uso de outros compostos de pneus, quando definida pela administração para a estratégia de prova, aplica-se a <strong>todos</strong> os pilotos da respectiva série, independentemente da posição na etapa anterior.</li>
+      </ul>
+    </div>
+
+    <h2>🗓&#65039; Party, ID da sala e gestão de etapas</h2>
+    <div class='overflow-x-auto my-6'>
+      <table class='w-full text-sm border-collapse'>
+        <thead>
+          <tr class='border-b border-cromo-dark/40'>
+            <th class='text-left py-3 px-3 font-display uppercase tracking-label text-xs text-cromo-dark'>Categoria</th>
+            <th class='text-left py-3 px-3 font-display uppercase tracking-label text-xs text-cromo-dark'>Dia</th>
+            <th class='text-left py-3 px-3 font-display uppercase tracking-label text-xs text-cromo-dark'>Responsável</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3 font-display font-bold text-linha-branca'>Série C</td><td class='py-2 px-3'>Segunda-feira</td><td class='py-2 px-3 font-mono tracking-mono'>Cardoso</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3 font-display font-bold text-linha-branca'>Série B</td><td class='py-2 px-3'>Segunda-feira</td><td class='py-2 px-3 font-mono tracking-mono'>Passianoto</td></tr>
+          <tr><td class='py-2 px-3 font-display font-bold text-linha-branca'>Série A</td><td class='py-2 px-3'>Terça-feira</td><td class='py-2 px-3 font-mono tracking-mono'>Dans</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class='text-sm text-cromo-dark'>Os responsáveis de cada série administram as pessoas de sua categoria, acompanham as inscrições e atualizações do campeonato e recebem os recursos encaminhados pela Central de Recursos. Os recursos são avaliados pelo <strong>Comitê de Validação</strong>, conforme as regras deste documento.</p>
+    <ul>
+      <li><strong>ID da sala</strong> &#8212; enviado pelos administradores às <strong>20h00</strong>.</li>
+      <li><strong>Convite da Party</strong> &#8212; disponível a partir das <strong>20h30</strong>.</li>
+      <li><strong>Briefing obrigatório</strong> &#8212; às <strong>20h45</strong>, presença de todos. Basta ouvir; pode desconectar após o encerramento.</li>
+      <li>2 briefings seguidos sem comparecer = largada em último; a 3ª falta sujeita a punição administrativa.</li>
+    </ul>
+    <div class='bg-asfalto-2 border-l-4 border-vermelho-flag p-5 my-6'>
+      <p class='font-display font-bold text-linha-branca mt-0 mb-2'>Política de inatividade (combate aos fantasmas)</p>
+      <p class='my-0'>Sem atividade relevante por mais de <strong>60 dias</strong> &#8212; participação em etapas, interação em tópicos ou confirmação em listas &#8212; o membro é removido. A triagem é trimestral.</p>
+    </div>
+
+    <h2>🛡&#65039; Gestão de membros e proteção de conteúdo</h2>
+    <ul>
+      <li><strong>Protocolo de retorno</strong> &#8212; quem foi removido por inatividade ou se afastou de categorias superiores retorna obrigatoriamente pela <strong>Série C</strong>, via inscrição padrão e sujeito a vaga.</li>
+      <li><strong>Propriedade intelectual</strong> &#8212; regulamento, tabelas e dinâmicas da Speed GT Brasil são de propriedade exclusiva da organização. Proibida cópia ou uso por outras comunidades.</li>
+      <li><strong>Conflito de interesses</strong> &#8212; organizadores de outras ligas no grupo devem manter postura ética. Captação de membros, uso do material ou postura de &#8220;espião&#8221; resulta em <strong style='color:#E63946'>banimento imediato</strong>.</li>
+    </ul>
+    <h2>&#9881;&#65039; Estrutura da comunidade</h2>
+
+    <div class='grid grid-cols-1 md:grid-cols-2 gap-5 my-6'>
+      <div class='bg-asfalto-2 border border-cromo-dark/40 p-6 accent-top'>
+        <h3 style='margin-top:0; margin-bottom:.75rem;'>Administração</h3>
+        <ul class='my-0'>
+          <li>Define diretrizes gerais</li>
+          <li>Organiza os campeonatos</li>
+          <li>Representa a comunidade</li>
+        </ul>
+      </div>
+      <div class='bg-asfalto-2 border border-cromo-dark/40 p-6 accent-top'>
+        <h3 style='margin-top:0; margin-bottom:.75rem;'>Comitê de Validação</h3>
+        <ul class='my-0'>
+          <li>Avalia e aprova propostas</li>
+          <li>Sugere melhorias</li>
+          <li>Decide casos não previstos</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class='font-display font-bold text-linha-branca'>Nenhuma decisão relevante entra em vigor sem validação do Comitê.</p>
+
+    <h2 id='equipe'>👥 Equipe de administração</h2>
+    <div class='overflow-x-auto my-6'>
+      <table class='w-full text-sm border-collapse'>
+        <thead>
+          <tr class='border-b border-cromo-dark/40'>
+            <th class='text-left py-3 px-3 font-display uppercase tracking-label text-xs text-cromo-dark'>Função</th>
+            <th class='text-left py-3 px-3 font-display uppercase tracking-label text-xs text-cromo-dark'>Nome</th>
+            <th class='text-left py-3 px-3 font-display uppercase tracking-label text-xs text-cromo-dark'>PSN</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3 font-display font-bold' style='color:#00A859'>Admin</td><td class='py-2 px-3 text-linha-branca'>Passianoto</td><td class='py-2 px-3 font-mono tracking-mono'><a href='https://profile.playstation.com/FastPassianoto' rel='noopener' target='_blank'>Fast Pass</a></td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3 font-display font-bold' style='color:#FFCB00'>Comitê</td><td class='py-2 px-3 text-linha-branca'>Daniel Vegas</td><td class='py-2 px-3 font-mono tracking-mono'><a href='https://profile.playstation.com/DansVegas2107' rel='noopener' target='_blank'>DansVegas2107</a></td></tr>          
+          <tr><td class='py-2 px-3 font-display font-bold' style='color:#FFCB00'>Comitê</td><td class='py-2 px-3 text-linha-branca'>L.Cardoso</td><td class='py-2 px-3 font-mono tracking-mono'><a href='https://profile.playstation.com/transito_forense' rel='noopener' target='_blank'>transito_forense</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>🤝 Princípios da comunidade</h2>
+    <div class='grid grid-cols-2 md:grid-cols-4 gap-3 my-6'>
+      <div class='bg-asfalto-2 border border-verde-grid/30 p-4 text-center'>
+        <p class='font-display font-bold text-sm my-0' style='color:#00A859'>Respeito acima de tudo</p>
+      </div>
+      <div class='bg-asfalto-2 border border-verde-grid/30 p-4 text-center'>
+        <p class='font-display font-bold text-sm my-0' style='color:#00A859'>Fair play sempre</p>
+      </div>
+      <div class='bg-asfalto-2 border border-verde-grid/30 p-4 text-center'>
+        <p class='font-display font-bold text-sm my-0' style='color:#00A859'>Transparência nas decisões</p>
+      </div>
+      <div class='bg-asfalto-2 border border-verde-grid/30 p-4 text-center'>
+        <p class='font-display font-bold text-sm my-0' style='color:#00A859'>Participação da comunidade</p>
+      </div>
+    </div>
+
+    <h2>👥 Conduta dos membros</h2>
+    <ul>
+      <li><strong>Comunicação responsável</strong> &#8212; críticas em privado aos ADMs ou por canais formais. Proibido usar chats públicos para questionar a integridade da liga.</li>
+      <li><strong>Neutralidade</strong> &#8212; vetada qualquer &#8220;ajuda mútua&#8221; que comprometa a integridade de terceiros.</li>
+      <li><strong>Comportamento</strong> &#8212; sem sarcasmo, ofensas ou intimidação.</li>
+      <li>Respeitar regras e decisões, manter comportamento esportivo e aceitar punições quando aplicadas.</li>
+    </ul>
+
+    <h2>📌 Alterações no estatuto</h2>
+    <p>Este estatuto pode ser alterado pela administração com aprovação do Comitê de Validação. Mudanças são comunicadas no grupo oficial de WhatsApp e nesta página.</p>
+
+    <hr/>
+
+    <h2 id='temporada-3'>🏆 Regulamento Especial &#8212; Temporada 3</h2>
+    <p>As regras desta seção são <strong>específicas da Temporada 3</strong> e complementam o Regulamento Geral da Speed GT Brasil. Em caso de conflito entre uma regra geral e uma regra específica da temporada, <strong>prevalece a regra específica da Temporada 3</strong> durante sua vigência. As demais regras gerais permanecem válidas.</p>
+
+    <h3>🚗 Carro único por piloto</h3>
+    <p>Durante a Temporada 3, cada piloto deve escolher <strong>um único modelo de carro</strong> para disputar o campeonato. O carro escolhido deve ser utilizado em <strong>todas as etapas da temporada</strong>. Após a primeira utilização oficial do veículo, <strong>não é permitida a troca de modelo</strong> durante a temporada.</p>
+    <div class='bg-asfalto-2 border-l-4 border-vermelho-flag p-5 my-6' style='background-color:rgba(230,57,70,0.08)'>
+      <p class='font-display font-bold text-linha-branca mt-0 mb-2'>🚫 Fabricante proibida</p>
+      <p class='my-0'>Na Temporada 3, <strong style='color:#E63946'>a fabricante Hyundai não pode ser escolhida</strong> por nenhum piloto.</p>
+    </div>
+    <div class='bg-asfalto-2 border border-cromo-dark/40 p-4 my-6'>
+      <p class='text-sm my-0'><strong>Exemplo:</strong> o piloto escolhe o Porsche 911 GT3 (992) &#8212; esse será o seu carro durante toda a Temporada 3. A escolha é individual; pilotos diferentes podem utilizar o mesmo modelo.</p>
+    </div>
+
+    <p class='text-sm text-cromo-dark mt-3 mb-1'>Exceções &#8212; a troca de veículo só pode ocorrer mediante autorização expressa da organização, em situações como:</p>
+    <ul>
+      <li>alteração relevante de balanceamento promovida pelo próprio jogo;</li>
+      <li>retirada ou alteração do veículo pelo Gran Turismo 7;</li>
+      <li>erro de configuração da organização;</li>
+      <li>impossibilidade técnica comprovada;</li>
+      <li>outra situação extraordinária reconhecida pelo Comitê.</li>
+    </ul>
+    <p class='text-sm text-cromo-dark'>A simples preferência por outro carro ou arrependimento da escolha <strong>não constitui motivo para troca</strong>.</p>
+
+    <div class='bg-asfalto-2 border-l-4 border-vermelho-flag p-5 my-6'>
+      <p class='font-display font-bold text-linha-branca mt-0 mb-2'>Penalidade por utilização de veículo diferente</p>
+      <p class='my-0'>A utilização de outro modelo sem autorização é infração de regulamento esportivo e pode resultar em <strong style='color:#E63946'>desclassificação da etapa</strong>, <strong style='color:#E63946'>perda integral dos pontos da etapa</strong> e outras medidas previstas no Sistema de Punições, quando houver reincidência ou tentativa deliberada de obter vantagem.</p>
+    </div>
+
+    <h3>🏁 Etapa final &#8212; Grande Final</h3>
+    <p>A Temporada 3 terá <strong>7 etapas</strong>, sendo <strong>6 etapas regulares</strong> e <strong>1 Grande Final</strong>. A Grande Final tem características especiais e é disputada em <strong>1h30 de duração</strong>.</p>
+
+    <h4 class='font-display font-bold text-linha-branca' style='margin-bottom:.5rem;'>Pontuação</h4>
+    <p>A pontuação obtida na Grande Final é <strong>dobrada</strong> em relação à tabela oficial.</p>
+    <div class='overflow-x-auto my-6'>
+      <table class='w-full text-sm border-collapse'>
+        <thead>
+          <tr class='border-b border-cromo-dark/40'>
+            <th class='text-left py-3 px-3 font-display uppercase tracking-label text-xs text-cromo-dark'>Posição</th>
+            <th class='text-right py-3 px-3 font-display uppercase tracking-label text-xs text-cromo-dark'>Pontos normais</th>
+            <th class='text-right py-3 px-3 font-display uppercase tracking-label text-xs text-cromo-dark'>Grande Final</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>1º</td><td class='text-right py-2 px-3 font-mono'>20</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>40</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>2º</td><td class='text-right py-2 px-3 font-mono'>18</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>36</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>3º</td><td class='text-right py-2 px-3 font-mono'>16</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>32</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>4º</td><td class='text-right py-2 px-3 font-mono'>14</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>28</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>5º</td><td class='text-right py-2 px-3 font-mono'>12</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>24</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>6º</td><td class='text-right py-2 px-3 font-mono'>10</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>20</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>7º</td><td class='text-right py-2 px-3 font-mono'>9</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>18</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>8º</td><td class='text-right py-2 px-3 font-mono'>8</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>16</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>9º</td><td class='text-right py-2 px-3 font-mono'>7</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>14</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>10º</td><td class='text-right py-2 px-3 font-mono'>6</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>12</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>11º</td><td class='text-right py-2 px-3 font-mono'>5</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>10</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>12º</td><td class='text-right py-2 px-3 font-mono'>4</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>8</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>13º</td><td class='text-right py-2 px-3 font-mono'>3</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>6</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>14º</td><td class='text-right py-2 px-3 font-mono'>2</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>4</td></tr>
+          <tr><td class='py-2 px-3'>15º</td><td class='text-right py-2 px-3 font-mono'>1</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>2</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class='text-sm text-cromo-dark'>Bônus de volta mais rápida, quando previsto no briefing, segue as condições especificamente estabelecidas para a etapa.</p>
+
+    <div class='bg-asfalto-2 border-l-4 border-vermelho-flag p-5 my-6'>
+      <p class='font-display font-bold text-linha-branca mt-0 mb-2'>🚫 Grande Final não é descartável</p>
+      <p class='my-0'>O resultado da Grande Final <strong style='color:#E63946'>não pode ser utilizado como descarte</strong>. O descarte aplica-se exclusivamente às <strong>seis etapas regulares</strong>. A classificação final é composta pelos resultados das seis etapas regulares &#8212; já aplicado o descarte previsto no regulamento &#8212; somados obrigatoriamente aos pontos obtidos na Grande Final, que tem participação obrigatória na composição da classificação final.</p>
+    </div>
+
+    <hr/>
+
+    <div class='mt-10 flex flex-wrap gap-3'>
+      <a class='cta-primary inline-flex items-center gap-2 px-5 py-3 font-display font-bold text-xs tracking-label uppercase' href='https://chat.whatsapp.com/Jz9Zg4z1q302rXOlaI8KKk' rel='noopener' target='_blank'>🏁 Entrar no grupo</a>
+    </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ============ PÁGINA EMBUTIDA: HALL DA FAMA ============ -->
+      <section class='py-16 md:py-24 border-t border-cromo-dark/30' id='hall-da-fama'>
+        <div class='max-w-container mx-auto px-4 md:px-8'>
+          <div class='max-w-5xl mx-auto'>
+            <div class='mb-10 scroll-reveal'>
+              <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-4'>Histórico de campeões</p>
+              <h2 class='font-display font-black text-h1 text-linha-branca'>Hall da Fama</h2>
+              <p class='text-cromo text-body mt-3 max-w-2xl'>Os pilotos que chegaram ao topo nos campeonatos da Speed GT Brasil e na Copa Fenix.</p>
+            </div>
+
+            <div class='grid grid-cols-1 md:grid-cols-2 gap-5 scroll-reveal'>
+
+              <article class='bg-asfalto-2 border border-cromo-dark/40 p-6 md:p-7 accent-top'>
+                <div class='flex items-center justify-between gap-4 mb-6'>
+                  <div>
+                    <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark'>Copa Fenix</p>
+                    <h3 class='font-display font-black text-h3 text-linha-branca mt-1'>Pódio histórico</h3>
+                  </div>
+                  <span class='font-accent text-xl' style='color:#C9A86A'>🏆</span>
+                </div>
+                <ol class='space-y-3'>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl' style='color:#C9A86A'>01</span><span class='font-display font-bold text-linha-branca'>gtiisr4380</span></li>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl text-cromo'>02</span><span class='font-display font-bold text-linha-branca'>zDa1ki</span></li>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl text-cromo'>03</span><span class='font-display font-bold text-linha-branca'>Victor_SuperGT</span></li>
+                </ol>
+              </article>
+
+              <article class='bg-asfalto-2 border border-cromo-dark/40 p-6 md:p-7'>
+                <div class='flex items-center justify-between gap-4 mb-6'>
+                  <div>
+                    <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark'>Série A</p>
+                    <h3 class='font-display font-black text-h3 text-linha-branca mt-1'>Temporada 1</h3>
+                  </div>
+                  <span class='font-accent text-xl' style='color:#C9A86A'>🏆</span>
+                </div>
+                <ol class='space-y-3'>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl' style='color:#C9A86A'>01</span><span class='font-display font-bold text-linha-branca'>zDa1ki</span></li>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl text-cromo'>02</span><span class='font-display font-bold text-linha-branca'>Dansvegas2107</span></li>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl text-cromo'>03</span><span class='font-display font-bold text-linha-branca'>mathheuuss</span></li>
+                </ol>
+              </article>
+
+              <article class='bg-asfalto-2 border border-cromo-dark/40 p-6 md:p-7'>
+                <div class='flex items-center justify-between gap-4 mb-6'>
+                  <div>
+                    <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark'>Série B</p>
+                    <h3 class='font-display font-black text-h3 text-linha-branca mt-1'>Temporada 1</h3>
+                  </div>
+                  <span class='font-accent text-xl' style='color:#C9A86A'>🏆</span>
+                </div>
+                <ol class='space-y-3'>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl' style='color:#C9A86A'>01</span><span class='font-display font-bold text-linha-branca'>GESANTOS_36</span></li>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl text-cromo'>02</span><span class='font-display font-bold text-linha-branca'>ivamneto2804</span></li>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl text-cromo'>03</span><span class='font-display font-bold text-linha-branca'>dennerbks</span></li>
+                </ol>
+              </article>
+
+              <article class='bg-asfalto-2 border border-cromo-dark/40 p-6 md:p-7'>
+                <div class='flex items-center justify-between gap-4 mb-6'>
+                  <div>
+                    <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark'>Série C</p>
+                    <h3 class='font-display font-black text-h3 text-linha-branca mt-1'>Temporada 1</h3>
+                  </div>
+                  <span class='font-accent text-xl' style='color:#C9A86A'>🏆</span>
+                </div>
+                <ol class='space-y-3'>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl' style='color:#C9A86A'>01</span><span class='font-display font-bold text-linha-branca'>blackminajunior</span></li>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl text-cromo'>02</span><span class='font-display font-bold text-linha-branca'>Jeangadelha1</span></li>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl text-cromo'>03</span><span class='font-display font-bold text-linha-branca'>FV46_Jao_Math</span></li>
+                </ol>
+              </article>
+
+              <article class='bg-asfalto-2 border border-cromo-dark/40 p-6 md:p-7'>
+                <div class='flex items-center justify-between gap-4 mb-6'>
+                  <div>
+                    <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark'>Série A</p>
+                    <h3 class='font-display font-black text-h3 text-linha-branca mt-1'>Temporada 2</h3>
+                  </div>
+                  <span class='font-accent text-xl' style='color:#C9A86A'>🏆</span>
+                </div>
+                <ol class='space-y-3'>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl' style='color:#C9A86A'>01</span><span class='font-display font-bold text-linha-branca'>zDa1ki</span></li>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl text-cromo'>02</span><span class='font-display font-bold text-linha-branca'>transito_forense</span></li>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl text-cromo'>03</span><span class='font-display font-bold text-linha-branca'>gtiisr4380</span></li>
+                </ol>
+              </article>
+
+              <article class='bg-asfalto-2 border border-cromo-dark/40 p-6 md:p-7'>
+                <div class='flex items-center justify-between gap-4 mb-6'>
+                  <div>
+                    <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark'>Série B</p>
+                    <h3 class='font-display font-black text-h3 text-linha-branca mt-1'>Temporada 2</h3>
+                  </div>
+                  <span class='font-accent text-xl' style='color:#C9A86A'>🏆</span>
+                </div>
+                <ol class='space-y-3'>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl' style='color:#C9A86A'>01</span><span class='font-display font-bold text-linha-branca'>Jeangadelha1</span></li>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl text-cromo'>02</span><span class='font-display font-bold text-linha-branca'>blackminajunior</span></li>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl text-cromo'>03</span><span class='font-display font-bold text-linha-branca'>Rick Rz</span></li>
+                </ol>
+              </article>
+
+              <article class='bg-asfalto-2 border border-cromo-dark/40 p-6 md:p-7'>
+                <div class='flex items-center justify-between gap-4 mb-6'>
+                  <div>
+                    <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark'>Série C</p>
+                    <h3 class='font-display font-black text-h3 text-linha-branca mt-1'>Temporada 2</h3>
+                  </div>
+                  <span class='font-accent text-xl' style='color:#C9A86A'>🏆</span>
+                </div>
+                <ol class='space-y-3'>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl' style='color:#C9A86A'>01</span><span class='font-display font-bold text-linha-branca'>Nico Cara</span></li>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl text-cromo'>02</span><span class='font-display font-bold text-linha-branca'>F Motta</span></li>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl text-cromo'>03</span><span class='font-display font-bold text-linha-branca'>GEM Theodore</span></li>
+                </ol>
+              </article>
+
+              <article class='bg-asfalto-2 border border-cromo-dark/40 p-6 md:p-7'>
+                <div class='flex items-center justify-between gap-4 mb-6'>
+                  <div>
+                    <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark'>Série D</p>
+                    <h3 class='font-display font-black text-h3 text-linha-branca mt-1'>Temporada 2</h3>
+                  </div>
+                  <span class='font-accent text-xl' style='color:#C9A86A'>🏆</span>
+                </div>
+                <ol class='space-y-3'>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl' style='color:#C9A86A'>01</span><span class='font-display font-bold text-linha-branca'>Darko</span></li>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl text-cromo'>02</span><span class='font-display font-bold text-linha-branca'>Wilker Aldo</span></li>
+                  <li class='flex items-center gap-4 bg-asfalto border border-cromo-dark/30 p-4'><span class='font-display font-black text-xl text-cromo'>03</span><span class='font-display font-bold text-linha-branca'>Welson</span></li>
+                </ol>
+              </article>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ============ PÁGINA EMBUTIDA: APOIE ============ -->
+      <section class='py-16 md:py-24 border-t border-cromo-dark/30' id='apoie'>
+        <div class='max-w-3xl mx-auto px-4 md:px-8'>
+          <div class='mb-10 scroll-reveal'>
+            <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-4'>Comunidade</p>
+            <h2 class='font-display font-black text-h1 text-linha-branca'>Apoie a comunidade</h2>
+          </div>
+          <div class='post-body scroll-reveal'>
+<p class='font-display font-bold' style='font-size:1.35rem; color:#F4F1EA; line-height:1.3;'>A Speed GT Brasil não tem mensalidade nem busca lucro.</p>
+
+    <p>Zero pressão pra contribuir. O apoio é voluntário &#8212; , a comunidade não tem fins lucrativos</p>
+
+    <div class='bg-asfalto-2 border-l-4 border-verde-grid p-6 my-8'>
+      <p class='font-display font-bold mt-0 mb-2' style='font-size:1.25rem; color:#F4F1EA;'>Mas se você quiser ajudar&#8230;</p>
+      <p class='my-0'>Manter um campeonato organizado tem custos &#8212; pequenos, mas reais. Quem quiser contribuir voluntariamente com qualquer valor pode mandar um Pix.</p>
+    </div>
+
+    <h2>💸 Pix da comunidade</h2>
+
+    <div class='bg-asfalto border border-verde-grid/40 accent-top p-6 md:p-8 my-6'>
+      <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mt-0 mb-2'>Chave Pix &#183; E-mail</p>
+      <p class='font-mono tracking-mono mt-0 mb-0' style='font-size:1.5rem; color:#00A859; word-break:break-all;'>speedgtbr@gmail.com</p>
+      <p class='text-sm text-cromo-dark mt-4 mb-0'>Beneficiário: Speed GT Brasil</p>
+    </div>
+
+    <h2>📌 Pra onde vai</h2>
+    <ul>
+      <li>Plano pago do <strong>SimGrid</strong> (rankings oficiais, eventos privados, sistema de inscrição).</li>
+      <li>Premiações simbólicas de fim de temporada.</li>
+      <li>Ferramentas de organização e transmissão.</li>
+      <li>Pequenos custos de operação da comunidade.</li>
+    </ul>
+    <p>Cada centavo volta pra dentro do campeonato. Nenhum tipo de remuneração pra organizadores.</p>
+
+    <h2>🤝 Outras formas de apoiar (sem dinheiro)</h2>
+    <div class='grid grid-cols-1 md:grid-cols-3 gap-4 my-6'>
+      <div class='bg-asfalto-2 border border-cromo-dark/40 p-5'>
+        <p class='font-display font-bold text-linha-branca mt-0 mb-2'>Indique a comunidade</p>
+        <p class='text-sm my-0'>Chama aquele amigo que reclama do Sport Mode pra correr com a gente.</p>
+      </div>
+      <div class='bg-asfalto-2 border border-cromo-dark/40 p-5'>
+        <p class='font-display font-bold text-linha-branca mt-0 mb-2'>Siga nossos canais</p>
+        <p class='text-sm my-0'><a href='https://instagram.com/speedgtbr' rel='noopener' target='_blank'>@speedgtbr</a> no Instagram e <a href='https://youtube.com/@SpeedGTBr' rel='noopener' target='_blank'>@SpeedGTBr</a> no YouTube &#8212; engajamento ajuda a crescer.</p>
+      </div>
+      <div class='bg-asfalto-2 border border-cromo-dark/40 p-5'>
+        <p class='font-display font-bold text-linha-branca mt-0 mb-2'>Corra limpo</p>
+        <p class='text-sm my-0'>A reputação da Speed GT é construída por cada piloto, em cada largada.</p>
+      </div>
+    </div>
+
+    <div class='bg-asfalto-2 border-l-4 border-amarelo-bandeirola p-6 my-10'>
+      <p class='font-display font-bold mt-0 mb-3' style='font-size:1.25rem; color:#F4F1EA;'>Nunca cobrado. Nunca pressionado.</p>
+      <p class='my-0'>Apoio aqui é exatamente isso: <strong>apoio</strong>. Voluntário, anônimo, opcional. Não tem assento reservado, divisão garantida ou tratamento diferenciado pra quem contribui. As regras valem igual pra todo mundo. Sempre.</p>
+    </div>
+
+    <hr/>
+
+    <div class='mt-10 flex flex-wrap gap-3'>
+      <a class='inline-flex items-center gap-2 px-5 py-3 font-display font-bold text-xs tracking-label uppercase border border-cromo text-cromo hover:text-linha-branca hover:border-linha-branca transition-colors' href='/'>Voltar para o início</a>
+      <a class='cta-primary inline-flex items-center gap-2 px-5 py-3 font-display font-bold text-xs tracking-label uppercase' href='https://chat.whatsapp.com/Jz9Zg4z1q302rXOlaI8KKk' rel='noopener' target='_blank'>🏁 Entrar no grupo</a>
+    </div>
+          </div>
+        </div>
+      </section>
+
+
+
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class='bg-asfalto border-t border-cromo-dark/30 py-12 md:py-16 relative z-10'>
+    <div class='max-w-container mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-3 gap-12'>
+      <div>
+        <div class='flex items-center gap-3 mb-4'>
+          <img alt='Speed GT Brasil' class='h-10 w-auto' src='https://raw.githubusercontent.com/fabianopassianoto/speedgtbrasil/main/logo06.png'>
+          <span class='font-display font-black text-lg tracking-tight'>SPEED GT BRASIL</span>
+        </div>
+        <p class='text-cromo text-sm max-w-xs leading-relaxed'>
+          Comunidade de pilotos de Gran Turismo 7. Campeonato de amigos. Regulamento de federação.
+        </p>
+        <p class='text-cromo-dark text-xs mt-6 font-mono tracking-mono'>&#169; 2026 SPEED GT BRASIL &amp; MAX LIMA</p>
+
+        <a aria-label='Boxes — área da comunidade' class='mt-8 inline-flex flex-col items-start gap-1 opacity-30 hover:opacity-100 transition-opacity duration-300 group' href='/search/label/boxes' title='Boxes'>
+          <img alt='' class='h-10 w-auto grayscale group-hover:grayscale-0 transition-all' onerror='this.style.display=&apos;none&apos;' src='https://raw.githubusercontent.com/fabianopassianoto/speedgtbrasil/main/audi-r8-gt3.png'>
+          <span class='font-mono text-[0.6rem] tracking-mono uppercase text-cromo-dark group-hover:text-verde-grid'>Boxes</span>
+        </a>
+      </div>
+
+      <div>
+        <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-4'>Navegação</p>
+        <ul class='space-y-2 text-sm'>
+          <li><a class='text-cromo hover:text-linha-branca transition-colors' href='/#por-que'>Por que existimos</a></li>
+          <li><a class='text-cromo hover:text-linha-branca transition-colors' href='/#comece-aqui'>Comece aqui</a></li>
+          <li><a class='text-cromo hover:text-linha-branca transition-colors' href='/#simgrid'>SimGrid</a></li>
+          <li><a class='text-cromo hover:text-linha-branca transition-colors' href='/#depoimentos'>Depoimentos</a></li>
+          <li><a class='text-cromo hover:text-linha-branca transition-colors' href='/#regras'>Regras</a></li>
+          <li><a class='text-cromo hover:text-linha-branca transition-colors' href='/#temporada-3'>Temporada 3</a></li>
+          <li><a class='text-cromo hover:text-linha-branca transition-colors' href='/#hall-da-fama'>Hall da Fama</a></li>
+          <li><a class='text-cromo hover:text-linha-branca transition-colors' href='/#apoie'>Apoie a comunidade</a></li>
+          <li><a class='text-cromo hover:text-linha-branca transition-colors' href='https://speedgtbr.atlassian.net/servicedesk/customer/portal/1/group/2/create/4' rel='noopener' target='_blank'>Recursos</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-4'>Canais oficiais</p>
+        <ul class='space-y-2 text-sm'>
+          <li>
+            <a class='text-cromo hover:text-linha-branca transition-colors inline-flex items-center gap-2' href='https://chat.whatsapp.com/Jz9Zg4z1q302rXOlaI8KKk' rel='noopener' target='_blank'>
+              <i class='w-4 h-4' data-lucide='message-circle'></i> Entrar no grupo do WhatsApp
+            </a>
+          </li>
+          <li>
+            <a class='text-cromo hover:text-linha-branca transition-colors inline-flex items-center gap-2' href='https://www.thesimgrid.com/communities/speed-gt-brasil' rel='noopener' target='_blank'>
+              <i class='w-4 h-4' data-lucide='trophy'></i> SimGrid (oficial)
+            </a>
+          </li>
+          <li>
+            <a class='text-cromo hover:text-linha-branca transition-colors inline-flex items-center gap-2' href='https://instagram.com/speedgtbr' rel='noopener' target='_blank'>
+              <svg aria-hidden='true' class='w-4 h-4' fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24'><rect height='20' rx='5' ry='5' width='20' x='2' y='2'/><path d='M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z'></path><line x1='17.5' x2='17.51' y1='6.5' y2='6.5'></line></svg>
+              @speedgtbr
+            </a>
+          </li>
+          <li>
+            <a class='text-cromo hover:text-linha-branca transition-colors inline-flex items-center gap-2' href='https://youtube.com/@SpeedGTBr' rel='noopener' target='_blank'>
+              <svg aria-hidden='true' class='w-4 h-4' fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24'><path d='M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z'></path><polygon points='9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02'></polygon></svg>
+              @SpeedGTBr
+            </a>
+          </li>
+          <li>
+            <a class='text-cromo hover:text-linha-branca transition-colors inline-flex items-center gap-2' href='mailto:speedgtbr@gmail.com'>
+              <i class='w-4 h-4' data-lucide='mail'></i> speedgtbr@gmail.com
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+  <script src="/assets/script.js"></script>
+</body>
+</html>
