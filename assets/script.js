@@ -1,4 +1,4 @@
-// Keep previously shared homepage section links working.
+﻿// Keep previously shared homepage section links working.
 (function () {
   if (location.pathname !== '/' && location.pathname !== '/index.html') return;
   var routes = {"por-que":"/por-que/","comece-aqui":"/comece-aqui/","regras":"/regras/","temporada-3":"/temporada-3/","hall-da-fama":"/hall-da-fama/","equipe":"/organizadores/","apoie":"/apoie/","depoimentos":"/depoimentos/","regulamento":"/regras/#regulamento","punicoes":"/regras/#punicoes","simgrid":"/comece-aqui/#simgrid","whatsapp":"/comece-aqui/#whatsapp","cadastro":"/comece-aqui/#cadastro","comece-apoie":"/comece-aqui/#comece-apoie","como-funciona":"/#como-funciona"};
@@ -118,10 +118,11 @@
 
       try {
         console.log(
-          '%c  SPEED GT BRASIL  %c\n\n  site criado por Max Lima  🏁\n',
-          'background:#00A859;color:#0B0B0E;font-family:Saira,sans-serif;font-weight:900;font-size:16px;padding:6px 14px;letter-spacing:0.12em;',
+          '%c  SPEED GT BRASIL  %c\n\n  site criado por Max Lima  ðŸ\n',
+          'background:#60A5FA;color:#0B0B0E;font-family:Saira,sans-serif;font-weight:900;font-size:16px;padding:6px 14px;letter-spacing:0.12em;',
           'color:#C4C4C4;font-family:monospace;font-size:12px;line-height:1.6;'
         );
       } catch (e) {}
     });
   })();
+
