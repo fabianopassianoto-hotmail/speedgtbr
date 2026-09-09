@@ -334,3 +334,7 @@ body::before {
 
 body { min-width: 0; }
   ]]></b:template-skin>
+/* Shared navigation and section offsets for independent pages. */
+[id] { scroll-margin-top: 6rem; }
+#site-header a[aria-current="page"] { color: #00A859; }
+.post-body > h1 { font-family: Saira, sans-serif; font-size: clamp(1.875rem, 4vw, 3rem); font-weight: 900; line-height: 1.15; margin-bottom: 1.5rem; }

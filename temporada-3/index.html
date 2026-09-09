@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regras da Temporada 3 — Speed GT Brasil</title>
+  <meta name="description" content="Regras da Temporada 3 da comunidade Speed GT Brasil. Informações para os pilotos de Gran Turismo 7.">
+  <meta property="og:site_name" content="Speed GT Brasil">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Regras da Temporada 3 — Speed GT Brasil">
+  <meta property="og:description" content="Regras da Temporada 3 da comunidade Speed GT Brasil. Informações para os pilotos de Gran Turismo 7.">
+  <meta property="og:url" content="https://speedgtbrasil.pages.dev/temporada-3/">
+  <meta property="og:image" content="https://raw.githubusercontent.com/fabianopassianoto/speedgtbrasil/main/logo06.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Regras da Temporada 3 — Speed GT Brasil">
+  <meta name="twitter:image" content="https://raw.githubusercontent.com/fabianopassianoto/speedgtbrasil/main/logo06.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Saira:wght@700;800;900&family=Saira+Stencil+One&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+  
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          asfalto: '#0B0B0E',
+          'asfalto-2': '#15151A',
+          'linha-branca': '#F4F1EA',
+          cromo: '#C4C4C4',
+          'cromo-dark': '#6B6B70',
+          'verde-grid': '#00A859',
+          'amarelo-bandeirola': '#FFCB00',
+          'dourado-pole': '#C9A86A',
+          'vermelho-flag': '#E63946',
+        },
+        fontFamily: {
+          display: ['Saira', 'sans-serif'],
+          body: ['"Public Sans"', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'monospace'],
+          accent: ['"Saira Stencil One"', 'sans-serif'],
+        },
+        maxWidth: { container: '1280px' },
+      },
+    },
+  };
+  
+  </script>
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body class="font-body bg-asfalto text-linha-branca antialiased">
+  <!-- ============ NAV ============ -->
+  <header class='fixed top-0 inset-x-0 z-50 transition-all duration-300' id='site-header'>
+    <div class='max-w-container mx-auto px-4 md:px-8 py-4 flex items-center justify-between'>
+      <a class='flex items-center gap-3' href='/'>
+        <img alt='Speed GT Brasil' class='h-10 w-auto' src='https://raw.githubusercontent.com/fabianopassianoto/speedgtbrasil/main/logo06.png'>
+        <span class='font-display font-black text-lg tracking-tight hidden sm:inline'>SPEED GT BRASIL</span>
+      </a>
+
+      <nav class='hidden md:flex items-center gap-5 text-sm font-medium' aria-label='Navegação principal'>
+        <a class='nav-link text-cromo hover:text-linha-branca' href='/por-que/'>Por que</a>
+        <a class='nav-link text-cromo hover:text-linha-branca' href='/comece-aqui/'>Comece aqui</a>
+        <div class='rules-menu'>
+          <button aria-expanded='false' aria-haspopup='true' class='nav-link rules-toggle' id='rules-toggle' type='button'>Regras</button>
+          <div aria-label='Opções de regras' class='rules-dropdown' id='rules-dropdown'>
+            <a href='/regras/'>Regras da Comunidade</a>
+            <a  href='/temporada-3/' aria-current="page">Regras da Temporada 3</a>
+          </div>
+        </div>
+        <a class='nav-link text-cromo hover:text-linha-branca' href='/hall-da-fama/'>Hall da Fama</a>
+        <a class='nav-link text-cromo hover:text-linha-branca' href='/organizadores/'>Organizadores</a>
+        <a class='nav-link text-cromo hover:text-linha-branca' href='/apoie/'>Apoie</a>
+        <a class='nav-link text-cromo hover:text-linha-branca' href='https://speedgtbr.atlassian.net/servicedesk/customer/portal/1/group/2/create/4' rel='noopener' target='_blank'>Recursos</a>
+        <a class='nav-link text-cromo hover:text-linha-branca' href='/depoimentos/'>Depoimentos</a>
+      </nav>
+
+      <a class='hidden md:inline-flex cta-primary items-center gap-2 px-5 py-2.5 font-display font-bold text-xs tracking-label uppercase' href='https://chat.whatsapp.com/Jz9Zg4z1q302rXOlaI8KKk' rel='noopener' target='_blank'>
+        <span aria-hidden='true'>🏁</span>
+        Entrar no grupo
+      </a>
+
+      <button aria-expanded='false' aria-label='Menu' class='md:hidden p-2 text-linha-branca' id='nav-toggle'>
+        <i class='w-6 h-6' data-lucide='menu' id='nav-icon-menu'></i>
+        <i class='w-6 h-6' data-lucide='x' id='nav-icon-close' style='display:none'></i>
+      </button>
+    </div>
+
+    <div class='mobile-drawer md:hidden bg-asfalto-2 border-t border-cromo-dark/30' id='mobile-drawer'>
+      <nav class='flex flex-col p-4 gap-1'>
+        <a class='py-3 px-2 text-cromo border-b border-cromo-dark/20' href='/por-que/'>Por que</a>
+        <a class='py-3 px-2 text-cromo border-b border-cromo-dark/20' href='/comece-aqui/'>Comece aqui</a>
+        <div class='rules-mobile'>
+          <button aria-expanded='false' class='rules-mobile-toggle py-3 px-2' id='rules-mobile-toggle' type='button'>Regras</button>
+          <div class='rules-mobile-sub'>
+            <a href='/regras/'>Regras da Comunidade</a>
+            <a  href='/temporada-3/' aria-current="page">Regras da Temporada 3</a>
+          </div>
+        </div>
+        <a class='py-3 px-2 text-cromo border-b border-cromo-dark/20' href='/hall-da-fama/'>Hall da Fama</a>
+        <a class='py-3 px-2 text-cromo border-b border-cromo-dark/20' href='/organizadores/'>Organizadores</a>
+        <a class='py-3 px-2 text-cromo border-b border-cromo-dark/20' href='/apoie/'>Apoie</a>
+        <a class='py-3 px-2 text-cromo border-b border-cromo-dark/20' href='https://speedgtbr.atlassian.net/servicedesk/customer/portal/1/group/2/create/4' rel='noopener' target='_blank'>Recursos</a>
+        <a class='py-3 px-2 text-cromo' href='/depoimentos/'>Depoimentos</a>
+        <a class='cta-primary mt-4 inline-flex items-center justify-center gap-2 px-5 py-3 font-display font-bold tracking-label uppercase' href='https://chat.whatsapp.com/Jz9Zg4z1q302rXOlaI8KKk' rel='noopener' target='_blank'>
+          <span aria-hidden='true'>🏁</span>
+          Entrar no grupo
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class='relative z-10 pt-20' id='top'>
+<section class='py-16 md:py-24'><div class='max-w-3xl mx-auto px-4 md:px-8'><div class='post-body'>    <h1 id='temporada-3'>🏆 Regulamento Especial &#8212; Temporada 3</h1>
+    <p>As regras desta seção são <strong>específicas da Temporada 3</strong> e complementam o Regulamento Geral da Speed GT Brasil. Em caso de conflito entre uma regra geral e uma regra específica da temporada, <strong>prevalece a regra específica da Temporada 3</strong> durante sua vigência. As demais regras gerais permanecem válidas.</p>
+
+    <h3>🚗 Carro único por piloto</h3>
+    <p>Durante a Temporada 3, cada piloto deve escolher <strong>um único modelo de carro</strong> para disputar o campeonato. O carro escolhido deve ser utilizado em <strong>todas as etapas da temporada</strong>. Após a primeira utilização oficial do veículo, <strong>não é permitida a troca de modelo</strong> durante a temporada.</p>
+    <div class='bg-asfalto-2 border-l-4 border-vermelho-flag p-5 my-6' style='background-color:rgba(230,57,70,0.08)'>
+      <p class='font-display font-bold text-linha-branca mt-0 mb-2'>🚫 Fabricante proibida</p>
+      <p class='my-0'>Na Temporada 3, <strong style='color:#E63946'>a fabricante Hyundai não pode ser escolhida</strong> por nenhum piloto.</p>
+    </div>
+    <div class='bg-asfalto-2 border border-cromo-dark/40 p-4 my-6'>
+      <p class='text-sm my-0'><strong>Exemplo:</strong> o piloto escolhe o Porsche 911 GT3 (992) &#8212; esse será o seu carro durante toda a Temporada 3. A escolha é individual; pilotos diferentes podem utilizar o mesmo modelo.</p>
+    </div>
+
+    <p class='text-sm text-cromo-dark mt-3 mb-1'>Exceções &#8212; a troca de veículo só pode ocorrer mediante autorização expressa da organização, em situações como:</p>
+    <ul>
+      <li>alteração relevante de balanceamento promovida pelo próprio jogo;</li>
+      <li>retirada ou alteração do veículo pelo Gran Turismo 7;</li>
+      <li>erro de configuração da organização;</li>
+      <li>impossibilidade técnica comprovada;</li>
+      <li>outra situação extraordinária reconhecida pelo Comitê.</li>
+    </ul>
+    <p class='text-sm text-cromo-dark'>A simples preferência por outro carro ou arrependimento da escolha <strong>não constitui motivo para troca</strong>.</p>
+
+    <div class='bg-asfalto-2 border-l-4 border-vermelho-flag p-5 my-6'>
+      <p class='font-display font-bold text-linha-branca mt-0 mb-2'>Penalidade por utilização de veículo diferente</p>
+      <p class='my-0'>A utilização de outro modelo sem autorização é infração de regulamento esportivo e pode resultar em <strong style='color:#E63946'>desclassificação da etapa</strong>, <strong style='color:#E63946'>perda integral dos pontos da etapa</strong> e outras medidas previstas no Sistema de Punições, quando houver reincidência ou tentativa deliberada de obter vantagem.</p>
+    </div>
+
+    <h3>🏁 Etapa final &#8212; Grande Final</h3>
+    <p>A Temporada 3 terá <strong>7 etapas</strong>, sendo <strong>6 etapas regulares</strong> e <strong>1 Grande Final</strong>. A Grande Final tem características especiais e é disputada em <strong>1h30 de duração</strong>.</p>
+
+    <h4 class='font-display font-bold text-linha-branca' style='margin-bottom:.5rem;'>Pontuação</h4>
+    <p>A pontuação obtida na Grande Final é <strong>dobrada</strong> em relação à tabela oficial.</p>
+    <div class='overflow-x-auto my-6'>
+      <table class='w-full text-sm border-collapse'>
+        <thead>
+          <tr class='border-b border-cromo-dark/40'>
+            <th class='text-left py-3 px-3 font-display uppercase tracking-label text-xs text-cromo-dark'>Posição</th>
+            <th class='text-right py-3 px-3 font-display uppercase tracking-label text-xs text-cromo-dark'>Pontos normais</th>
+            <th class='text-right py-3 px-3 font-display uppercase tracking-label text-xs text-cromo-dark'>Grande Final</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>1º</td><td class='text-right py-2 px-3 font-mono'>20</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>40</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>2º</td><td class='text-right py-2 px-3 font-mono'>18</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>36</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>3º</td><td class='text-right py-2 px-3 font-mono'>16</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>32</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>4º</td><td class='text-right py-2 px-3 font-mono'>14</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>28</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>5º</td><td class='text-right py-2 px-3 font-mono'>12</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>24</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>6º</td><td class='text-right py-2 px-3 font-mono'>10</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>20</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>7º</td><td class='text-right py-2 px-3 font-mono'>9</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>18</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>8º</td><td class='text-right py-2 px-3 font-mono'>8</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>16</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>9º</td><td class='text-right py-2 px-3 font-mono'>7</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>14</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>10º</td><td class='text-right py-2 px-3 font-mono'>6</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>12</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>11º</td><td class='text-right py-2 px-3 font-mono'>5</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>10</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>12º</td><td class='text-right py-2 px-3 font-mono'>4</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>8</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>13º</td><td class='text-right py-2 px-3 font-mono'>3</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>6</td></tr>
+          <tr class='border-b border-cromo-dark/20'><td class='py-2 px-3'>14º</td><td class='text-right py-2 px-3 font-mono'>2</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>4</td></tr>
+          <tr><td class='py-2 px-3'>15º</td><td class='text-right py-2 px-3 font-mono'>1</td><td class='text-right py-2 px-3 font-mono text-linha-branca'>2</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class='text-sm text-cromo-dark'>Bônus de volta mais rápida, quando previsto no briefing, segue as condições especificamente estabelecidas para a etapa.</p>
+
+    <div class='bg-asfalto-2 border-l-4 border-vermelho-flag p-5 my-6'>
+      <p class='font-display font-bold text-linha-branca mt-0 mb-2'>🚫 Grande Final não é descartável</p>
+      <p class='my-0'>O resultado da Grande Final <strong style='color:#E63946'>não pode ser utilizado como descarte</strong>. O descarte aplica-se exclusivamente às <strong>seis etapas regulares</strong>. A classificação final é composta pelos resultados das seis etapas regulares &#8212; já aplicado o descarte previsto no regulamento &#8212; somados obrigatoriamente aos pontos obtidos na Grande Final, que tem participação obrigatória na composição da classificação final.</p>
+    </div>
+
+    <hr/>
+
+<p><a class='text-verde-grid' href='/regras/'>Consultar o regulamento geral</a></p></div></div></section>
+</main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class='bg-asfalto border-t border-cromo-dark/30 py-12 md:py-16 relative z-10'>
+    <div class='max-w-container mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-3 gap-12'>
+      <div>
+        <div class='flex items-center gap-3 mb-4'>
+          <img alt='Speed GT Brasil' class='h-10 w-auto' src='https://raw.githubusercontent.com/fabianopassianoto/speedgtbrasil/main/logo06.png'>
+          <span class='font-display font-black text-lg tracking-tight'>SPEED GT BRASIL</span>
+        </div>
+        <p class='text-cromo text-sm max-w-xs leading-relaxed'>
+          Comunidade de pilotos de Gran Turismo 7. Campeonato de amigos. Regulamento de federação.
+        </p>
+        <p class='text-cromo-dark text-xs mt-6 font-mono tracking-mono'>&#169; 2026 SPEED GT BRASIL &amp; MAX LIMA</p>
+
+        <a aria-label='Boxes — área da comunidade' class='mt-8 inline-flex flex-col items-start gap-1 opacity-30 hover:opacity-100 transition-opacity duration-300 group' href='/comece-aqui/' title='Boxes'>
+          <img alt='' class='h-10 w-auto grayscale group-hover:grayscale-0 transition-all' onerror='this.style.display=&apos;none&apos;' src='https://raw.githubusercontent.com/fabianopassianoto/speedgtbrasil/main/audi-r8-gt3.png'>
+          <span class='font-mono text-[0.6rem] tracking-mono uppercase text-cromo-dark group-hover:text-verde-grid'>Boxes</span>
+        </a>
+      </div>
+
+      <div>
+        <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-4'>Navegação</p>
+        <ul class='space-y-2 text-sm'>
+          <li><a class='text-cromo hover:text-linha-branca transition-colors' href='/por-que/'>Por que existimos</a></li>
+          <li><a class='text-cromo hover:text-linha-branca transition-colors' href='/comece-aqui/'>Comece aqui</a></li>
+          <li><a class='text-cromo hover:text-linha-branca transition-colors' href='/comece-aqui/#simgrid'>SimGrid</a></li>
+          <li><a class='text-cromo hover:text-linha-branca transition-colors' href='/depoimentos/'>Depoimentos</a></li>
+          <li><a class='text-cromo hover:text-linha-branca transition-colors' href='/regras/'>Regras</a></li>
+          <li><a  class='text-cromo hover:text-linha-branca transition-colors' href='/temporada-3/' aria-current="page">Temporada 3</a></li>
+          <li><a class='text-cromo hover:text-linha-branca transition-colors' href='/hall-da-fama/'>Hall da Fama</a></li>
+          <li><a class='text-cromo hover:text-linha-branca transition-colors' href='/apoie/'>Apoie a comunidade</a></li>
+          <li><a class='text-cromo hover:text-linha-branca transition-colors' href='https://speedgtbr.atlassian.net/servicedesk/customer/portal/1/group/2/create/4' rel='noopener' target='_blank'>Recursos</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class='font-display font-bold text-xs tracking-label uppercase text-cromo-dark mb-4'>Canais oficiais</p>
+        <ul class='space-y-2 text-sm'>
+          <li>
+            <a class='text-cromo hover:text-linha-branca transition-colors inline-flex items-center gap-2' href='https://chat.whatsapp.com/Jz9Zg4z1q302rXOlaI8KKk' rel='noopener' target='_blank'>
+              <i class='w-4 h-4' data-lucide='message-circle'></i> Entrar no grupo do WhatsApp
+            </a>
+          </li>
+          <li>
+            <a class='text-cromo hover:text-linha-branca transition-colors inline-flex items-center gap-2' href='https://www.thesimgrid.com/communities/speed-gt-brasil' rel='noopener' target='_blank'>
+              <i class='w-4 h-4' data-lucide='trophy'></i> SimGrid (oficial)
+            </a>
+          </li>
+          <li>
+            <a class='text-cromo hover:text-linha-branca transition-colors inline-flex items-center gap-2' href='https://instagram.com/speedgtbr' rel='noopener' target='_blank'>
+              <svg aria-hidden='true' class='w-4 h-4' fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24'><rect height='20' rx='5' ry='5' width='20' x='2' y='2'/><path d='M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z'></path><line x1='17.5' x2='17.51' y1='6.5' y2='6.5'></line></svg>
+              @speedgtbr
+            </a>
+          </li>
+          <li>
+            <a class='text-cromo hover:text-linha-branca transition-colors inline-flex items-center gap-2' href='https://youtube.com/@SpeedGTBr' rel='noopener' target='_blank'>
+              <svg aria-hidden='true' class='w-4 h-4' fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24'><path d='M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z'></path><polygon points='9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02'></polygon></svg>
+              @SpeedGTBr
+            </a>
+          </li>
+          <li>
+            <a class='text-cromo hover:text-linha-branca transition-colors inline-flex items-center gap-2' href='mailto:speedgtbr@gmail.com'>
+              <i class='w-4 h-4' data-lucide='mail'></i> speedgtbr@gmail.com
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+  <script src="/assets/script.js"></script>
+</body>
+</html>

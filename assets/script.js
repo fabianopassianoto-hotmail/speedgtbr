@@ -1,3 +1,15 @@
+// Keep previously shared homepage section links working.
+(function () {
+  if (location.pathname !== '/' && location.pathname !== '/index.html') return;
+  var routes = {"por-que":"/por-que/","comece-aqui":"/comece-aqui/","regras":"/regras/","temporada-3":"/temporada-3/","hall-da-fama":"/hall-da-fama/","equipe":"/organizadores/","apoie":"/apoie/","depoimentos":"/depoimentos/","regulamento":"/regras/#regulamento","punicoes":"/regras/#punicoes","simgrid":"/comece-aqui/#simgrid","whatsapp":"/comece-aqui/#whatsapp","cadastro":"/comece-aqui/#cadastro","comece-apoie":"/comece-aqui/#comece-apoie","como-funciona":"/#como-funciona"};
+  function redirect() {
+    var target = routes[location.hash.slice(1)];
+    if (target && target !== location.pathname + location.hash) location.replace(target);
+  }
+  redirect();
+  window.addEventListener('hashchange', redirect);
+})();
+
 (function () {
     function ready(fn) {
       if (document.readyState !== 'loading') fn();
