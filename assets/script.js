@@ -30,32 +30,32 @@
     }
 
     function initRulesMenu() {
-      var menu = document.querySelector('.rules-menu');
-      var toggle = document.getElementById('rules-toggle');
-      var mobile = document.querySelector('.rules-mobile');
-      var mobileToggle = document.getElementById('rules-mobile-toggle');
-      if (menu && toggle) {
-        var close = function () {
-          menu.classList.remove('is-open');
-          toggle.setAttribute('aria-expanded', 'false');
-        };
-        toggle.addEventListener('click', function (e) {
-          e.stopPropagation();
-          var open = !menu.classList.contains('is-open');
-          menu.classList.toggle('is-open', open);
-          toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      var groups = document.querySelectorAll('.nav-group');
+      groups.forEach(function (group) {
+        group.addEventListener('toggle', function () {
+          if (group.open) groups.forEach(function (other) { if (other !== group) other.open = false; });
         });
-        menu.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', close); });
-        document.addEventListener('click', function (e) { if (!menu.contains(e.target)) close(); });
-        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
-      }
-      if (mobile && mobileToggle) {
-        mobileToggle.addEventListener('click', function () {
-          var open = !mobile.classList.contains('is-open');
-          mobile.classList.toggle('is-open', open);
-          mobileToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        group.addEventListener('focusout', function (event) {
+          if (!group.contains(event.relatedTarget)) group.open = false;
         });
-      }
+        group.querySelectorAll('a').forEach(function (link) {
+          link.addEventListener('click', function () { group.open = false; });
+        });
+      });
+      document.addEventListener('click', function (event) {
+        groups.forEach(function (group) { if (!group.contains(event.target)) group.open = false; });
+      });
+      document.addEventListener('keydown', function (event) {
+        if (event.key !== 'Escape') return;
+        groups.forEach(function (group) {
+          if (group.open && group.contains(document.activeElement)) group.querySelector('summary').focus();
+          group.open = false;
+        });
+      });
+      document.querySelectorAll('#site-header a').forEach(function (link) {
+        var url = new URL(link.href);
+        if (url.origin === location.origin && url.pathname === location.pathname && !url.hash) link.setAttribute('aria-current', 'page');
+      });
     }
 
     function initMobileMenu() {
@@ -70,6 +70,10 @@
         if (iMenu) iMenu.style.display = open ? 'none' : '';
         if (iClose) iClose.style.display = open ? '' : 'none';
       };
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && drawer.classList.contains('is-open')) { setOpen(false); btn.focus(); }
+      });
+      window.matchMedia('(min-width: 1200px)').addEventListener('change', function () { setOpen(false); });
       btn.addEventListener('click', function () { setOpen(!drawer.classList.contains('is-open')); });
       drawer.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { setOpen(false); }); });
     }
@@ -119,7 +123,7 @@
       try {
         console.log(
           '%c  SPEED GT BRASIL  %c\n\n  site criado por Max Lima  🏁\n',
-          'background:#00A859;color:#0B0B0E;font-family:Saira,sans-serif;font-weight:900;font-size:16px;padding:6px 14px;letter-spacing:0.12em;',
+          'background:#60A5FA;color:#0B0B0E;font-family:Saira,sans-serif;font-weight:900;font-size:16px;padding:6px 14px;letter-spacing:0.12em;',
           'color:#C4C4C4;font-family:monospace;font-size:12px;line-height:1.6;'
         );
       } catch (e) {}

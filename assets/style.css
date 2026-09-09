@@ -42,7 +42,7 @@ body::before {
 
 .hero-mesh {
   background:
-    radial-gradient(ellipse at bottom left, rgba(0, 168, 89, 0.10) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom left, rgba(96,165,250, 0.10) 0%, transparent 50%),
     radial-gradient(ellipse at top right, rgba(255, 203, 0, 0.07) 0%, transparent 50%);
 }
 
@@ -52,7 +52,7 @@ body::before {
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 4px;
-  background: #00A859;
+  background: #60A5FA;
 }
 
 .pilar-card {
@@ -69,7 +69,7 @@ body::before {
   transition: background 200ms ease;
 }
 .pilar-card:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
-.pilar-card:hover::before { background: #00A859; }
+.pilar-card:hover::before { background: #60A5FA; }
 
 .stencil-badge {
   clip-path: polygon(
@@ -89,73 +89,56 @@ body::before {
 
 .ficha-divider { height: 1px; background: #2a2a31; }
 
-.cta-primary { background: #00A859; color: #FFFFFF; transition: transform 150ms ease, filter 150ms ease; }
-.cta-primary:hover { filter: brightness(1.08); transform: scale(1.02); color: #FFFFFF; }
+.cta-primary { background: linear-gradient(135deg, #2563EB, #1D4ED8); color: #FFFFFF; box-shadow: 0 4px 18px rgba(37,99,235,.18); transition: transform 150ms ease, filter 150ms ease, box-shadow 150ms ease; }
+.cta-primary:hover { filter: brightness(1.12); transform: scale(1.02); color: #FFFFFF; box-shadow: 0 6px 24px rgba(37,99,235,.3); }
 .post-body a.cta-primary, .post-body a.cta-primary:hover { color: #FFFFFF; text-decoration: none; }
 
 .nav-link { position: relative; transition: color 150ms ease; }
 .nav-link::after {
   content: ''; position: absolute;
   left: 0; right: 0; bottom: -6px;
-  height: 1px; background: #00A859;
+  height: 1px; background: #60A5FA;
   transform: scaleX(0); transform-origin: left;
   transition: transform 200ms ease;
 }
 .nav-link:hover::after { transform: scaleX(1); }
 
-/* Regras: dropdown da navegação */
-.rules-menu { position: relative; }
-.rules-toggle {
-  appearance: none; border: 0; background: transparent; cursor: pointer;
-  display: inline-flex; align-items: center; gap: .35rem; padding: 0;
-  font: inherit; color: #C4C4C4;
+/* Navegação agrupada: disclosure nativo, inclusive sem JavaScript. */
+.desktop-nav, .desktop-cta { display: none; }
+.mobile-nav-toggle { display: inline-flex; }
+.nav-group { position: relative; }
+.nav-group summary { cursor: pointer; color: #C4C4C4; padding: .7rem 0; white-space: nowrap; }
+.nav-group summary:hover, .nav-group[open] summary { color: #F4F1EA; }
+.nav-submenu { min-width: 230px; padding: .4rem; background: #15151A; border: 1px solid #36363e; }
+.nav-submenu a { display: block; padding: .7rem .8rem; color: #C4C4C4; font-size: .85rem; }
+.nav-submenu a:hover, .nav-submenu a[aria-current] { background: #222229; color: #F4F1EA; }
+#site-header :focus-visible, .season-links a:focus-visible, .championship-link:focus-visible { outline: 2px solid #FFCB00; outline-offset: 4px; }
+.mobile-drawer { max-height: calc(100dvh - 80px); overflow-y: auto; }
+.mobile-drawer .nav-group { border-bottom: 1px solid #2a2a31; }
+@media (min-width: 1200px) {
+  .desktop-nav, .desktop-cta { display: flex; }
+  .mobile-nav-toggle, .mobile-drawer.is-open { display: none; }
+  .desktop-nav .nav-submenu { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); box-shadow: 0 18px 40px #0006; }
 }
-.rules-toggle:hover { color: #F4F1EA; }
-.rules-toggle::after {
-  content: ''; width: 6px; height: 6px;
-  border-right: 1px solid currentColor; border-bottom: 1px solid currentColor;
-  transform: rotate(45deg) translateY(-2px); transition: transform 150ms ease;
-}
-.rules-menu.is-open .rules-toggle::after { transform: rotate(225deg) translate(-1px, -1px); }
-.rules-dropdown {
-  display: none; position: absolute; top: calc(100% + 14px); left: 50%; transform: translateX(-50%);
-  min-width: 220px; padding: .4rem; z-index: 60;
-  background: #15151A; border: 1px solid rgba(107,107,112,.45);
-  box-shadow: 0 18px 40px rgba(0,0,0,.35);
-}
-.rules-menu.is-open .rules-dropdown { display: block; }
-.rules-dropdown a {
-  display: block; padding: .7rem .8rem; color: #C4C4C4;
-  font-size: .82rem; transition: background 150ms ease, color 150ms ease;
-}
-.rules-dropdown a:hover { background: #1c1c22; color: #F4F1EA; text-decoration: none; }
-.rules-mobile { border-bottom: 1px solid rgba(107,107,112,.2); }
-.rules-mobile-toggle {
-  width: 100%; display: flex; align-items: center; justify-content: space-between;
-  appearance: none; border: 0; background: transparent; cursor: pointer;
-  text-align: left; font: inherit; color: #C4C4C4;
-}
-.rules-mobile-toggle::after {
-  content: ''; width: 7px; height: 7px;
-  border-right: 1px solid currentColor; border-bottom: 1px solid currentColor;
-  transform: rotate(45deg) translateY(-2px);
-}
-.rules-mobile.is-open .rules-mobile-toggle::after { transform: rotate(225deg) translate(-1px, -1px); }
-.rules-mobile-sub { display: none; padding: 0 0 .35rem 1rem; }
-.rules-mobile.is-open .rules-mobile-sub { display: block; }
-.rules-mobile-sub a { display: block; padding: .6rem .5rem; color: #8f8f95; font-size: .9rem; }
-.rules-mobile-sub a:hover { color: #F4F1EA; text-decoration: none; }
+.season-links { display: flex; flex-wrap: wrap; gap: 1rem; margin: 2rem 0 3rem; color: #F4F1EA; }
+.season-links a { border-bottom: 1px solid #60A5FA; padding: .5rem 0; }
+.championship-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+.championship-card { padding: 2rem; background: #15151A; border: 1px solid #2a2a31; scroll-margin-top: 110px; display: flex; flex-direction: column; }
+.championship-card:target { border-color: #60A5FA; }
+.championship-status { color: #C4C4C4; font-size: .85rem; line-height: 1.6; margin: 1rem 0 1.5rem; }
+.championship-link { display: block; text-align: center; padding: .85rem 1rem; margin-top: auto; }
+@media (max-width: 900px) { .championship-grid { grid-template-columns: 1fr; } }
 
 .timeline-node { border: 1px solid #2a2a31; transition: border-color 200ms ease, transform 200ms ease; }
 .timeline-node:hover { border-color: #6B6B70; transform: translateY(-2px); }
 .timeline-node.is-next { border-color: #FFCB00; box-shadow: inset 0 0 0 1px rgba(255,203,0,.15); }
 
 .gesto-vertical {
-  background: linear-gradient(180deg, transparent 0%, #00A859 18%, #00A859 45%, #FFCB00 55%, #FFCB00 82%, transparent 100%);
+  background: linear-gradient(180deg, transparent 0%, #60A5FA 18%, #60A5FA 45%, #FFCB00 55%, #FFCB00 82%, transparent 100%);
   filter: blur(0.5px);
 }
 .logo-glow {
-  filter: drop-shadow(0 20px 60px rgba(0, 168, 89, 0.15)) drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 20px 60px rgba(96,165,250, 0.15)) drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
 }
 
 .nav-scrolled {
@@ -187,9 +170,9 @@ body::before {
   width: 1.25rem;
   height: 1.25rem;
   flex: 0 0 auto;
-  color: #00A859;
-  border: 1px solid rgba(0,168,89,.3);
-  background: rgba(0,168,89,.08);
+  color: #60A5FA;
+  border: 1px solid rgba(96,165,250,.3);
+  background: rgba(96,165,250,.08);
   border-radius: 4px;
   margin-right: 0.75rem;
 }
@@ -206,13 +189,13 @@ body::before {
 .step-num {
   font-family: 'Saira Stencil One', sans-serif;
   font-size: 2.5rem;
-  color: #00A859;
+  color: #60A5FA;
   line-height: 1;
 }
 .step-arrow {
   width: 1px;
   height: 2rem;
-  background: linear-gradient(180deg, rgba(0,168,89,.6), rgba(0,168,89,0));
+  background: linear-gradient(180deg, rgba(96,165,250,.6), rgba(96,165,250,0));
   margin: 0.5rem auto;
 }
 
@@ -223,7 +206,7 @@ body::before {
   position: relative;
   transition: border-color 200ms ease, transform 200ms ease;
 }
-.testimonial-card:hover { border-color: rgba(0,168,89,.4); transform: translateY(-2px); }
+.testimonial-card:hover { border-color: rgba(96,165,250,.4); transform: translateY(-2px); }
 .testimonial-card::before {
   content: '';
   position: absolute;
@@ -236,7 +219,7 @@ body::before {
 .testimonial-avatar {
   width: 2.5rem; height: 2.5rem;
   border-radius: 9999px;
-  background: linear-gradient(135deg, #00A859, #006e3a);
+  background: linear-gradient(135deg, #93C5FD, #60A5FA);
   color: #0B0B0E;
   display: inline-flex;
   align-items: center;
@@ -248,7 +231,7 @@ body::before {
 .objection-q { color: #FFCB00; font-family: 'Saira', sans-serif; font-weight: 700; }
 
 .pull-quote {
-  border-left: 3px solid #00A859;
+  border-left: 3px solid #60A5FA;
   padding: 0.5rem 0 0.5rem 1.5rem;
   font-family: 'Saira', sans-serif;
   font-weight: 700;
@@ -263,12 +246,12 @@ body::before {
   width: 56px;
   height: 56px;
   border-radius: 9999px;
-  background: #00A859;
+  background: #60A5FA;
   color: #0B0B0E;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 12px 28px rgba(0,0,0,.5), 0 0 0 6px rgba(0,168,89,.12);
+  box-shadow: 0 12px 28px rgba(0,0,0,.5), 0 0 0 6px rgba(96,165,250,.12);
   z-index: 40;
   transition: transform 180ms ease;
 }
@@ -284,14 +267,14 @@ body::before {
 .post-body h2 { font-size: clamp(1.5rem, 3.5vw, 2rem); }
 .post-body h3 { font-size: clamp(1.125rem, 2vw, 1.5rem); }
 .post-body p  { margin: 1rem 0; }
-.post-body a  { color: #00A859; text-decoration: underline; text-decoration-color: rgba(0,168,89,.4); text-underline-offset: 3px; }
-.post-body a:hover { text-decoration-color: #00A859; }
+.post-body a  { color: #60A5FA; text-decoration: underline; text-decoration-color: rgba(96,165,250,.4); text-underline-offset: 3px; }
+.post-body a:hover { text-decoration-color: #60A5FA; }
 .post-body ul, .post-body ol { margin: 1rem 0 1.25rem 1.25rem; }
 .post-body ul li { list-style: disc; margin: .375rem 0; }
 .post-body ol li { list-style: decimal; margin: .375rem 0; }
 .post-body strong { color: #F4F1EA; font-weight: 600; }
 .post-body blockquote {
-  border-left: 3px solid #00A859; margin: 1.5rem 0;
+  border-left: 3px solid #60A5FA; margin: 1.5rem 0;
   padding: .25rem 0 .25rem 1.25rem; color: #F4F1EA; font-style: italic;
 }
 .post-body code {
@@ -318,7 +301,7 @@ body::before {
   transition: color 150ms ease, border-color 150ms ease, background 150ms ease;
 }
 .btn-pill:hover {
-  color: #F4F1EA; border-color: #00A859; background: #1c1c22;
+  color: #F4F1EA; border-color: #60A5FA; background: #1c1c22;
   text-decoration: none;
 }
 .btn-secondary {
@@ -336,5 +319,5 @@ body { min-width: 0; }
   ]]></b:template-skin>
 /* Shared navigation and section offsets for independent pages. */
 [id] { scroll-margin-top: 6rem; }
-#site-header a[aria-current="page"] { color: #00A859; }
+#site-header a[aria-current="page"] { color: #60A5FA; }
 .post-body > h1 { font-family: Saira, sans-serif; font-size: clamp(1.875rem, 4vw, 3rem); font-weight: 900; line-height: 1.15; margin-bottom: 1.5rem; }
