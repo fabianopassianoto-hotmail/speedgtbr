@@ -1,0 +1,8 @@
+data,piloto_id,nome,serie,tipo,valor,vai_para_medalha,observacao
+28/07/2026,SGT001,Dans,A,Inscrição,20.00,0.00,
+28/07/2026,SGT010,Denner,A,Inscrição,20.00,0.00,
+28/07/2026,SGT023,Jordano,B,Inscrição com doação,30.00,10.00,
+28/07/2026,,Eduardo Camargo,,Inscrição com doação,20.00,0.00,Piloto não localizado em nenhuma das três séries
+28/08/2026,SGT020,Frederico Motta,B,Inscrição,20.00,0.00,
+28/08/2026,SGT013,João Matheus,A,Inscrição,20.00,0.00,
+28/08/2026,SGT015,Rick,A,Inscrição,20.00,0.00,

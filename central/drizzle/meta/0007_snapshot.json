@@ -1,0 +1,1507 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "7de86aff-79c4-4991-a116-23b40e23fd3e",
+  "prevId": "32ec69d0-c30f-4947-9e75-7a5ba93343bb",
+  "tables": {
+    "caixa": {
+      "name": "caixa",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "temporada_id": {
+          "name": "temporada_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "data": {
+          "name": "data",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "piloto_id": {
+          "name": "piloto_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "nome": {
+          "name": "nome",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "tipo": {
+          "name": "tipo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "valor": {
+          "name": "valor",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "vai_para_medalha": {
+          "name": "vai_para_medalha",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "generated": {
+            "as": "(max(0, valor - 2000))",
+            "type": "stored"
+          }
+        },
+        "observacao": {
+          "name": "observacao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "idx_caixa_temporada_piloto": {
+          "name": "idx_caixa_temporada_piloto",
+          "columns": [
+            "temporada_id",
+            "piloto_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "caixa_temporada_id_temporadas_id_fk": {
+          "name": "caixa_temporada_id_temporadas_id_fk",
+          "tableFrom": "caixa",
+          "tableTo": "temporadas",
+          "columnsFrom": [
+            "temporada_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "caixa_piloto_id_pilotos_id_fk": {
+          "name": "caixa_piloto_id_pilotos_id_fk",
+          "tableFrom": "caixa",
+          "tableTo": "pilotos",
+          "columnsFrom": [
+            "piloto_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_caixa_valor": {
+          "name": "ck_caixa_valor",
+          "value": "\"caixa\".\"valor\" >= 0"
+        }
+      }
+    },
+    "calendario": {
+      "name": "calendario",
+      "columns": {
+        "temporada_id": {
+          "name": "temporada_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "etapa": {
+          "name": "etapa",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "pista": {
+          "name": "pista",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "classe_ou_formato": {
+          "name": "classe_ou_formato",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "duracao": {
+          "name": "duracao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "data": {
+          "name": "data",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "multiplicador": {
+          "name": "multiplicador",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "observacao": {
+          "name": "observacao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "regra_carro": {
+          "name": "regra_carro",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "carro_padrao": {
+          "name": "carro_padrao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "fabricante_padrao": {
+          "name": "fabricante_padrao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "calendario_temporada_id_temporadas_id_fk": {
+          "name": "calendario_temporada_id_temporadas_id_fk",
+          "tableFrom": "calendario",
+          "tableTo": "temporadas",
+          "columnsFrom": [
+            "temporada_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "calendario_temporada_id_etapa_pk": {
+          "columns": [
+            "temporada_id",
+            "etapa"
+          ],
+          "name": "calendario_temporada_id_etapa_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_calendario_etapa": {
+          "name": "ck_calendario_etapa",
+          "value": "\"calendario\".\"etapa\" > 0"
+        },
+        "ck_calendario_multiplicador": {
+          "name": "ck_calendario_multiplicador",
+          "value": "\"calendario\".\"multiplicador\" > 0"
+        },
+        "ck_calendario_regra_carro": {
+          "name": "ck_calendario_regra_carro",
+          "value": "\"calendario\".\"regra_carro\" IS NULL OR \"calendario\".\"regra_carro\" IN ('regulamento', 'piloto', 'misto')"
+        }
+      }
+    },
+    "corridas": {
+      "name": "corridas",
+      "columns": {
+        "temporada_id": {
+          "name": "temporada_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "etapa": {
+          "name": "etapa",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "piloto_id": {
+          "name": "piloto_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "confirmou": {
+          "name": "confirmou",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "compareceu": {
+          "name": "compareceu",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "falta_justificada": {
+          "name": "falta_justificada",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "posicao_final": {
+          "name": "posicao_final",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "volta_mais_rapida": {
+          "name": "volta_mais_rapida",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "punicao": {
+          "name": "punicao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "abandono_motivo": {
+          "name": "abandono_motivo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "observacao": {
+          "name": "observacao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "pontos": {
+          "name": "pontos",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "carro": {
+          "name": "carro",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "fabricante": {
+          "name": "fabricante",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "origem_carro": {
+          "name": "origem_carro",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "idx_corridas_temporada_etapa": {
+          "name": "idx_corridas_temporada_etapa",
+          "columns": [
+            "temporada_id",
+            "etapa"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "corridas_piloto_id_pilotos_id_fk": {
+          "name": "corridas_piloto_id_pilotos_id_fk",
+          "tableFrom": "corridas",
+          "tableTo": "pilotos",
+          "columnsFrom": [
+            "piloto_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "fk_corridas_calendario": {
+          "name": "fk_corridas_calendario",
+          "tableFrom": "corridas",
+          "tableTo": "calendario",
+          "columnsFrom": [
+            "temporada_id",
+            "etapa"
+          ],
+          "columnsTo": [
+            "temporada_id",
+            "etapa"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "corridas_temporada_id_etapa_piloto_id_pk": {
+          "columns": [
+            "temporada_id",
+            "etapa",
+            "piloto_id"
+          ],
+          "name": "corridas_temporada_id_etapa_piloto_id_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_corridas_posicao_final": {
+          "name": "ck_corridas_posicao_final",
+          "value": "\"corridas\".\"posicao_final\" IS NULL OR \"corridas\".\"posicao_final\" > 0"
+        },
+        "ck_corridas_pontos": {
+          "name": "ck_corridas_pontos",
+          "value": "\"corridas\".\"pontos\" >= 0"
+        },
+        "ck_corridas_origem_carro": {
+          "name": "ck_corridas_origem_carro",
+          "value": "\"corridas\".\"origem_carro\" IS NULL OR \"corridas\".\"origem_carro\" IN ('regulamento', 'piloto')"
+        }
+      }
+    },
+    "divisoes": {
+      "name": "divisoes",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "temporada_id": {
+          "name": "temporada_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "codigo": {
+          "name": "codigo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nome": {
+          "name": "nome",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "cor": {
+          "name": "cor",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "ordem": {
+          "name": "ordem",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "regra_carro": {
+          "name": "regra_carro",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "carro_padrao": {
+          "name": "carro_padrao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "fabricante_padrao": {
+          "name": "fabricante_padrao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'ativa'"
+        },
+        "arquivada_em": {
+          "name": "arquivada_em",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "motivo_arquivamento": {
+          "name": "motivo_arquivamento",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "uidx_divisoes_temporada_codigo": {
+          "name": "uidx_divisoes_temporada_codigo",
+          "columns": [
+            "temporada_id",
+            "codigo"
+          ],
+          "isUnique": true
+        },
+        "idx_divisoes_temporada_ordem": {
+          "name": "idx_divisoes_temporada_ordem",
+          "columns": [
+            "temporada_id",
+            "ordem"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "divisoes_temporada_id_temporadas_id_fk": {
+          "name": "divisoes_temporada_id_temporadas_id_fk",
+          "tableFrom": "divisoes",
+          "tableTo": "temporadas",
+          "columnsFrom": [
+            "temporada_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_divisoes_codigo": {
+          "name": "ck_divisoes_codigo",
+          "value": "length(trim(\"divisoes\".\"codigo\")) > 0"
+        },
+        "ck_divisoes_nome": {
+          "name": "ck_divisoes_nome",
+          "value": "length(trim(\"divisoes\".\"nome\")) > 0"
+        },
+        "ck_divisoes_ordem": {
+          "name": "ck_divisoes_ordem",
+          "value": "\"divisoes\".\"ordem\" > 0"
+        },
+        "ck_divisoes_regra_carro": {
+          "name": "ck_divisoes_regra_carro",
+          "value": "\"divisoes\".\"regra_carro\" IS NULL OR \"divisoes\".\"regra_carro\" IN ('regulamento', 'piloto', 'misto')"
+        },
+        "ck_divisoes_status": {
+          "name": "ck_divisoes_status",
+          "value": "\"divisoes\".\"status\" IN ('ativa', 'arquivada', 'cancelada')"
+        }
+      }
+    },
+    "fila": {
+      "name": "fila",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "apelido": {
+          "name": "apelido",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nome_completo": {
+          "name": "nome_completo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "psn": {
+          "name": "psn",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "simgrid": {
+          "name": "simgrid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "simgrid_url": {
+          "name": "simgrid_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "whatsapp": {
+          "name": "whatsapp",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "cidade": {
+          "name": "cidade",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "uf": {
+          "name": "uf",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "volante_ou_controle": {
+          "name": "volante_ou_controle",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "perfil_pilotagem": {
+          "name": "perfil_pilotagem",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "disponibilidade": {
+          "name": "disponibilidade",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "carro_preferido": {
+          "name": "carro_preferido",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "pista_citada": {
+          "name": "pista_citada",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "relacoes": {
+          "name": "relacoes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "curiosidade": {
+          "name": "curiosidade",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "observacoes_adm": {
+          "name": "observacoes_adm",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "ativo": {
+          "name": "ativo",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "cadastro_status": {
+          "name": "cadastro_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "data_nascimento": {
+          "name": "data_nascimento",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "data_entrada": {
+          "name": "data_entrada",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "corridas_4fun": {
+          "name": "corridas_4fun",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "conduta": {
+          "name": "conduta",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "pronto_para_serie": {
+          "name": "pronto_para_serie",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "promovido_para_piloto_id": {
+          "name": "promovido_para_piloto_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "idx_fila_apelido": {
+          "name": "idx_fila_apelido",
+          "columns": [
+            "apelido"
+          ],
+          "isUnique": false
+        },
+        "idx_fila_promovido_para_piloto_id": {
+          "name": "idx_fila_promovido_para_piloto_id",
+          "columns": [
+            "promovido_para_piloto_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "fila_promovido_para_piloto_id_pilotos_id_fk": {
+          "name": "fila_promovido_para_piloto_id_pilotos_id_fk",
+          "tableFrom": "fila",
+          "tableTo": "pilotos",
+          "columnsFrom": [
+            "promovido_para_piloto_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_fila_id": {
+          "name": "ck_fila_id",
+          "value": "\"fila\".\"id\" GLOB 'FIL[0-9][0-9][0-9]'"
+        },
+        "ck_fila_apelido": {
+          "name": "ck_fila_apelido",
+          "value": "length(trim(\"fila\".\"apelido\")) > 0"
+        },
+        "ck_fila_corridas_4fun": {
+          "name": "ck_fila_corridas_4fun",
+          "value": "\"fila\".\"corridas_4fun\" IS NULL OR \"fila\".\"corridas_4fun\" >= 0"
+        }
+      }
+    },
+    "formularios_pendentes": {
+      "name": "formularios_pendentes",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "criado_em": {
+          "name": "criado_em",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nome_completo": {
+          "name": "nome_completo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "psn": {
+          "name": "psn",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "simgrid": {
+          "name": "simgrid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "simgrid_url": {
+          "name": "simgrid_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "whatsapp": {
+          "name": "whatsapp",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "cidade": {
+          "name": "cidade",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "uf": {
+          "name": "uf",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "volante_ou_controle": {
+          "name": "volante_ou_controle",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "perfil_pilotagem": {
+          "name": "perfil_pilotagem",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "disponibilidade": {
+          "name": "disponibilidade",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "carro_preferido": {
+          "name": "carro_preferido",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "pista_citada": {
+          "name": "pista_citada",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "data_nascimento": {
+          "name": "data_nascimento",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "curiosidade": {
+          "name": "curiosidade",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'pendente'"
+        },
+        "revisado_em": {
+          "name": "revisado_em",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "destino_tipo": {
+          "name": "destino_tipo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "destino_id": {
+          "name": "destino_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "idx_formularios_pendentes_status_criado_em": {
+          "name": "idx_formularios_pendentes_status_criado_em",
+          "columns": [
+            "status",
+            "criado_em"
+          ],
+          "isUnique": false
+        },
+        "idx_formularios_pendentes_whatsapp": {
+          "name": "idx_formularios_pendentes_whatsapp",
+          "columns": [
+            "whatsapp"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_formularios_pendentes_status": {
+          "name": "ck_formularios_pendentes_status",
+          "value": "\"formularios_pendentes\".\"status\" IN ('pendente', 'aplicado', 'descartado')"
+        }
+      }
+    },
+    "inscricoes": {
+      "name": "inscricoes",
+      "columns": {
+        "temporada_id": {
+          "name": "temporada_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "piloto_id": {
+          "name": "piloto_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "serie": {
+          "name": "serie",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "situacao": {
+          "name": "situacao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "saida_em": {
+          "name": "saida_em",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "motivo_saida": {
+          "name": "motivo_saida",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "previsao_volta": {
+          "name": "previsao_volta",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "idx_inscricoes_temporada_serie": {
+          "name": "idx_inscricoes_temporada_serie",
+          "columns": [
+            "temporada_id",
+            "serie"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "inscricoes_temporada_id_temporadas_id_fk": {
+          "name": "inscricoes_temporada_id_temporadas_id_fk",
+          "tableFrom": "inscricoes",
+          "tableTo": "temporadas",
+          "columnsFrom": [
+            "temporada_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "inscricoes_piloto_id_pilotos_id_fk": {
+          "name": "inscricoes_piloto_id_pilotos_id_fk",
+          "tableFrom": "inscricoes",
+          "tableTo": "pilotos",
+          "columnsFrom": [
+            "piloto_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "inscricoes_temporada_id_piloto_id_pk": {
+          "columns": [
+            "temporada_id",
+            "piloto_id"
+          ],
+          "name": "inscricoes_temporada_id_piloto_id_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_inscricoes_serie": {
+          "name": "ck_inscricoes_serie",
+          "value": "length(trim(\"inscricoes\".\"serie\")) > 0"
+        },
+        "ck_inscricoes_situacao": {
+          "name": "ck_inscricoes_situacao",
+          "value": "\"inscricoes\".\"situacao\" IS NULL OR \"inscricoes\".\"situacao\" IN ('ativo', 'suplente', 'inativo', 'saiu')"
+        }
+      }
+    },
+    "pilotos": {
+      "name": "pilotos",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "apelido": {
+          "name": "apelido",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nome_completo": {
+          "name": "nome_completo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "psn": {
+          "name": "psn",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "simgrid": {
+          "name": "simgrid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "simgrid_url": {
+          "name": "simgrid_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "whatsapp": {
+          "name": "whatsapp",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "cidade": {
+          "name": "cidade",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "uf": {
+          "name": "uf",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "volante_ou_controle": {
+          "name": "volante_ou_controle",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "perfil_pilotagem": {
+          "name": "perfil_pilotagem",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "disponibilidade": {
+          "name": "disponibilidade",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "carro_preferido": {
+          "name": "carro_preferido",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "pista_citada": {
+          "name": "pista_citada",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "relacoes": {
+          "name": "relacoes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "curiosidade": {
+          "name": "curiosidade",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "observacoes_adm": {
+          "name": "observacoes_adm",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "ativo": {
+          "name": "ativo",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "cadastro_status": {
+          "name": "cadastro_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "data_nascimento": {
+          "name": "data_nascimento",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "data_entrada": {
+          "name": "data_entrada",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "arquivado_em": {
+          "name": "arquivado_em",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "motivo_arquivamento": {
+          "name": "motivo_arquivamento",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_pilotos_id": {
+          "name": "ck_pilotos_id",
+          "value": "\"pilotos\".\"id\" GLOB 'SGT[0-9][0-9][0-9]'"
+        },
+        "ck_pilotos_apelido": {
+          "name": "ck_pilotos_apelido",
+          "value": "length(trim(\"pilotos\".\"apelido\")) > 0"
+        }
+      }
+    },
+    "temporadas": {
+      "name": "temporadas",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nome": {
+          "name": "nome",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "ativa": {
+          "name": "ativa",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "total_etapas": {
+          "name": "total_etapas",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "pilotos_por_serie": {
+          "name": "pilotos_por_serie",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "tipo_evento": {
+          "name": "tipo_evento",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'campeonato'"
+        },
+        "gera_classificacao": {
+          "name": "gera_classificacao",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "regra_carro": {
+          "name": "regra_carro",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "carro_padrao": {
+          "name": "carro_padrao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "fabricante_padrao": {
+          "name": "fabricante_padrao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'ativa'"
+        },
+        "arquivada_em": {
+          "name": "arquivada_em",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "motivo_arquivamento": {
+          "name": "motivo_arquivamento",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_temporadas_total_etapas": {
+          "name": "ck_temporadas_total_etapas",
+          "value": "\"temporadas\".\"total_etapas\" > 0"
+        },
+        "ck_temporadas_pilotos_por_serie": {
+          "name": "ck_temporadas_pilotos_por_serie",
+          "value": "\"temporadas\".\"pilotos_por_serie\" > 0"
+        },
+        "ck_temporadas_tipo_evento": {
+          "name": "ck_temporadas_tipo_evento",
+          "value": "\"temporadas\".\"tipo_evento\" IN ('campeonato', '4fun')"
+        },
+        "ck_temporadas_regra_carro": {
+          "name": "ck_temporadas_regra_carro",
+          "value": "\"temporadas\".\"regra_carro\" IS NULL OR \"temporadas\".\"regra_carro\" IN ('regulamento', 'piloto', 'misto')"
+        },
+        "ck_temporadas_status": {
+          "name": "ck_temporadas_status",
+          "value": "\"temporadas\".\"status\" IN ('ativa', 'arquivada', 'cancelada')"
+        }
+      }
+    },
+    "usuarios_acessos": {
+      "name": "usuarios_acessos",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "account_user_id": {
+          "name": "account_user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nome": {
+          "name": "nome",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "papel": {
+          "name": "papel",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "serie": {
+          "name": "serie",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "ativo": {
+          "name": "ativo",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        }
+      },
+      "indexes": {
+        "uidx_usuarios_acessos_account_user_id": {
+          "name": "uidx_usuarios_acessos_account_user_id",
+          "columns": [
+            "account_user_id"
+          ],
+          "isUnique": true
+        },
+        "uidx_usuarios_acessos_email": {
+          "name": "uidx_usuarios_acessos_email",
+          "columns": [
+            "email"
+          ],
+          "isUnique": true
+        },
+        "idx_usuarios_acessos_papel_serie": {
+          "name": "idx_usuarios_acessos_papel_serie",
+          "columns": [
+            "papel",
+            "serie"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_usuarios_acessos_papel": {
+          "name": "ck_usuarios_acessos_papel",
+          "value": "\"usuarios_acessos\".\"papel\" IN ('administrador', 'coordenador')"
+        }
+      }
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "indexes": {}
+  }
+}

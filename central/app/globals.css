@@ -1,0 +1,608 @@
+@import url("https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,600;0,700;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "../vendor/shadcn-tailwind-4.13.0.css";
+
+/* --------------------------------------------------------------------------
+   SPEED GT BRASIL — SISTEMA VISUAL SIMRACING
+   -------------------------------------------------------------------------- */
+
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility scrollbar-gutter-stable {
+  scrollbar-gutter: stable;
+}
+
+:root {
+  color-scheme: dark;
+
+  /* Cores-base */
+  --background: #0B0B0E;
+  --foreground: #ffffff;
+  --card: #131722;
+  --card-foreground: #ffffff;
+  --popover: #131722;
+  --popover-foreground: #ffffff;
+  --primary: #60A5FA;
+  --primary-foreground: #0B0B0E;
+  --secondary: #172235;
+  --secondary-foreground: #ffffff;
+  --muted: #131722;
+  --muted-foreground: #8a92a6;
+  --accent: #18283e;
+  --accent-foreground: #ffffff;
+  --destructive: #e8604c;
+  --border: #252c38;
+  --input: #252c38;
+  --ring: #60A5FA;
+
+  /* Telemetria e gráficos */
+  --chart-1: #60A5FA;
+  --chart-2: #00e676;
+  --chart-3: #e8604c;
+  --chart-4: #73ffb0;
+  --chart-5: #8a92a6;
+
+  /* Navegação */
+  --sidebar: #0d1016;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #60A5FA;
+  --sidebar-primary-foreground: #0B0B0E;
+  --sidebar-accent: #18283e;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #252c38;
+  --sidebar-ring: #60A5FA;
+
+  /* Tokens de superfície */
+  --panel-glass: rgba(19, 23, 34, 0.76);
+  --panel-solid: #131722;
+  --panel-raised: #191f2b;
+  --carbon-line: rgba(255, 255, 255, 0.018);
+  --blue-glow: rgba(96, 165, 250, 0.5);
+  --green-glow: rgba(0, 230, 118, 0.3);
+
+  /* Geometria e tipografia */
+  --radius: 4px;
+  --font-display: "Chakra Petch", "Arial Narrow", sans-serif;
+  --font-interface: "Inter", Arial, sans-serif;
+  --font-data: "JetBrains Mono", Consolas, monospace;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 4px;
+  --radius-xl: 6px;
+  --font-sans: var(--font-interface);
+  --font-mono: var(--font-data);
+}
+
+/* --------------------------------------------------------------------------
+   BASE — carbono fosco, legibilidade e movimento controlado
+   -------------------------------------------------------------------------- */
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  background: var(--background);
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100dvh;
+  color: var(--foreground);
+  font-family: var(--font-interface);
+  background-color: var(--background);
+  background-image:
+    radial-gradient(circle at 8% -12%, rgba(96, 165, 250, 0.075), transparent 27rem),
+    radial-gradient(circle at 96% 18%, rgba(0, 230, 118, 0.055), transparent 30rem),
+    linear-gradient(115deg, var(--carbon-line) 25%, transparent 25%),
+    linear-gradient(295deg, var(--carbon-line) 25%, transparent 25%);
+  background-position: 0 0, 0 0, 0 0, 4px 4px;
+  background-size: auto, auto, 8px 8px, 8px 8px;
+  background-attachment: fixed;
+}
+
+::selection {
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a {
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 300ms ease,
+    transform 180ms ease;
+}
+
+:focus-visible {
+  outline: none;
+}
+
+.font-display,
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+}
+
+.font-data,
+time,
+table td[class*="font-data"] {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+/* --------------------------------------------------------------------------
+   HEADER E NAVEGAÇÃO — cockpit fixo e estados de alta leitura
+   -------------------------------------------------------------------------- */
+
+header {
+  position: relative;
+  z-index: 40;
+  background:
+    linear-gradient(90deg, rgba(96, 165, 250, 0.035), transparent 35%),
+    rgba(13, 16, 22, 0.94) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+header::after {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 1px;
+  content: "";
+  background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.7), rgba(0, 230, 118, 0.55), transparent);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+header nav button,
+nav.fixed button {
+  position: relative;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+header nav button[aria-current="page"],
+nav.fixed button[aria-current="page"] {
+  color: var(--primary);
+  text-shadow: 0 0 14px rgba(96, 165, 250, 0.25);
+}
+
+nav.fixed {
+  background: rgba(13, 16, 22, 0.96) !important;
+  box-shadow: 0 -12px 30px rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* --------------------------------------------------------------------------
+   PAINÉIS, CARDS E CONTAINERS — vidro técnico com cantos precisos
+   -------------------------------------------------------------------------- */
+
+.bg-\[\#131722\] {
+  background: var(--panel-glass) !important;
+}
+
+article[class*="bg-[#131722]"],
+section[class*="bg-[#131722]"],
+div[class*="border"][class*="bg-[#131722]"],
+[data-slot="card"] {
+  border-radius: var(--radius);
+  border-color: rgba(255, 255, 255, 0.065) !important;
+  background: var(--panel-glass) !important;
+  box-shadow:
+    0 16px 36px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+article[class*="bg-[#131722]"]:hover,
+button[class*="bg-[#131722]"]:hover {
+  border-color: rgba(0, 230, 118, 0.22) !important;
+  background: rgba(20, 32, 34, 0.9) !important;
+}
+
+/* Faixa de telemetria em cards com borda semântica */
+article[class*="border-l-4"],
+section[class*="border-l-4"],
+div[class*="border-l-4"] {
+  box-shadow:
+    0 16px 36px rgba(0, 0, 0, 0.18),
+    inset 10px 0 24px -18px currentColor;
+}
+
+/* --------------------------------------------------------------------------
+   FORMULÁRIOS — controles de painel Motec
+   -------------------------------------------------------------------------- */
+
+input[class],
+textarea[class],
+select[class] {
+  color: var(--foreground);
+  background-color: rgba(10, 12, 16, 0.84) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+}
+
+input[class]:hover,
+textarea[class]:hover,
+select[class]:hover {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+input[class]:focus,
+textarea[class]:focus,
+select[class]:focus,
+input[class]:focus-visible,
+textarea[class]:focus-visible,
+select[class]:focus-visible {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.13) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #6f788b;
+}
+
+/* --------------------------------------------------------------------------
+   BOTÕES E CTAs — LED de volante, sem excesso de brilho
+   -------------------------------------------------------------------------- */
+
+button[class*="font-bold"],
+[data-slot="button"] {
+  border-radius: var(--radius);
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+button.bg-\[\#60A5FA\],
+[data-slot="button"][data-variant="default"] {
+  color: var(--primary-foreground) !important;
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  button.bg-\[\#60A5FA\]:hover,
+  [data-slot="button"][data-variant="default"]:hover {
+    background: #93C5FD !important;
+    box-shadow: 0 0 15px var(--blue-glow);
+    transform: translateY(-1px);
+  }
+
+  button[class*="border-[#60A5FA]"]:hover {
+    color: var(--primary-foreground) !important;
+    background: var(--primary) !important;
+    box-shadow: 0 0 15px rgba(96, 165, 250, 0.28);
+  }
+
+  button[class*="border-[#00E676]"]:hover {
+    color: #06120c !important;
+    background: var(--chart-2) !important;
+    box-shadow: 0 0 15px var(--green-glow);
+  }
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* --------------------------------------------------------------------------
+   TABELAS E CLASSIFICAÇÃO — leitura rápida de posições e dados
+   -------------------------------------------------------------------------- */
+
+table {
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.065);
+  border-radius: var(--radius);
+  background: rgba(19, 23, 34, 0.58);
+}
+
+table thead {
+  color: var(--muted-foreground);
+  background: rgba(10, 12, 16, 0.94) !important;
+  border-bottom: 1px solid rgba(96, 165, 250, 0.15);
+}
+
+table thead th {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.085em;
+}
+
+table tbody tr {
+  background: rgba(19, 23, 34, 0.7) !important;
+  transition:
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+table tbody tr:hover {
+  background: rgba(0, 230, 118, 0.075) !important;
+  box-shadow: inset 3px 0 0 rgba(0, 230, 118, 0.7);
+}
+
+/* P1 recebe prioridade visual sem depender de uma nova estrutura de markup. */
+table.min-w-\[920px\] tbody > tr:first-child {
+  background:
+    linear-gradient(90deg, rgba(96, 165, 250, 0.1), transparent 34%),
+    rgba(19, 23, 34, 0.84) !important;
+  box-shadow: inset 4px 0 0 var(--primary);
+}
+
+table.min-w-\[920px\] tbody > tr:first-child td:first-child strong {
+  display: inline-flex;
+  min-width: 42px;
+  min-height: 30px;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-foreground);
+  background: var(--primary);
+  border-radius: 3px;
+  box-shadow: 0 0 14px rgba(96, 165, 250, 0.24);
+}
+
+div[class~="md:hidden"][class~="space-y-3"] > article:first-child {
+  border-left-color: var(--primary) !important;
+  background:
+    linear-gradient(100deg, rgba(96, 165, 250, 0.09), transparent 40%),
+    var(--panel-glass) !important;
+  box-shadow: inset 4px 0 0 var(--primary);
+}
+
+div[class~="md:hidden"][class~="space-y-3"] > article:first-child > div:first-of-type > span:first-child {
+  color: var(--primary-foreground);
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+/* --------------------------------------------------------------------------
+   DETALHES DE INTERFACE E RESPONSIVIDADE
+   -------------------------------------------------------------------------- */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0B0B0E;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #303846;
+  border: 2px solid #0B0B0E;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00e676;
+}
+
+/* --------------------------------------------------------------------------
+   CADASTRO GUIADO — fluxo de uma pergunta por etapa
+   -------------------------------------------------------------------------- */
+
+.registration-shell {
+  background:
+    radial-gradient(circle at 82% 22%, rgba(0, 230, 118, 0.065), transparent 24rem),
+    radial-gradient(circle at 12% 86%, rgba(96, 165, 250, 0.055), transparent 28rem);
+}
+
+.registration-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.registration-progress {
+  box-shadow: 0 0 12px rgba(96, 165, 250, 0.42);
+  transition: width 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.registration-step {
+  animation: registration-step-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.registration-shell .registration-input {
+  border: 0 !important;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.registration-shell .registration-input:hover {
+  border-bottom-color: rgba(255, 255, 255, 0.42) !important;
+}
+
+.registration-shell .registration-input:focus,
+.registration-shell .registration-input:focus-visible {
+  border-bottom-color: var(--primary) !important;
+  box-shadow: 0 10px 18px -16px rgba(96, 165, 250, 0.9) !important;
+}
+
+.registration-choice {
+  border-radius: var(--radius);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .registration-choice:hover {
+    border-color: rgba(96, 165, 250, 0.58) !important;
+    background: rgba(96, 165, 250, 0.08) !important;
+    transform: translateY(-2px);
+  }
+}
+
+.registration-footer {
+  box-shadow: 0 -16px 38px rgba(0, 0, 0, 0.28);
+}
+
+.registration-success {
+  background:
+    linear-gradient(120deg, rgba(0, 230, 118, 0.075), transparent 42%),
+    var(--panel-glass) !important;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.38);
+}
+
+@keyframes registration-step-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 767px) {
+  body {
+    background-attachment: scroll;
+    background-image:
+      radial-gradient(circle at 8% -5%, rgba(96, 165, 250, 0.07), transparent 19rem),
+      linear-gradient(115deg, var(--carbon-line) 25%, transparent 25%),
+      linear-gradient(295deg, var(--carbon-line) 25%, transparent 25%);
+  }
+
+  article[class*="bg-[#131722]"],
+  section[class*="bg-[#131722]"],
+  div[class*="border"][class*="bg-[#131722]"] {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Compact app surfaces and touch-friendly, selectable filters. */
+.league-app { font-size: 14px; }
+.league-app h1 { font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.2; }
+.league-app h2 { font-size: clamp(1.15rem, 2.2vw, 1.5rem); line-height: 1.25; }
+.league-app strong.font-display { font-size: 1.05rem; line-height: 1.3; }
+.league-app [role="dialog"] .font-display { font-size: 1.5rem; }
+.filter-group { display: flex; align-items: flex-start; gap: .6rem; min-width: 0; }
+.filter-label { flex: 0 0 88px; padding-top: 13px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #aab2c2; }
+.filter-options { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.filter-chip { border: 1px solid #343b48; background: #10141b; color: #c7ccd6; border-radius: 999px; padding: 0 13px; min-height: 40px; height: auto; font-size: 12px; line-height: 1.3; font-weight: 600; white-space: normal; text-align: center; box-shadow: none; cursor: pointer; }
+.filter-chip[aria-pressed="true"] { background: #60A5FA; color: #0B0B0E; border-color: #60A5FA; }
+.filter-chip:focus-visible { outline: 2px solid #60A5FA; outline-offset: 3px; }
+.filter-chip:disabled { opacity: .5; cursor: default; }
+@media(max-width: 767px) {
+ .league-app section.sticky { position: static; }
+ .league-app header img { max-height: 40px; }
+ .league-app input, .league-app select, .league-app textarea { font-size: 16px; }
+ .league-app nav { padding-bottom: env(safe-area-inset-bottom); }
+ .filter-group { display: block; }
+ .filter-label { display: block; padding: 0 0 5px; }
+ .filter-chip { min-height: 44px; padding-inline: 12px; }
+ .race-row-main { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; }
+ .race-row-main > span:first-child { display: none; }
+ .race-row-main > button { grid-column: 1 / -1; }
+ .race-row-main > label:last-child { grid-column: 1 / -1; }
+ .race-row { border-radius: 8px; overflow: hidden; }
+}
+
+.league-app .pilot-list-row .font-display { font-size: 17px; line-height: 1.3; }
+@media(max-width:767px){.league-app nav.fixed button{font-family:var(--font-interface);font-size:9px;letter-spacing:0;text-transform:none;}.league-app .pilot-list-row{grid-template-columns:4px 60px minmax(0,1fr) auto;}.league-app .pilot-list-row>.font-data{padding-inline:8px;font-size:10px;}}
+@keyframes registration-logo-intro {
+  0% { opacity: 0; }
+  20%, 75% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes registration-reveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.registration-logo-intro { animation: registration-logo-intro 3s ease-in-out both; }
+.registration-reveal { animation: registration-reveal 180ms ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .registration-logo-intro { animation: none; opacity: 1; }
+  .registration-reveal { animation: none; }
+}

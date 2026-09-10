@@ -1,0 +1,1 @@
+ALTER TABLE `inscricoes` ADD `pagamento_isento` integer DEFAULT false NOT NULL;

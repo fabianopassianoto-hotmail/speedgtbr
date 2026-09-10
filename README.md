@@ -28,6 +28,37 @@ Esta primeira integração traz **somente o resumo público**, quando o SimGrid 
 ### Como testar e publicar
 
 1. Para testar o site estático: `python -m http.server 8080` e abrir `http://localhost:8080/campeonatos/`. Nesse modo, a consulta da API cai no aviso de indisponibilidade; os links e menus continuam funcionando.
-2. Para testar também a Function: `npx wrangler pages dev .` e abrir a URL local informada. Consultar `/api/championships/26971`, `26974` e `26975`: sucesso traz título, descrição e horário; bloqueio retorna HTTP 503 com `status: unavailable`. Um ID desconhecido retorna 404.
+2. Para testar também a Function: `npx wrangler pages dev dist-pages` e abrir a URL local informada. Consultar `/api/championships/26971`, `26974` e `26975`: sucesso traz título, descrição e horário; bloqueio retorna HTTP 503 com `status: unavailable`. Um ID desconhecido retorna 404.
 3. Conferir as dez páginas, os dropdowns com Tab/Enter/Escape, clique externo e menu móvel. Testar larguras 390, 768, 1024, 1280 e 1440px. Os links Série A/B/C devem levar ao cartão correto.
-4. Publicar por integração Git do Cloudflare Pages ou `npx wrangler pages deploy .`, que inclui `functions/`. Upload apenas dos arquivos estáticos pelo painel não instala Pages Functions; nesse caso os cartões funcionam com o aviso e os links oficiais. Não há build obrigatório e nenhuma publicação é realizada por estas alterações.
+4. Publicar por integração Git do Cloudflare Pages ou `npx wrangler pages deploy dist-pages`, que inclui `functions/`. Upload apenas dos arquivos estáticos pelo painel não instala Pages Functions; nesse caso os cartões funcionam com o aviso e os links oficiais. Prepare os arquivos públicos antes com node scripts/build-pages.mjs. A Central tem build e publicação separados.
+
+## Central no Cloudflare Pages
+
+A branch central integra o sistema em /central, com o azul #60A5FA, menu em
+todas as páginas e link de volta ao site. Site e aplicação usam a mesma URL da prévia.
+
+Configure no Pages:
+- Branch de prévia: central.
+- Comando de build: npm run build.
+- Diretório de saída: dist-pages.
+- Versão do Node: 22.13 ou superior.
+- Compatibility flag: nodejs_compat.
+- Binding D1: DB, associado ao banco da central.
+- ACCESS_TEAM_DOMAIN: domínio da equipe, como equipe.cloudflareaccess.com.
+- ACCESS_AUD: identificador da aplicação Cloudflare Access.
+
+Configure Access para proteger /central e /central/* na URL de prévia.
+Se o cadastro deve ser público, configure exceções para /central/cadastro,
+ /central/api/cadastro e assets em /central/assets/* e /central/brand/*.
+O Worker verifica a assinatura do JWT do Access antes de aceitar a identidade.
+Sem banco e Access configurados, mostra uma mensagem de preparação e não abre os dados.
+
+O build gera dist-pages usando uma lista explícita de arquivos públicos e
+o Worker compilado em Pages Advanced Mode. A API de campeonatos é preservada.
+Nunca publique a raiz inteira. A Function de proteção em functions/central
+impede o acesso aos arquivos internos caso a configuração antiga ainda seja usada.
+
+Para compilar manualmente: npm run build.
+Para publicar manualmente o pacote: npx wrangler pages deploy dist-pages --branch central.
+As migrations e o procedimento de restauração estão em central/MIGRATION.md.
+Os backups em central/export/data permanecem locais e fora do Git.

@@ -1,0 +1,104 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1788207572634,
+      "tag": "0000_serious_wallow",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1788212756081,
+      "tag": "0001_daily_shooting_star",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1788237584897,
+      "tag": "0002_chief_blob",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1788240030208,
+      "tag": "0003_cool_shocker",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1788268000886,
+      "tag": "0004_married_random",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1788272651353,
+      "tag": "0005_glamorous_metal_master",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1788273807460,
+      "tag": "0006_flimsy_dormammu",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1788275190571,
+      "tag": "0007_steep_queen_noir",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1788286294250,
+      "tag": "0008_ordinary_captain_stacy",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1788288661462,
+      "tag": "0009_aberrant_crusher_hogan",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1788289987928,
+      "tag": "0010_unique_greymalkin",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1788306437718,
+      "tag": "0011_brainy_korg",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1788379200000,
+      "tag": "0012_division_capacity_calendar",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1788498345383,
+      "tag": "0013_bouncy_longshot",
+      "breakpoints": true
+    }
+  ]
+}

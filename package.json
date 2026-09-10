@@ -1,0 +1,9 @@
+{
+  "name": "speedgtbr-site",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix central ci && npm --prefix central run build && node scripts/build-pages.mjs",
+    "build:pages": "node scripts/build-pages.mjs"
+  },
+  "engines": { "node": ">=22.13.0" }
+}
