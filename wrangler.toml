@@ -1,0 +1,13 @@
+name = "speedgtbr"
+pages_build_output_dir = "dist-pages"
+compatibility_date = "2026-09-08"
+compatibility_flags = ["nodejs_compat"]
+
+[env.preview]
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "speedgtbr-central-preview"
+database_id = "14f2c59a-224b-471b-a398-b331dfeb78fe"
+migrations_dir = "central/drizzle"
+
+[env.production]
