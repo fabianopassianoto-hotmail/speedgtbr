@@ -10,4 +10,8 @@ database_name = "speedgtbr-central-preview"
 database_id = "14f2c59a-224b-471b-a398-b331dfeb78fe"
 migrations_dir = "central/drizzle"
 
+[env.preview.vars]
+ACCESS_TEAM_DOMAIN = "purple-butterfly-b461.cloudflareaccess.com"
+ACCESS_AUD = "8b3aa31522a4d544a12ff7a826ede0fe95f2c7b54d1b970d82f0fa1b542e024e"
+
 [env.production]
