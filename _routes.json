@@ -1,1 +1,1 @@
-{"version":1,"include":["/api/championships/*","/central","/central/*"],"exclude":[]}
+{"version":1,"include":["/api/championships/*","/cadastro","/cadastro/","/central","/central/*"],"exclude":[]}

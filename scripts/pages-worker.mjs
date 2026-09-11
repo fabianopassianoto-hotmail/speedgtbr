@@ -8,6 +8,11 @@ function unavailable(status, message) {
 export default {
   async fetch(request, env, ctx) {
     const path = new URL(request.url).pathname;
+    if (path === "/cadastro" || path === "/cadastro/") {
+      const target = new URL(request.url);
+      target.pathname = "/central/cadastro";
+      return Response.redirect(target.href, 307);
+    }
     const championship = path.match(/^\/api\/championships\/([^/]+)\/?$/);
     if (championship) {
       if (request.method !== "GET") return new Response("Method not allowed", { status: 405, headers: { Allow: "GET" } });
@@ -15,8 +20,8 @@ export default {
     }
     if (path === "/central" || path.startsWith("/central/")) {
       if (/^\/central\/(assets|brand)\//.test(path) || /^\/central\/(og\.png|favicon\.svg)$/.test(path)) return env.ASSETS.fetch(request);
-      if (!env.DB || !env.ACCESS_TEAM_DOMAIN || !env.ACCESS_AUD) return unavailable(503, "A central está em preparação. Volte em breve.");
       const publicRegistration = /^\/central\/(cadastro|api\/cadastro)\/?$/.test(path);
+      if (!env.DB || (!publicRegistration && (!env.ACCESS_TEAM_DOMAIN || !env.ACCESS_AUD))) return unavailable(503, "A central está em preparação. Volte em breve.");
       const email = publicRegistration ? null : await authenticatedEmail(request, env);
       if (!publicRegistration && !email) return unavailable(401, "Entre com uma conta autorizada pelo acesso da comunidade.");
       const headers = new Headers(request.headers);
