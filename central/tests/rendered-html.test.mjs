@@ -187,7 +187,7 @@ test("builds a responsive standings screen from recorded results", async () => {
   assert.match(raceEntry, /Só conta como falta disciplinar/);
 });
 
-test("captures birth date, league entry and controller choice", async () => {
+test("preserves historical fields while simplifying public registration", async () => {
   const registrationForm = await readFile(
     new URL("../components/public-registration-form.tsx", import.meta.url),
     "utf8",
@@ -201,10 +201,10 @@ test("captures birth date, league entry and controller choice", async () => {
     "utf8",
   );
 
-  assert.match(registrationForm, /name="volanteOuControle"/);
-  assert.match(registrationForm, /option value="Volante"/);
-  assert.match(registrationForm, /name: "dataNascimento"/);
-  assert.match(registrationForm, /name: "curiosidade"/);
+  assert.doesNotMatch(registrationForm, /name="volanteOuControle"/);
+  assert.match(registrationForm, /name: "classificacaoGt7"/);
+  assert.doesNotMatch(registrationForm, /name: "dataNascimento"/);
+  assert.doesNotMatch(registrationForm, /name: "curiosidade"/);
   assert.match(pilotScreen, /Aniversário na liga:/);
   assert.match(migration, /ADD `data_nascimento` text/);
   assert.match(migration, /ADD `data_entrada` text/);

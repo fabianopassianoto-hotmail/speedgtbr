@@ -14,6 +14,12 @@ type FormRow = {
   email: string | null;
   cidade: string | null;
   uf: string | null;
+  rua: string | null;
+  numero: string | null;
+  bairro: string | null;
+  cep: string | null;
+  complemento: string | null;
+  classificacao_gt7: string | null;
   volante_ou_controle: string | null;
   perfil_pilotagem: string | null;
   disponibilidade: string | null;
@@ -32,6 +38,12 @@ const submittedColumns = [
   ["email", "email"],
   ["cidade", "cidade"],
   ["uf", "uf"],
+  ["rua", "rua"],
+  ["numero", "numero"],
+  ["bairro", "bairro"],
+  ["cep", "cep"],
+  ["complemento", "complemento"],
+  ["classificacao_gt7", "classificacao_gt7"],
   ["volante_ou_controle", "volante_ou_controle"],
   ["perfil_pilotagem", "perfil_pilotagem"],
   ["disponibilidade", "disponibilidade"],
@@ -78,7 +90,7 @@ export async function POST(
   const form = await db
     .prepare(
       `SELECT id, nome_completo, psn, simgrid, simgrid_url, whatsapp, email,
-              cidade, uf, volante_ou_controle, perfil_pilotagem,
+              cidade, uf, rua, numero, bairro, cep, complemento, classificacao_gt7, volante_ou_controle, perfil_pilotagem,
               disponibilidade, carro_preferido, pista_citada,
               data_nascimento, curiosidade
        FROM formularios_pendentes
@@ -175,10 +187,10 @@ export async function POST(
         .prepare(
           `INSERT INTO fila (
              id, apelido, nome_completo, psn, simgrid, simgrid_url, whatsapp,
-             cidade, uf, email, volante_ou_controle, perfil_pilotagem,
+             cidade, uf, rua, numero, bairro, cep, complemento, classificacao_gt7, email, volante_ou_controle, perfil_pilotagem,
              disponibilidade, carro_preferido, pista_citada, data_nascimento,
              curiosidade, data_entrada
-           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         )
         .bind(
           queueId,
@@ -190,6 +202,12 @@ export async function POST(
           form.whatsapp,
           form.cidade,
           form.uf,
+          form.rua,
+          form.numero,
+          form.bairro,
+          form.cep,
+          form.complemento,
+          form.classificacao_gt7,
           form.email,
           form.volante_ou_controle,
           form.perfil_pilotagem,

@@ -2156,6 +2156,12 @@ function RecordSheet({
               <EditableField label="Apelido de narração" field="apelido" value={record.apelido} editable={editable} required onSave={onSave} />
               <EditableField label="Nome completo" field="nomeCompleto" value={record.nomeCompleto} editable={editable} onSave={onSave} />
               <EditableField label="PSN" field="psn" value={record.psn} editable={editable} mono onSave={onSave} />
+              <ReadOnlyField label="Rua" value={record.rua ?? null} />
+              <ReadOnlyField label="Número" value={record.numero ?? null} />
+              <ReadOnlyField label="Bairro" value={record.bairro ?? null} />
+              <ReadOnlyField label="CEP" value={record.cep ?? null} />
+              <ReadOnlyField label="Complemento" value={record.complemento ?? null} />
+              <ReadOnlyField label="Classificação GT7" value={record.classificacao_gt7 ?? null} />
               <EditableField label="SimGrid" field="simgrid" value={record.simgrid} editable={editable} mono onSave={onSave} />
               <EditableField label="Link do SimGrid" field="simgridUrl" value={record.simgridUrl} editable={editable} mono onSave={onSave} />
               <EditableField label="Data de nascimento" field="dataNascimento" value={record.dataNascimento} editable={editable} inputType="date" mono onSave={onSave} />
@@ -2236,6 +2242,12 @@ function RecordSheet({
               <EditableField label="Apelido de narração" field="apelido" value={record.apelido} editable={editable} required onSave={onSave} />
               <EditableField label="Nome completo" field="nomeCompleto" value={record.nomeCompleto} editable={editable} onSave={onSave} />
               <EditableField label="PSN" field="psn" value={record.psn} editable={editable} mono onSave={onSave} />
+              <ReadOnlyField label="Rua" value={record.rua ?? null} />
+              <ReadOnlyField label="Número" value={record.numero ?? null} />
+              <ReadOnlyField label="Bairro" value={record.bairro ?? null} />
+              <ReadOnlyField label="CEP" value={record.cep ?? null} />
+              <ReadOnlyField label="Complemento" value={record.complemento ?? null} />
+              <ReadOnlyField label="Classificação GT7" value={record.classificacao_gt7 ?? null} />
               <EditableField label="SimGrid" field="simgrid" value={record.simgrid} editable={editable} mono onSave={onSave} />
               <EditableField label="Link do SimGrid" field="simgridUrl" value={record.simgridUrl} editable={editable} mono onSave={onSave} />
               <EditableField label="Data de nascimento" field="dataNascimento" value={record.dataNascimento} editable={editable} inputType="date" mono onSave={onSave} />
@@ -2553,6 +2565,12 @@ function PendingFormSheet({
             <ReadOnlyField label="Cidade" value={form.cidade} />
             <ReadOnlyField label="UF" value={form.uf} />
           </div>
+          <ReadOnlyField label="Rua" value={form.rua ?? null} />
+          <ReadOnlyField label="Número" value={form.numero ?? null} />
+          <ReadOnlyField label="Bairro" value={form.bairro ?? null} />
+          <ReadOnlyField label="CEP" value={form.cep ?? null} />
+          <ReadOnlyField label="Complemento" value={form.complemento ?? null} />
+          <ReadOnlyField label="Classificação GT7" value={form.classificacao_gt7 ?? null} />
           <ReadOnlyField label="PSN" value={form.psn} mono />
           <ReadOnlyField label="SimGrid" value={form.simgrid} mono />
           <ReadOnlyField label="Link do SimGrid" value={form.simgridUrl} mono />

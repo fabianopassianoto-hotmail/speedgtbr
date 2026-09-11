@@ -9,7 +9,7 @@ const source = (await readFile(new URL("../scripts/pages-worker.mjs", import.met
 const { default: worker } = await import(`data:text/javascript;base64,${Buffer.from(source).toString("base64")}`);
 
 test("registration shortcut preserves query parameters", async () => {
-  for (const path of ["/cadastro", "/cadastro/"]) {
+  for (const path of ["/cadastro", "/cadastro/", "/comece-aqui", "/comece-aqui/"]) {
     const response = await worker.fetch(new Request(`https://example.com${path}?origem=convite`), {}, {});
     assert.equal(response.status, 307);
     assert.equal(response.headers.get("location"), "https://example.com/central/cadastro?origem=convite");
@@ -17,7 +17,7 @@ test("registration shortcut preserves query parameters", async () => {
 });
 
 test("public registration works without Access and discards forged identity", async () => {
-  for (const path of ["/central/cadastro", "/central/api/cadastro"]) {
+  for (const path of ["/central/cadastro", "/central/api/cadastro", "/central/api/cadastro/reenviar"]) {
     const response = await worker.fetch(new Request(`https://example.com${path}`, { headers: { "cf-access-authenticated-user-email": "forged@example.com" } }), { DB: {} }, {});
     assert.equal(response.status, 200);
     assert.deepEqual(await response.json(), { path, email: null });

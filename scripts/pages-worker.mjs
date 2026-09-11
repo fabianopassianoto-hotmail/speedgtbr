@@ -8,7 +8,7 @@ function unavailable(status, message) {
 export default {
   async fetch(request, env, ctx) {
     const path = new URL(request.url).pathname;
-    if (path === "/cadastro" || path === "/cadastro/") {
+    if (path === "/cadastro" || path === "/cadastro/" || path === "/comece-aqui" || path === "/comece-aqui/") {
       const target = new URL(request.url);
       target.pathname = "/central/cadastro";
       return Response.redirect(target.href, 307);
@@ -20,7 +20,7 @@ export default {
     }
     if (path === "/central" || path.startsWith("/central/")) {
       if (/^\/central\/(assets|brand)\//.test(path) || /^\/central\/(og\.png|favicon\.svg)$/.test(path)) return env.ASSETS.fetch(request);
-      const publicRegistration = /^\/central\/(cadastro|api\/cadastro)\/?$/.test(path);
+      const publicRegistration = /^\/central\/(cadastro|api\/cadastro(?:\/reenviar)?)\/?$/.test(path);
       if (!env.DB || (!publicRegistration && (!env.ACCESS_TEAM_DOMAIN || !env.ACCESS_AUD))) return unavailable(503, "A central está em preparação. Volte em breve.");
       const email = publicRegistration ? null : await authenticatedEmail(request, env);
       if (!publicRegistration && !email) return unavailable(401, "Entre com uma conta autorizada pelo acesso da comunidade.");
