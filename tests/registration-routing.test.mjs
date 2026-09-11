@@ -9,7 +9,7 @@ const source = (await readFile(new URL("../scripts/pages-worker.mjs", import.met
 const { default: worker } = await import(`data:text/javascript;base64,${Buffer.from(source).toString("base64")}`);
 
 test("registration shortcut preserves query parameters", async () => {
-  for (const path of ["/cadastro", "/cadastro/", "/comece-aqui", "/comece-aqui/"]) {
+  for (const path of ["/cadastro", "/cadastro/", "/comece-aqui", "/comece-aqui/", "/central/central", "/central/central/"]) {
     const response = await worker.fetch(new Request(`https://example.com${path}?origem=convite`), {}, {});
     assert.equal(response.status, 307);
     assert.equal(response.headers.get("location"), "https://example.com/central/cadastro?origem=convite");

@@ -54,3 +54,9 @@ Os testes de cadastro usam banco em memória com todas as migrações e simulam 
 Validação visual concluída em 390 px e 1280 px: seis perguntas, revisão, confirmação e redirecionamento, sem erros no navegador ou rolagem horizontal. Os envios foram simulados no teste visual; a persistência foi testada separadamente em SQLite.
 
 A compilação e os 43 testes passaram. A checagem global de TypeScript ainda aponta problemas preexistentes de tipagem do runtime Cloudflare e de telas de corridas/home. O comando de desenvolvimento original também apresenta limitações locais (flag duplicada e data mais recente que o simulador instalado); a prévia foi validada com o pacote compilado e uma data de compatibilidade sobrescrita apenas no comando local.
+
+## Correção da prévia em 11/09/2026
+
+A publicação automática do commit b4917e0 ocorreu antes de aplicar a migração 0014. O banco speedgtbr-central-preview foi conferido e a migração 0014 foi aplicada, preservando os registros. As consultas de pilotos, fila e formulários dependem dessa migração.
+
+O caminho /central/central passa a redirecionar para /central/cadastro, preservando os parâmetros. Use a URL estável da branch: https://central-nova.speedgtbr.pages.dev/central/cadastro. URLs com identificador de publicação, como c223373a, continuam apontando para aquele pacote específico e não recebem novos commits. A Cloudflare Access protege o domínio da prévia; uma sessão autenticada continua necessária conforme a configuração atual.
