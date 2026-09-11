@@ -48,7 +48,9 @@ Configure no Pages:
 - ACCESS_AUD: identificador da aplicação Cloudflare Access.
 
 Configure Access para proteger /central e /central/* na URL de prévia.
-Se o cadastro deve ser público, configure exceções para /central/cadastro,
+O endereço /cadastro redireciona para o formulário completo em /central/cadastro.
+O formulário e sua API não exigem configuração de Access, mas precisam do D1.
+Se houver uma política de Access no domínio, configure exceções para /cadastro, /central/cadastro,
  /central/api/cadastro e assets em /central/assets/* e /central/brand/*.
 O Worker verifica a assinatura do JWT do Access antes de aceitar a identidade.
 Sem banco e Access configurados, mostra uma mensagem de preparação e não abre os dados.
