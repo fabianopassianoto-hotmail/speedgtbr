@@ -1,10 +1,21 @@
 "use client";
 
-import { Check, CircleDollarSign, FileSpreadsheet, ShieldCheck, UserRound, WalletCards } from "lucide-react";
+import { Check, CircleDollarSign, FileSpreadsheet, Plus, ShieldCheck, Trash2, UserRound, WalletCards } from "lucide-react";
 import { useState } from "react";
 
 import { FilterChips } from "@/components/filter-chips";
 import { CashSettings } from "@/components/cash-settings";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import type { RaceCompetition } from "@/db/races";
 import type { CashEntry } from "@/db/finance";
 import type { PilotListItem } from "@/db/pilots";
@@ -16,13 +27,26 @@ type Props = {
   pilots: PilotListItem[];
   isAdmin: boolean;
   onOpenPilot: (id: string) => void;
+  onCreateEntry: (entry: CashEntryDraft) => Promise<boolean>;
+  onDeleteEntry: (entry: CashEntry) => Promise<boolean>;
 };
 
-export function CashScreen({ competitions, entries, pilots, isAdmin, onOpenPilot }: Props) {
+export type CashEntryDraft = {
+  temporadaId: string;
+  data: string;
+  pilotoId: string | null;
+  nome: string;
+  tipo: string;
+  valor: number;
+  observacao: string;
+};
+
+export function CashScreen({ competitions, entries, pilots, isAdmin, onOpenPilot, onCreateEntry, onDeleteEntry }: Props) {
   const [query, setQuery] = useState("");
   const [paymentFilter,setPaymentFilter]=useState("todos");
   const [scope,setScope]=useState("todos");
   const [message, setMessage] = useState("");
+  const [showEntryForm, setShowEntryForm] = useState(false);
   const currentEntries = entries.filter((entry) => entry.temporadaId === "2026");
   const pool = scope === "serie" ? pilots.filter(p=>Boolean(p.serie)&&p.situacao!=="saiu"&&!p.arquivadoEm) : pilots;
   const paid = pool.filter(p=>p.totalPago>0);
@@ -66,8 +90,10 @@ export function CashScreen({ competitions, entries, pilots, isAdmin, onOpenPilot
     <main className="mx-auto max-w-6xl px-3 pb-28 md:px-6 md:pb-12">
       <section className="sticky top-0 z-30 -mx-3 border-b border-border bg-background/95 px-3 pb-3 pt-4 backdrop-blur md:-mx-6 md:px-6 md:pt-5">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#60A5FA]">Financeiro · temporada 2026</p>
-        <div className="flex flex-wrap items-end justify-between gap-3"><h1 className="font-display mt-1 text-4xl font-bold uppercase leading-none md:text-5xl">Caixa</h1><button type="button" onClick={exportPendingPayments} className="flex min-h-11 items-center gap-2 bg-[#60A5FA] px-3 text-sm font-bold text-[#0A0C10]"><FileSpreadsheet className="size-4"/>Exportar quem falta pagar</button></div>
+        <div className="flex flex-wrap items-end justify-between gap-3"><h1 className="font-display mt-1 text-4xl font-bold uppercase leading-none md:text-5xl">Caixa</h1><div className="flex flex-wrap gap-2"><button type="button" onClick={()=>setShowEntryForm((value)=>!value)} className="flex min-h-11 items-center gap-2 border border-[#60A5FA] px-3 text-sm font-bold text-[#60A5FA]"><Plus className="size-4"/>{showEntryForm?"Fechar cadastro":"Cadastrar pagamento"}</button><button type="button" onClick={exportPendingPayments} className="flex min-h-11 items-center gap-2 bg-[#60A5FA] px-3 text-sm font-bold text-[#0A0C10]"><FileSpreadsheet className="size-4"/>Exportar quem falta pagar</button></div></div>
       </section>
+
+      {showEntryForm&&<CashEntryForm competitions={competitions} pilots={pilots} onSave={async(entry)=>{const ok=await onCreateEntry(entry);if(ok){setShowEntryForm(false);setMessage("Pagamento cadastrado.");}return ok;}}/>}
 
       <div className="mt-4"><FilterChips label="Pilotos" value={scope} onChange={setScope} options={[{value:"todos",label:"Todos os pilotos"},{value:"serie",label:"Com série"}]}/></div>
       <section className="grid grid-cols-2 gap-3 pt-4 lg:grid-cols-4">
@@ -114,10 +140,46 @@ export function CashScreen({ competitions, entries, pilots, isAdmin, onOpenPilot
           <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Histórico</p>
           <h2 className="font-display mt-1 text-2xl font-bold uppercase">Lançamentos</h2>
         </div>
-        {currentEntries.length ? <div className="border-b border-border">{currentEntries.map((entry) => <div key={entry.id} className="grid min-h-14 grid-cols-[92px_1fr_auto] items-center gap-3 border-b border-border bg-[#10141B] px-3 py-2 last:border-b-0"><span className="font-data text-xs text-muted-foreground">{formatDate(entry.data)}</span><span className="min-w-0"><strong className="block truncate">{entry.nome}</strong><span className="block truncate text-xs text-muted-foreground">{entry.tipo}{entry.observacao ? ` · ${entry.observacao}` : ""}</span></span><strong className="font-data text-[#00E676]">{formatCurrency(entry.valor)}</strong></div>)}</div> : <p className="border-l-4 border-[#60A5FA] bg-[#131722] p-4 text-sm text-muted-foreground">Nenhum lançamento registrado.</p>}
+        {currentEntries.length ? <div className="border-b border-border">{currentEntries.map((entry) => <div key={entry.id} className="grid min-h-14 grid-cols-[82px_1fr_auto_auto] items-center gap-2 border-b border-border bg-[#10141B] px-3 py-2 last:border-b-0 md:grid-cols-[92px_1fr_auto_auto]"><span className="font-data text-xs text-muted-foreground">{formatDate(entry.data)}</span><span className="min-w-0"><strong className="block truncate">{entry.nome}</strong><span className="block truncate text-xs text-muted-foreground">{entry.tipo}{entry.observacao ? ` · ${entry.observacao}` : ""}</span></span><strong className="font-data text-sm text-[#00E676] md:text-base">{formatCurrency(entry.valor)}</strong><DeletePaymentButton entry={entry} onDelete={async()=>{const ok=await onDeleteEntry(entry);if(ok)setMessage("Pagamento excluído e totais atualizados.");return ok;}}/></div>)}</div> : <p className="border-l-4 border-[#60A5FA] bg-[#131722] p-4 text-sm text-muted-foreground">Nenhum lançamento registrado.</p>}
       </section>
     </main>
   );
+}
+
+function CashEntryForm({competitions,pilots,onSave}:{competitions:RaceCompetition[];pilots:PilotListItem[];onSave:(entry:CashEntryDraft)=>Promise<boolean>}){
+  const active=competitions.filter((item)=>item.status!=="cancelada");
+  const [temporadaId,setTemporadaId]=useState(active.find((item)=>item.id==="2026")?.id??active[0]?.id??"");
+  const [data,setData]=useState(()=>new Intl.DateTimeFormat("en-CA",{timeZone:"America/Sao_Paulo"}).format(new Date()));
+  const [pilotoId,setPilotoId]=useState("");
+  const [nome,setNome]=useState("");
+  const [tipo,setTipo]=useState("Inscrição");
+  const [valor,setValor]=useState("20,00");
+  const [observacao,setObservacao]=useState("");
+  const [error,setError]=useState("");
+  const [saving,setSaving]=useState(false);
+  async function submit(event:React.FormEvent<HTMLFormElement>){event.preventDefault();const cents=parseCurrencyToCents(valor);if(!temporadaId||!data||!cents||(!pilotoId&&!nome.trim())){setError(!pilotoId&&!nome.trim()?"Informe o nome ou selecione um piloto.":"Preencha temporada, data e um valor maior que zero.");return;}setError("");setSaving(true);const ok=await onSave({temporadaId,data,pilotoId:pilotoId||null,nome,tipo,valor:cents,observacao});setSaving(false);if(!ok)setError("Não foi possível cadastrar o pagamento.");}
+  return <form onSubmit={submit} className="mt-4 border-l-4 border-[#60A5FA] bg-[#131722] p-4">
+    <div><p className="text-xs font-semibold uppercase tracking-[.12em] text-[#60A5FA]">Novo lançamento</p><h2 className="font-display mt-1 text-2xl font-bold uppercase">Cadastrar pagamento</h2></div>
+    <div className="mt-4 grid gap-3 md:grid-cols-2">
+      <Field label="Temporada"><select required value={temporadaId} onChange={(event)=>setTemporadaId(event.target.value)} className="h-11 w-full border border-border bg-[#0D1118] px-3">{active.map((item)=><option key={item.id} value={item.id}>{item.nome}</option>)}</select></Field>
+      <Field label="Data"><input required type="date" value={data} onChange={(event)=>setData(event.target.value)} className="h-11 w-full border border-border bg-[#0D1118] px-3"/></Field>
+      <Field label="Vincular a piloto (opcional)"><select value={pilotoId} onChange={(event)=>setPilotoId(event.target.value)} className="h-11 w-full border border-border bg-[#0D1118] px-3"><option value="">Pagamento sem piloto</option>{pilots.filter((pilot)=>!pilot.arquivadoEm).slice().sort((a,b)=>a.apelido.localeCompare(b.apelido,"pt-BR")).map((pilot)=><option key={pilot.id} value={pilot.id}>{pilot.apelido} · {pilot.id}</option>)}</select></Field>
+      <Field label={pilotoId?"Nome preenchido pelo piloto":"Nome do pagamento"}><input disabled={Boolean(pilotoId)} required={!pilotoId} value={pilotoId?pilots.find((pilot)=>pilot.id===pilotoId)?.apelido??"":nome} onChange={(event)=>setNome(event.target.value)} placeholder="Ex.: Patrocínio ou nome da pessoa" className="h-11 w-full border border-border bg-[#0D1118] px-3 disabled:text-muted-foreground"/></Field>
+      <Field label="Tipo"><input required value={tipo} onChange={(event)=>setTipo(event.target.value)} placeholder="Ex.: Inscrição, doação, patrocínio" className="h-11 w-full border border-border bg-[#0D1118] px-3"/></Field>
+      <Field label="Valor (R$)"><input required inputMode="decimal" value={valor} onChange={(event)=>setValor(event.target.value)} className="font-data h-11 w-full border border-border bg-[#0D1118] px-3"/></Field>
+      <label className="md:col-span-2"><span className="mb-1 block text-xs font-semibold uppercase tracking-[.08em] text-muted-foreground">Observação (opcional)</span><textarea value={observacao} onChange={(event)=>setObservacao(event.target.value)} className="min-h-20 w-full border border-border bg-[#0D1118] p-3"/></label>
+    </div>
+    {error&&<p className="mt-3 text-sm text-[#FF8A78]" role="alert">{error}</p>}
+    <button disabled={saving} className="mt-4 min-h-11 bg-[#60A5FA] px-4 font-bold text-[#0A0C10] disabled:opacity-60">{saving?"Salvando…":"Salvar pagamento"}</button>
+  </form>;
+}
+
+function Field({label,children}:{label:string;children:React.ReactNode}){return <label><span className="mb-1 block text-xs font-semibold uppercase tracking-[.08em] text-muted-foreground">{label}</span>{children}</label>}
+
+function DeletePaymentButton({entry,onDelete}:{entry:CashEntry;onDelete:()=>Promise<boolean>}){
+  const [deleting,setDeleting]=useState(false);
+  const [open,setOpen]=useState(false);
+  return <AlertDialog open={open} onOpenChange={setOpen}><AlertDialogTrigger asChild><button type="button" className="flex size-11 items-center justify-center text-[#FF8A78] outline-none hover:bg-[#351D1C] focus-visible:ring-2 focus-visible:ring-[#E8604C]" aria-label={`Excluir pagamento de ${entry.nome}`}><Trash2 className="size-4"/></button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Excluir este pagamento?</AlertDialogTitle><AlertDialogDescription>O lançamento de {formatCurrency(entry.valor)} de {entry.nome} será removido e os totais do Caixa serão recalculados.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancelar</AlertDialogCancel><AlertDialogAction disabled={deleting} onClick={async(event)=>{event.preventDefault();setDeleting(true);const ok=await onDelete();setDeleting(false);if(ok)setOpen(false);}} className="bg-[#E8604C] text-white hover:bg-[#F07160]">{deleting?"Excluindo…":"Excluir pagamento"}</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>;
 }
 
 function Metric({ icon: Icon, label, value, tone, onClick, selected }: { icon: typeof CircleDollarSign; label: string; value: string; tone: string; onClick?:()=>void; selected?:boolean }) {
@@ -134,3 +196,4 @@ function formatDate(value: string) {
   return day && month && year ? `${day}/${month}/${year}` : value;
 }
 
+function parseCurrencyToCents(value:string){const normalized=value.trim().replace(/\s/g,"").replace(/R\$/gi,"");if(!normalized)return 0;const decimal=normalized.includes(",")?normalized.replace(/\./g,"").replace(",","."):normalized;const amount=Number(decimal);return Number.isFinite(amount)&&amount>0?Math.round(amount*100):0;}

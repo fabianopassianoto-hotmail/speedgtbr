@@ -36,4 +36,19 @@ export async function POST(request:Request,context:{params:Promise<{id:string}>}
   whatsappGroupUrl:division.whatsapp_group_url??defaultDivisionGroupUrl(serie,division.nome),
  });
 }
+
+export async function DELETE(request:Request,context:{params:Promise<{id:string}>}){
+ const user=await getChatGPTUser(); if(!user)return Response.json({error:"Autenticação obrigatória."},{status:401});
+ const access=await ensureCurrentUserAccess(user); if(!access||access.papel!=="administrador")return Response.json({error:"Somente o administrador altera inscrições."},{status:403});
+ const {id}=await context.params; if(!/^SGT\d{3}$/.test(id))return bad("Piloto inválido.");
+ let body:any; try{body=await request.json();}catch{return bad("Dados inválidos.");}
+ const temporadaId=typeof body.temporadaId==="string"?body.temporadaId.trim():"";
+ if(!temporadaId)return bad("Temporada inválida.");
+ const db=getD1Binding();
+ const started=await db.prepare("SELECT COUNT(*) total FROM corridas WHERE temporada_id=?").bind(temporadaId).first<{total:number}>();
+ if(Number(started?.total??0)>0)return Response.json({error:"A temporada já começou. Use ‘Não vai participar’ para preservar o histórico."},{status:409});
+ const removed=await db.prepare("DELETE FROM inscricoes WHERE temporada_id=? AND piloto_id=? RETURNING serie,situacao").bind(temporadaId,id).first<{serie:string;situacao:string|null}>();
+ if(!removed)return Response.json({error:"O piloto não está nesta temporada."},{status:404});
+ return Response.json({ok:true,temporadaId,serie:removed.serie,situacao:removed.situacao});
+}
 function bad(error:string){return Response.json({error},{status:400});}

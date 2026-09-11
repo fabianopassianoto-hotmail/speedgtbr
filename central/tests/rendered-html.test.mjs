@@ -430,3 +430,19 @@ test("stores season payment exemptions and excludes them from pending payment", 
   assert.match(pilotsQuery, /!Boolean\(row\.pagamento_isento\)/);
   assert.match(migration, /ADD `pagamento_isento` integer DEFAULT false NOT NULL/);
 });
+
+test("lets administrators remove future enrollments and manage cash entries", async () => {
+  const enrollments = await readFile(new URL("../app/api/pilotos/[id]/inscricoes/route.ts", import.meta.url), "utf8");
+  const cashRoute = await readFile(new URL("../app/api/caixa/route.ts", import.meta.url), "utf8");
+  const pilotsScreen = await readFile(new URL("../components/pilots-screen.tsx", import.meta.url), "utf8");
+  const cashScreen = await readFile(new URL("../components/cash-screen.tsx", import.meta.url), "utf8");
+  assert.match(enrollments, /export async function DELETE/);
+  assert.match(enrollments, /SELECT COUNT\(\*\) total FROM corridas WHERE temporada_id=\?/);
+  assert.match(enrollments, /DELETE FROM inscricoes WHERE temporada_id=\? AND piloto_id=\?/);
+  assert.match(cashRoute, /INSERT INTO caixa/);
+  assert.match(cashRoute, /DELETE FROM caixa WHERE id=\?/);
+  assert.match(pilotsScreen, /Tirar da temporada/);
+  assert.match(pilotsScreen, /Excluir este pagamento/);
+  assert.match(cashScreen, /Cadastrar pagamento/);
+  assert.match(cashScreen, /Pagamento sem piloto/);
+});

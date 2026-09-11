@@ -13,6 +13,7 @@ import {
   MessageCircle,
   Search,
   Trophy,
+  Trash2,
   UserRound,
   UserPlus,
   Users,
@@ -26,7 +27,18 @@ import { Button } from "@/components/ui/button";
 import { PilotCompetitionConfig, RaceEntryScreen } from "@/components/race-entry-screen";
 import { StandingsScreen } from "@/components/standings-screen";
 import { BulletinScreen } from "@/components/bulletin-screen";
-import { CashScreen } from "@/components/cash-screen";
+import { CashScreen, type CashEntryDraft } from "@/components/cash-screen";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { QueueScreen } from "@/components/queue-screen";
 import { HomeScreen } from "@/components/home-screen";
 import { Input } from "@/components/ui/input";
@@ -738,6 +750,61 @@ export function PilotsScreen({
     }
   }
 
+  async function createCashEntry(draft: CashEntryDraft): Promise<boolean> {
+    setSaveStatus({ message: "Salvando pagamento…", tone: "saving" });
+    try {
+      const response = await fetch("/central/api/caixa", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(draft),
+      });
+      const result = (await response.json()) as {
+        error?: string;
+        entry?: CashEntry;
+        status?: { totalPago: number; isentoPagamento: boolean; inscricaoPendente: boolean } | null;
+      };
+      if (!response.ok || !result.entry) throw new Error(result.error || "Não foi possível cadastrar o pagamento.");
+      setCashEntries((current) => [result.entry!, ...current]);
+      if (result.entry.pilotoId && result.entry.temporadaId === "2026" && result.status) {
+        updatePaymentStatus(result.entry.pilotoId, result.status.totalPago, result.status.isentoPagamento, result.status.inscricaoPendente);
+      }
+      setSaveStatus({ message: "Pagamento cadastrado", tone: "success" });
+      window.setTimeout(() => setSaveStatus(null), 1_800);
+      return true;
+    } catch (error) {
+      setSaveStatus({ message: error instanceof Error ? error.message : "Erro ao cadastrar pagamento.", tone: "error" });
+      return false;
+    }
+  }
+
+  async function deleteCashEntry(entry: CashEntry): Promise<boolean> {
+    setSaveStatus({ message: "Excluindo pagamento…", tone: "saving" });
+    try {
+      const response = await fetch("/central/api/caixa", {
+        method: "DELETE",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ pagamentoId: entry.id }),
+      });
+      const result = (await response.json()) as {
+        error?: string;
+        temporadaId?: string;
+        pilotoId?: string | null;
+        status?: { totalPago: number; isentoPagamento: boolean; inscricaoPendente: boolean } | null;
+      };
+      if (!response.ok) throw new Error(result.error || "Não foi possível excluir o pagamento.");
+      setCashEntries((current) => current.filter((item) => item.id !== entry.id));
+      if (result.pilotoId && result.temporadaId === "2026" && result.status) {
+        updatePaymentStatus(result.pilotoId, result.status.totalPago, result.status.isentoPagamento, result.status.inscricaoPendente);
+      }
+      setSaveStatus({ message: "Pagamento excluído", tone: "success" });
+      window.setTimeout(() => setSaveStatus(null), 1_800);
+      return true;
+    } catch (error) {
+      setSaveStatus({ message: error instanceof Error ? error.message : "Erro ao excluir pagamento.", tone: "error" });
+      return false;
+    }
+  }
+
   async function setPaymentExemption(
     pilotId: string,
     isento: boolean,
@@ -886,6 +953,13 @@ export function PilotsScreen({
             : pilot,
         ),
       );
+    }
+  }
+
+  function handleMembershipRemove(pilotId: string, temporadaId: string) {
+    setRacePilots((current) => current.filter((pilot) => !(pilot.id === pilotId && pilot.temporadaId === temporadaId)));
+    if (temporadaId === "2026") {
+      setPilotos((current) => current.map((pilot) => pilot.id === pilotId ? { ...pilot, serie: null, situacao: null, isentoPagamento: false, inscricaoPendente: false } : pilot));
     }
   }
 
@@ -1144,6 +1218,8 @@ export function PilotsScreen({
           pilots={pilotos}
           isAdmin={access.papel === "administrador"}
           onOpenPilot={(id) => setSelectedKey({ kind: "piloto", id })}
+          onCreateEntry={createCashEntry}
+          onDeleteEntry={deleteCashEntry}
         />
       </div>
       <div hidden={activeScreen !== "fila"}>
@@ -1186,10 +1262,11 @@ export function PilotsScreen({
           ) : selected ? (
             <RecordSheet
               record={selected}
-              raceData={{ ...raceData, pilotos: racePilots }}
+              raceData={{ ...raceData, pilotos: racePilots, resultados: raceResults }}
               editable={Boolean(selectedEditable)}
               isAdmin={access.papel === "administrador"}
               campeonatoIniciado={campeonatoIniciado}
+              cashEntries={cashEntries}
               saveStatus={saveStatus}
               onSave={(field, value) =>
                 selected.kind === "piloto"
@@ -1206,12 +1283,14 @@ export function PilotsScreen({
                   ? setPaymentExemption(selected.id, isento)
                   : Promise.resolve(false)
               }
+              onDeletePayment={deleteCashEntry}
               onPromote={(serie, situacao) =>
                 selected.kind === "fila"
                   ? promoteQueue(selected.id, serie, situacao)
                   : Promise.resolve(false)
               }
               onMembershipChange={handleMembershipChange}
+              onMembershipRemove={handleMembershipRemove}
             />
           ) : null}
         </SheetContent>
@@ -1506,7 +1585,9 @@ function PilotMembershipPanel({
   divisions,
   enrollments,
   editable,
+  startedSeasonIds,
   onMembershipChange,
+  onMembershipRemove,
 }: {
   pilotId: string;
   pilotName: string;
@@ -1515,12 +1596,14 @@ function PilotMembershipPanel({
   divisions: RaceDivision[];
   enrollments: RacePilot[];
   editable: boolean;
+  startedSeasonIds: Set<string>;
   onMembershipChange: (
     pilotId: string,
     temporadaId: string,
     serie: string,
     situacao: MembershipStatus,
   ) => void;
+  onMembershipRemove: (pilotId: string, temporadaId: string) => void;
 }) {
   const [memberships, setMemberships] = useState(enrollments);
   const availableCompetitions = competitions.filter(
@@ -1540,6 +1623,7 @@ function PilotMembershipPanel({
   );
   const [newStatus, setNewStatus] = useState<MembershipStatus>("ativo");
   const [message, setMessage] = useState("");
+  const [removingSeason,setRemovingSeason]=useState<string|null>(null);
   const [invite, setInvite] = useState<{ message: string; url: string } | null>(
     null,
   );
@@ -1617,6 +1701,15 @@ function PilotMembershipPanel({
     return true;
   }
 
+  async function removeMembership(temporadaId:string){
+    setRemovingSeason(temporadaId);setMessage("Tirando piloto da temporada…");setInvite(null);
+    const response=await fetch(`/central/api/pilotos/${pilotId}/inscricoes`,{method:"DELETE",headers:{"content-type":"application/json"},body:JSON.stringify({temporadaId})});
+    const result=await response.json() as {error?:string};setRemovingSeason(null);
+    if(!response.ok){setMessage(result.error??"Não foi possível tirar o piloto da temporada.");return false;}
+    setMemberships((current)=>current.filter((item)=>item.temporadaId!==temporadaId));
+    onMembershipRemove(pilotId,temporadaId);setMessage("Piloto retirado da temporada. O cadastro geral foi preservado.");return true;
+  }
+
   return (
     <div className="space-y-4">
       <div>
@@ -1683,6 +1776,8 @@ function PilotMembershipPanel({
                       )
                     }
                   />
+                  {editable&&!startedSeasonIds.has(membership.temporadaId)&&<AlertDialog><AlertDialogTrigger asChild><button type="button" className="min-h-11 w-full border border-[#E8604C] px-3 text-sm font-bold text-[#FF8A78] outline-none hover:bg-[#351D1C] focus-visible:ring-2 focus-visible:ring-[#E8604C]">Tirar da temporada</button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Tirar {pilotName} desta temporada?</AlertDialogTitle><AlertDialogDescription>O piloto sairá da série {membership.serie} em {competition?.nome??membership.temporadaId}. O cadastro geral e os demais históricos não serão apagados.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancelar</AlertDialogCancel><AlertDialogAction disabled={removingSeason===membership.temporadaId} onClick={()=>void removeMembership(membership.temporadaId)} className="bg-[#E8604C] text-white hover:bg-[#F07160]">{removingSeason===membership.temporadaId?"Tirando…":"Tirar da temporada"}</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>}
+                  {editable&&startedSeasonIds.has(membership.temporadaId)&&<p className="text-xs leading-5 text-muted-foreground">A temporada já começou. Para manter o histórico, altere a situação para “Não vai participar”.</p>}
                 </div>
               </div>
             );
@@ -1852,22 +1947,27 @@ function RecordSheet({
   editable,
   isAdmin,
   campeonatoIniciado,
+  cashEntries,
   saveStatus,
   onSave,
   onRegisterPayment,
   onSetPaymentExemption,
+  onDeletePayment,
   onPromote,
   onMembershipChange,
+  onMembershipRemove,
 }: {
   record: PilotListItem | QueueListItem;
   raceData: {
     competicoes: RaceCompetition[];
     divisoes: RaceDivision[];
     pilotos: RacePilot[];
+    resultados: RaceResult[];
   };
   editable: boolean;
   isAdmin: boolean;
   campeonatoIniciado: boolean;
+  cashEntries: CashEntry[];
   saveStatus: {
     message: string;
     tone: "saving" | "success" | "error";
@@ -1875,6 +1975,7 @@ function RecordSheet({
   onSave: (field: string, value: unknown) => Promise<boolean>;
   onRegisterPayment: (data: string, valor: number) => Promise<boolean>;
   onSetPaymentExemption: (isento: boolean) => Promise<boolean>;
+  onDeletePayment: (entry: CashEntry) => Promise<boolean>;
   onPromote: (
     serie: Serie,
     situacao: "ativo" | "suplente",
@@ -1885,6 +1986,7 @@ function RecordSheet({
     serie: string,
     situacao: MembershipStatus,
   ) => void;
+  onMembershipRemove: (pilotId: string, temporadaId: string) => void;
 }) {
   const whatsappUrl = makeWhatsappUrl(record.whatsapp);
 
@@ -1939,14 +2041,17 @@ function RecordSheet({
         {record.kind === "piloto" ? (
           <>
             <PanelSection title="Campeonato" icon={Trophy}>
-              {record.serie ? (
+              {record.serie || cashEntries.some((entry)=>entry.pilotoId===record.id&&entry.temporadaId==="2026") ? (
                 <PaymentRegistration
                   totalPago={record.totalPago}
                   isentoPagamento={record.isentoPagamento}
                   inscricaoPendente={record.inscricaoPendente}
                   editable={isAdmin}
+                  hasEnrollment={Boolean(record.serie)}
+                  entries={cashEntries.filter((entry)=>entry.pilotoId===record.id&&entry.temporadaId==="2026")}
                   onRegister={onRegisterPayment}
                   onSetExemption={onSetPaymentExemption}
+                  onDelete={onDeletePayment}
                 />
               ) : (
                 <div className="border-l-2 border-[#8A92A6] bg-[#131722] p-3">
@@ -1977,7 +2082,9 @@ function RecordSheet({
                 divisions={raceData.divisoes}
                 enrollments={raceData.pilotos.filter((pilot) => pilot.id === record.id)}
                 editable={editable && isAdmin}
+                startedSeasonIds={new Set(raceData.resultados.map((result)=>result.temporadaId))}
                 onMembershipChange={onMembershipChange}
+                onMembershipRemove={onMembershipRemove}
               />
               {record.situacao === "saiu" && (
                 <div className="border-t border-border pt-4">
@@ -2632,21 +2739,28 @@ function PaymentRegistration({
   isentoPagamento,
   inscricaoPendente,
   editable,
+  hasEnrollment,
+  entries,
   onRegister,
   onSetExemption,
+  onDelete,
 }: {
   totalPago: number;
   isentoPagamento: boolean;
   inscricaoPendente: boolean;
   editable: boolean;
+  hasEnrollment: boolean;
+  entries: CashEntry[];
   onRegister: (data: string, valor: number) => Promise<boolean>;
   onSetExemption: (isento: boolean) => Promise<boolean>;
+  onDelete: (entry: CashEntry) => Promise<boolean>;
 }) {
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(localIsoDate);
   const [amount, setAmount] = useState("20,00");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [deletingId,setDeletingId]=useState<number|null>(null);
 
   async function toggleExemption() {
     setSubmitting(true);
@@ -2692,6 +2806,8 @@ function PaymentRegistration({
           <p className="font-semibold">
             {isentoPagamento
               ? "Pagamento isento"
+              : !hasEnrollment
+                ? "Pagamento registrado"
               : inscricaoPendente
                 ? "Inscrição pendente"
                 : "Inscrição em dia"}
@@ -2700,7 +2816,7 @@ function PaymentRegistration({
             Total pago: {formatCurrency(totalPago)}
           </p>
         </div>
-        {editable && !open && (
+        {editable && hasEnrollment && !open && (
           <div className="flex shrink-0 flex-col gap-2">
             <button type="button" onClick={() => setOpen(true)} className="min-h-11 border border-[#60A5FA] px-3 text-sm font-bold text-[#60A5FA] outline-none hover:bg-[#272B13] focus-visible:ring-2 focus-visible:ring-[#60A5FA]">Registrar pagamento</button>
             <button type="button" disabled={submitting} onClick={toggleExemption} className="min-h-11 border border-[#00E676] px-3 text-sm font-semibold text-[#73FFB0] outline-none focus-visible:ring-2 focus-visible:ring-[#00E676] disabled:opacity-50">{isentoPagamento ? "Remover isenção" : "Marcar isento"}</button>
@@ -2708,11 +2824,15 @@ function PaymentRegistration({
         )}
       </div>
 
+      {entries.length>0&&<div className="mt-3 border-t border-border pt-3"><p className="mb-2 text-xs font-semibold uppercase tracking-[.1em] text-muted-foreground">Pagamentos registrados</p><div className="space-y-2">{entries.slice().sort((a,b)=>b.data.localeCompare(a.data)||b.id-a.id).map((entry)=><div key={entry.id} className="grid grid-cols-[1fr_auto_auto] items-center gap-2 bg-[#0D1118] px-3 py-2"><span className="min-w-0"><strong className="font-data block text-sm">{formatCurrency(entry.valor)}</strong><span className="block text-xs text-muted-foreground">{formatShortDate(entry.data)} · {entry.tipo}</span></span>{editable&&<AlertDialog><AlertDialogTrigger asChild><button type="button" aria-label={`Excluir pagamento de ${formatCurrency(entry.valor)}`} className="flex size-11 items-center justify-center text-[#FF8A78] hover:bg-[#351D1C] focus-visible:ring-2 focus-visible:ring-[#E8604C]"><Trash2 className="size-4"/></button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Excluir este pagamento?</AlertDialogTitle><AlertDialogDescription>O lançamento de {formatCurrency(entry.valor)} será apagado e a situação do piloto será recalculada.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancelar</AlertDialogCancel><AlertDialogAction disabled={deletingId===entry.id} onClick={()=>{setDeletingId(entry.id);void onDelete(entry).finally(()=>setDeletingId(null));}} className="bg-[#E8604C] text-white hover:bg-[#F07160]">{deletingId===entry.id?"Excluindo…":"Excluir pagamento"}</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>}</div>)}</div></div>}
+
       {!editable && (
         <p className="mt-2 text-xs text-muted-foreground">
           Somente o administrador pode registrar pagamentos.
         </p>
       )}
+
+      {editable&&!hasEnrollment&&<p className="mt-2 text-xs text-muted-foreground">O piloto não está inscrito na temporada atual. Os lançamentos existentes ainda podem ser excluídos abaixo.</p>}
 
       {open && (
         <form onSubmit={submit} className="mt-3 border-t border-border pt-3">

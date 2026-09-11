@@ -19,11 +19,13 @@ let access={papel:'administrador',serie:null};
 let signedIn=true;
 const binding={prepare(sql){const statement=db.prepare(sql);let values=[];return {bind(...args){values=args;return this},async first(){return statement.get(...values)??null},async all(){return {results:statement.all(...values)}},async run(){const r=statement.run(...values);return {meta:{changes:r.changes}}}}},async batch(statements){db.exec('BEGIN');try{for(const statement of statements)await statement.run();db.exec('COMMIT')}catch(e){db.exec('ROLLBACK');throw e}}};
 globalThis.__speedTest={getChatGPTUser:async()=>signedIn?{id:'test'}:null,ensureCurrentUserAccess:async()=>access,getD1Binding:()=>binding};
-async function moduleFrom(file){let source=fs.readFileSync(new URL(file,import.meta.url),'utf8');source=source.replace('import { seedData } from "@/db/seed-data";','const seedData=globalThis.__speedTest.seedData;');source=source.replace(/^import .* from "@\/(?:app\/chatgpt-auth|db|db\/access)";\r?\n/gm,'').replace('import { calculateRacePoints } from "@/db/scoring";',`const {calculateRacePoints}=globalThis.__speedTest;`);source='const {getChatGPTUser,ensureCurrentUserAccess,getD1Binding}=globalThis.__speedTest;\n'+source;const code=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;return import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));}
+async function moduleFrom(file){let source=fs.readFileSync(new URL(file,import.meta.url),'utf8');source=source.replace('import { seedData } from "@/db/seed-data";','const seedData=globalThis.__speedTest.seedData;');source=source.replace(/^import .* from "@\/(?:app\/chatgpt-auth|db|db\/access)";\r?\n/gm,'').replace('import { calculateRacePoints } from "@/db/scoring";',`const {calculateRacePoints}=globalThis.__speedTest;`).replace('import { defaultDivisionGroupUrl } from "@/lib/whatsapp-groups";','const defaultDivisionGroupUrl=()=>null;');source='const {getChatGPTUser,ensureCurrentUserAccess,getD1Binding}=globalThis.__speedTest;\n'+source;const code=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;return import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));}
 globalThis.__speedTest.seedData={pontuacao:new Map(fs.readFileSync(new URL('../seed/pontuacao.csv',import.meta.url),'utf8').trim().split(/\r?\n/).slice(1).map(line=>line.split(',').map(Number)))};
 globalThis.__speedTest.calculateRacePoints=(await moduleFrom('../db/scoring.ts')).calculateRacePoints;
 const race=await moduleFrom('../app/api/corridas/route.ts');
 const cash=await moduleFrom('../app/api/caixa-configuracao/route.ts');
+const cashEntriesApi=await moduleFrom('../app/api/caixa/route.ts');
+const enrollmentsApi=await moduleFrom('../app/api/pilotos/[id]/inscricoes/route.ts');
 const row=(id,pos,extra={})=>({pilotoId:id,confirmou:true,faltaJustificada:null,posicaoFinal:pos,voltaMaisRapida:false,ausente:false,punicao:null,abandonoMotivo:null,observacao:null,carro:null,fabricante:null,origemCarro:null,pontosSuplente:null,...extra});
 const post=(results,extra={})=>race.POST(new Request('http://local/api/corridas',{method:'POST',body:JSON.stringify({temporadaId:'test',serie:'A',etapa:1,resultados:results,...extra})}));
 
@@ -74,3 +76,23 @@ test('cash values persist by season and invalid money is rejected',async()=>{
  signedIn=false;assert.equal((await post([row('SGT001',1)])).status,401);
 });
 
+test('creates and deletes cash entries and only removes enrollment before a season starts',async()=>{
+ signedIn=true;access={papel:'administrador',serie:null};
+ db.exec(`INSERT INTO temporadas(id,nome,ativa,total_etapas,pilotos_por_serie) VALUES ('future','Temporada futura',1,2,15);
+ INSERT INTO divisoes(temporada_id,codigo,nome,ordem) VALUES ('future','A','Série A',1);
+ INSERT INTO pilotos(id,apelido) VALUES ('SGT005','Futuro');
+ INSERT INTO inscricoes(temporada_id,piloto_id,serie,situacao) VALUES ('future','SGT005','A','ativo');`);
+ const create=await cashEntriesApi.POST(new Request('http://local/api/caixa',{method:'POST',body:JSON.stringify({temporadaId:'future',data:'2026-09-11',pilotoId:'SGT005',tipo:'Inscrição',valor:2000})}));
+ assert.equal(create.status,200);const created=await create.json();assert.equal(created.entry.nome,'Futuro');
+ assert.equal(db.prepare('SELECT COUNT(*) total FROM caixa WHERE id=?').get(created.entry.id).total,1);
+ const removeCash=await cashEntriesApi.DELETE(new Request('http://local/api/caixa',{method:'DELETE',body:JSON.stringify({pagamentoId:created.entry.id})}));
+ assert.equal(removeCash.status,200);assert.equal(db.prepare('SELECT COUNT(*) total FROM caixa WHERE id=?').get(created.entry.id).total,0);
+ const params={params:Promise.resolve({id:'SGT005'})};
+ const removeEnrollment=await enrollmentsApi.DELETE(new Request('http://local/api/pilotos/SGT005/inscricoes',{method:'DELETE',body:JSON.stringify({temporadaId:'future'})}),params);
+ assert.equal(removeEnrollment.status,200);assert.equal(db.prepare("SELECT COUNT(*) total FROM inscricoes WHERE temporada_id='future' AND piloto_id='SGT005'").get().total,0);
+ db.exec(`INSERT INTO inscricoes(temporada_id,piloto_id,serie,situacao) VALUES ('future','SGT005','A','ativo');
+ INSERT INTO calendario(temporada_id,etapa,pista,multiplicador) VALUES ('future',1,'Spa',1);
+ INSERT INTO corridas(temporada_id,etapa,piloto_id,pontos) VALUES ('future',1,'SGT005',0);`);
+ const blocked=await enrollmentsApi.DELETE(new Request('http://local/api/pilotos/SGT005/inscricoes',{method:'DELETE',body:JSON.stringify({temporadaId:'future'})}),params);
+ assert.equal(blocked.status,409);assert.equal(db.prepare("SELECT COUNT(*) total FROM inscricoes WHERE temporada_id='future' AND piloto_id='SGT005'").get().total,1);
+});

@@ -1,6 +1,18 @@
 # Migração — Speed GT Brasil
 
-## Escopo deste pacote
+## Atualização da exportação — 11 de setembro de 2026
+
+Código atualizado para a versão **33** do Sites, commit
+`780d035f46e5db29561da39fcde26f0ecf0b6376`, preservando o tema azul,
+a autenticação Cloudflare Access e as rotas em `/central` deste repositório.
+Inclui a tela pública `/central/cadastro`, sua API, introdução e imagens,
+além dos novos controles de inscrições e pagamentos.
+
+Esta atualização exporta código, assets, esquema e migrations. Não contém
+um novo backup dos registros do banco hospedado, nem credenciais. Os backups
+citados abaixo pertencem à exportação inicial e não estão versionados no Git.
+
+## Escopo do pacote inicial
 
 Este pacote foi criado a partir da versão publicada **32** do ChatGPT Sites, commit
 `2f2dc7c29012a10825df7b8587f3410709e619f6`, em 8 de setembro de 2026.
