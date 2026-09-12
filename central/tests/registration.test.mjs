@@ -58,7 +58,7 @@ test('email delivery uses stored recipient, throttles retries and skips already 
   const source=readFileSync(new URL('../lib/registration-email.ts',import.meta.url),'utf8').replace('import { env } from "cloudflare:workers";','const env = globalThis.registrationMailEnv;').replace('"./registration"',JSON.stringify(registrationUrl));
   const {sendRegistrationEmail}=await import(moduleUrl(source));
   const originalFetch=globalThis.fetch;let calls=0;
-  globalThis.fetch=async(_url,options)=>{calls++;assert.deepEqual(JSON.parse(options.body).to,['piloto@example.com']);assert.equal(options.headers['Idempotency-Key'],'registration-'+key);return new Response('',{status:calls===1?503:200})};
+  globalThis.fetch=async(_url,options)=>{calls++;assert.deepEqual(JSON.parse(options.body).to,['piloto@example.com']);assert.equal(JSON.parse(options.body).reply_to,'speedgtbr@gmail.com');assert.equal(options.headers['Idempotency-Key'],'registration-'+key);return new Response('',{status:calls===1?503:200})};
   try {
     assert.equal(await sendRegistrationEmail(db,key),'failed');
     assert.equal(await sendRegistrationEmail(db,key),'pending');assert.equal(calls,1);

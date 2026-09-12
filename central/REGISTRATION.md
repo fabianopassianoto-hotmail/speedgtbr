@@ -60,3 +60,17 @@ A compilação e os 43 testes passaram. A checagem global de TypeScript ainda ap
 A publicação automática do commit b4917e0 ocorreu antes de aplicar a migração 0014. O banco speedgtbr-central-preview foi conferido e a migração 0014 foi aplicada, preservando os registros. As consultas de pilotos, fila e formulários dependem dessa migração.
 
 O caminho /central/central passa a redirecionar para /central/cadastro, preservando os parâmetros. Use a URL estável da branch: https://central-nova.speedgtbr.pages.dev/central/cadastro. URLs com identificador de publicação, como c223373a, continuam apontando para aquele pacote específico e não recebem novos commits. A Cloudflare Access protege o domínio da prévia; uma sessão autenticada continua necessária conforme a configuração atual.
+
+## Identidade do e-mail da comunidade
+
+Remetente proposto: Speed GT Brasil <administracao@speedgtbrasil.com.br>. Respostas ao e-mail de cadastro vão para speedgtbr@gmail.com pelo cabeçalho Reply-To, sem depender da criação de uma caixa postal nova. O endereço administracao@ só poderá enviar depois da verificação do domínio no provedor escolhido.
+
+Verificado em 11/09/2026: domínio ativo na conta Cloudflare; Email Routing ainda desativado; nenhuma credencial de envio configurada no Pages. O acesso atual à API recusou consulta de DNS e assinaturas, portanto não foi possível ativar DNS nem confirmar o plano Workers Paid. O envio real continua pendente de configuração do provedor.
+
+Opções: manter Resend (integração existente; plano gratuito sujeito aos limites atuais) ou usar Cloudflare Email Sending (exige Workers Paid para destinatários não previamente verificados). Cloudflare Email Routing pode futuramente encaminhar administracao@speedgtbrasil.com.br para speedgtbr@gmail.com; isso é recebimento e não substitui a configuração de envio.
+
+## Ativação em 12/09/2026
+
+Resend selecionado e configurado na prévia central_nova. SPF, DKIM e MX de retorno confirmados no DNS público. RESEND_API_KEY salva como secret_text no Pages, sem versionar a credencial. Remetente administracao@speedgtbrasil.com.br e Reply-To speedgtbr@gmail.com.
+
+O provedor aceitou um teste real para speedgtbr@gmail.com com o conteúdo completo do cadastro. Aceite de envio não confirma chegada à caixa de entrada; conferir também spam. Esta ativação cobre a prévia; a branch main/produção não foi alterada.
