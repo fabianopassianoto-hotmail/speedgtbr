@@ -6,6 +6,9 @@ import ts from 'typescript';
 const moduleUrl = source => 'data:text/javascript;base64,' + Buffer.from(ts.transpileModule(source, {compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText).toString('base64');
 const registrationUrl = moduleUrl(readFileSync(new URL('../lib/registration.ts',import.meta.url),'utf8'));
 const {validateRegistration,registrationSummary,welcomeEmailText} = await import(registrationUrl);
+const templateUrl = moduleUrl(readFileSync(new URL('../lib/registration-email-template.ts',import.meta.url),'utf8').replace('"./registration"',JSON.stringify(registrationUrl)));
+const {welcomeEmailHtml} = await import(templateUrl);
+const logo = readFileSync(new URL('../../Logo.jpg',import.meta.url)).toString('base64');
 const valid = {nomeCompleto:'Piloto Teste',whatsapp:'11912345678',email:'piloto@example.com',psn:'Piloto_Teste',cidade:'São Paulo',uf:'SP',classificacaoGt7:'A+',rua:'Rua Teste',numero:'10',bairro:'Centro',cep:'01001-000',complemento:''};
 function database() {
   const sqlite = new DatabaseSync(':memory:');
@@ -55,10 +58,10 @@ test('email delivery uses stored recipient, throttles retries and skips already 
   const {sqlite,db}=database();const key=crypto.randomUUID();
   sqlite.prepare("INSERT INTO formularios_pendentes(criado_em,nome_completo,whatsapp,email,submission_key) VALUES(?,?,?,?,?)").run(new Date().toISOString(),'Piloto','11912345678','piloto@example.com',key);
   globalThis.registrationMailEnv={RESEND_API_KEY:'test-key',REGISTRATION_EMAIL_FROM:'Speed <sender@example.com>'};
-  const source=readFileSync(new URL('../lib/registration-email.ts',import.meta.url),'utf8').replace('import { env } from "cloudflare:workers";','const env = globalThis.registrationMailEnv;').replace('"./registration"',JSON.stringify(registrationUrl));
+  const source=readFileSync(new URL('../lib/registration-email.ts',import.meta.url),'utf8').replace('import { env } from "cloudflare:workers";','const env = globalThis.registrationMailEnv;').replace('"./registration"',JSON.stringify(registrationUrl)).replace('"./registration-email-template"',JSON.stringify(templateUrl)).replace('import logoDataUrl from "../../Logo.jpg?inline";', 'const logoDataUrl = '+JSON.stringify('data:image/jpeg;base64,'+logo)+';');
   const {sendRegistrationEmail}=await import(moduleUrl(source));
   const originalFetch=globalThis.fetch;let calls=0;
-  globalThis.fetch=async(_url,options)=>{calls++;assert.deepEqual(JSON.parse(options.body).to,['piloto@example.com']);assert.equal(JSON.parse(options.body).reply_to,'speedgtbr@gmail.com');assert.equal(options.headers['Idempotency-Key'],'registration-'+key);return new Response('',{status:calls===1?503:200})};
+  globalThis.fetch=async(_url,options)=>{calls++;const payload=JSON.parse(options.body);assert.match(payload.html,/cid:speedgt-logo/);assert.equal(payload.attachments[0].content,logo);assert.equal(payload.attachments[0].content_id,'speedgt-logo');assert.ok(payload.text);assert.deepEqual(JSON.parse(options.body).to,['piloto@example.com']);assert.equal(JSON.parse(options.body).reply_to,'speedgtbr@gmail.com');assert.equal(options.headers['Idempotency-Key'],'registration-'+key);return new Response('',{status:calls===1?503:200})};
   try {
     assert.equal(await sendRegistrationEmail(db,key),'failed');
     assert.equal(await sendRegistrationEmail(db,key),'pending');assert.equal(calls,1);
@@ -86,4 +89,12 @@ test('approval copies address and rating and preserves historical data during me
   assert.equal((await approve(request({action:'nova_fila',apelido:'Piloto'}),{params:Promise.resolve({id:'2'})})).status,200);
   const queue=sqlite.prepare('SELECT * FROM fila').get();assert.equal(queue.classificacao_gt7,'A+');assert.equal(queue.cep,valid.cep);
   sqlite.close();
+});
+
+test('HTML welcome escapes names and retains all onboarding links with an inline logo',()=>{
+ const html=welcomeEmailHtml('<img src=x onerror="alert(1)">');
+ assert.ok(!html.includes('<img src=x'));assert.ok(html.includes('&lt;img'));
+ assert.match(html,/src="cid:speedgt-logo"/);
+ for(const url of ['Jz9Zg4z1q302rXOlaI8KKk','instagram.com/speedgtbr','dI8-pXOOAvc','communities/speed-gt-brasil','discord.com/register','steampowered.com/join/']) assert.ok(html.includes(url));
+ assert.match(html,/aprovação de um administrador/);
 });

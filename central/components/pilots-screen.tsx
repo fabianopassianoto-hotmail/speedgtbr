@@ -24,7 +24,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { FilterChips } from "@/components/filter-chips";
 import { Button } from "@/components/ui/button";
-import { PilotCompetitionConfig, RaceEntryScreen } from "@/components/race-entry-screen";
+import { PilotCompetitionConfig } from "@/components/race-entry-screen";
 import { StandingsScreen } from "@/components/standings-screen";
 import { BulletinScreen } from "@/components/bulletin-screen";
 import { CashScreen, type CashEntryDraft } from "@/components/cash-screen";
@@ -65,7 +65,7 @@ import { GENERAL_WHATSAPP_GROUP_URL } from "@/lib/whatsapp-groups";
 import { downloadXlsx } from "@/lib/xlsx-client";
 
 type Filter = string;
-type Screen = "inicio" | "pilotos" | "corrida" | "classificacao" | "boletim" | "caixa" | "fila";
+type Screen = "inicio" | "pilotos" | "classificacao" | "boletim" | "caixa" | "fila";
 type ListRecord = PilotListItem | QueueListItem | PendingFormListItem;
 
 const GENERAL_COMPETITION = "__cadastro_geral__";
@@ -110,7 +110,6 @@ const statusFilters: Array<{ value: Filter; label: string }> = [
 const navItems = [
   { value: "inicio", label: "Início", icon: House, enabled: true },
   { value: "pilotos", label: "Pilotos", icon: Users, enabled: true },
-  { value: "corrida", label: "Corrida", icon: Flag, enabled: true },
   { value: "classificacao", label: "Classificação", icon: Trophy, enabled: true },
   { value: "caixa", label: "Caixa", icon: CircleDollarSign, enabled: true },
   { value: "fila", label: "Fila", icon: ListOrdered, enabled: true },
@@ -293,7 +292,7 @@ export function PilotsScreen({
   const [formularios, setFormularios] = useState(initialForms);
   const [cashEntries, setCashEntries] = useState(initialCashEntries);
   const [accessRequests, setAccessRequests] = useState(initialAccessRequests);
-  const [raceResults, setRaceResults] = useState(raceData.resultados);
+  const [raceResults] = useState(raceData.resultados);
   const [racePilots, setRacePilots] = useState(raceData.pilotos);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("todos");
@@ -963,26 +962,6 @@ export function PilotsScreen({
     }
   }
 
-  const currentSeasonPilots: RacePilot[] = pilotos
-    .filter(
-      (pilot) =>
-        Boolean(pilot.serie) &&
-        (pilot.situacao ?? "ativo") === "ativo" &&
-        !pilot.arquivadoEm,
-    )
-    .map((pilot) => ({
-      id: pilot.id,
-      apelido: pilot.apelido,
-      simgrid: pilot.simgrid,
-      temporadaId: "2026",
-      serie: pilot.serie!,
-      situacao: "ativo",
-      pilotoArquivado: false,
-    }));
-  const activeRacePilots: RacePilot[] = [
-    ...racePilots.filter((pilot) => pilot.temporadaId !== "2026"),
-    ...currentSeasonPilots,
-  ];
   const currentSeasonClassificationPilots: RacePilot[] = pilotos
     .filter(
       (pilot) =>
@@ -1003,9 +982,6 @@ export function PilotsScreen({
     ...racePilots.filter((pilot) => pilot.temporadaId !== "2026"),
     ...currentSeasonClassificationPilots,
   ];
-  const raceRosterKey = activeRacePilots
-    .map((pilot) => `${pilot.id}:${pilot.serie}`)
-    .join("|");
   const activeCompetitionName =
     raceData.competicoes.find((competition) => competition.status === "ativa")
       ?.nome ?? "Competição não definida";
@@ -1174,21 +1150,6 @@ export function PilotsScreen({
           <PilotCompetitionConfig competitions={raceData.competicoes} divisions={raceData.divisoes} stages={raceData.etapas} enrolledPilots={racePilots} availablePilots={raceData.pilotosDisponiveis} selectedCompetition={pilotCompetition === GENERAL_COMPETITION ? raceData.competicoes.find((item)=>item.status==="ativa")?.id ?? raceData.competicoes[0]?.id ?? "" : pilotCompetition}/>
         )}
       </main>
-      </div>
-      <div hidden={activeScreen !== "corrida"}>
-        <RaceEntryScreen
-          key={raceRosterKey}
-          competitions={raceData.competicoes}
-          divisions={raceData.divisoes}
-          stages={raceData.etapas}
-          pilots={classificationPilots}
-          availablePilots={raceData.pilotosDisponiveis}
-          initialResults={raceResults}
-          access={{ papel: access.papel, serie: access.serie }}
-          onOpenPilot={(id) => setSelectedKey({ kind: "piloto", id })}
-          onResultsChange={setRaceResults}
-          onAddPilot={() => { setActiveScreen("pilotos"); setPilotCompetition(raceData.competicoes.find((item)=>item.status==="ativa")?.id ?? GENERAL_COMPETITION); }}
-        />
       </div>
       <div hidden={activeScreen !== "classificacao" && activeScreen !== "boletim"}>
         <div className="mx-auto max-w-6xl px-3 pt-4 md:px-6"><FilterChips label="Classificação" value={activeScreen==="boletim"?"boletim":classificationView} onChange={v=>{setClassificationView(v);setActiveScreen("classificacao")}} options={[{value:"tabela",label:"Classificação"},{value:"boletim",label:"Boletim e exportação"}]}/></div>
@@ -2266,7 +2227,7 @@ function RecordSheet({
               <EditableField label="Curiosidade" field="curiosidade" value={record.curiosidade} editable={editable} multiline onSave={onSave} />
             </PanelSection>
             <PanelSection title="Fila" icon={ListOrdered}>
-              <p className="text-xs text-muted-foreground">As corridas 4Fun são organizadas nas divisões, pela aba Corrida.</p>
+              <p className="text-xs text-muted-foreground">A participação em eventos será organizada pela administração.</p>
               <EditableField label="Conduta" field="conduta" value={record.conduta} editable={editable} multiline onSave={onSave} />
               <NativeSelectField
                 label="Pronto para série ou suplência"
@@ -2572,15 +2533,6 @@ function PendingFormSheet({
           <ReadOnlyField label="Complemento" value={form.complemento ?? null} />
           <ReadOnlyField label="Classificação GT7" value={form.classificacao_gt7 ?? null} />
           <ReadOnlyField label="PSN" value={form.psn} mono />
-          <ReadOnlyField label="SimGrid" value={form.simgrid} mono />
-          <ReadOnlyField label="Link do SimGrid" value={form.simgridUrl} mono />
-          <ReadOnlyField label="Volante ou controle" value={form.volanteOuControle} />
-          <ReadOnlyField label="Data de nascimento" value={form.dataNascimento} />
-          <ReadOnlyField label="Perfil de pilotagem" value={form.perfilPilotagem} />
-          <ReadOnlyField label="Disponibilidade" value={form.disponibilidade} />
-          <ReadOnlyField label="Carro preferido" value={form.carroPreferido} />
-          <ReadOnlyField label="Pista citada" value={form.pistaCitada} />
-          <ReadOnlyField label="Curiosidade" value={form.curiosidade} />
         </PanelSection>
 
         <PanelSection title="Conferência" icon={Search}>

@@ -1,6 +1,9 @@
 import type { getD1Binding } from "@/db";
 import { env } from "cloudflare:workers";
 import { welcomeEmailText } from "./registration";
+import { welcomeEmailHtml } from "./registration-email-template";
+import logoDataUrl from "../../Logo.jpg?inline";
+
 type MailEnvironment = { RESEND_API_KEY?: string; REGISTRATION_EMAIL_FROM?: string; REGISTRATION_EMAIL_REPLY_TO?: string };
 export async function sendRegistrationEmail(db: ReturnType<typeof getD1Binding>, key: string): Promise<string> {
   const row = await db.prepare("SELECT id, nome_completo, email, email_status, criado_em FROM formularios_pendentes WHERE submission_key = ?")
@@ -21,7 +24,7 @@ export async function sendRegistrationEmail(db: ReturnType<typeof getD1Binding>,
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${config.RESEND_API_KEY}`, "Content-Type": "application/json", "Idempotency-Key": `registration-${key}` },
-      body: JSON.stringify({ from: config.REGISTRATION_EMAIL_FROM, to: [row.email], reply_to: config.REGISTRATION_EMAIL_REPLY_TO || "speedgtbr@gmail.com", subject: "Seu cadastro na Speed GT Brasil: próximos passos", text: welcomeEmailText(row.nome_completo) }),
+      body: JSON.stringify({ from: config.REGISTRATION_EMAIL_FROM, to: [row.email], reply_to: config.REGISTRATION_EMAIL_REPLY_TO || "speedgtbr@gmail.com", subject: "Seu cadastro na Speed GT Brasil: próximos passos", text: welcomeEmailText(row.nome_completo), html: welcomeEmailHtml(row.nome_completo), attachments: [{ filename: "Logo.jpg", content: logoDataUrl.split(",")[1], content_id: "speedgt-logo", content_type: "image/jpeg" }] }),
       signal: AbortSignal.timeout(8000),
     });
     if (response.ok) status = "sent";

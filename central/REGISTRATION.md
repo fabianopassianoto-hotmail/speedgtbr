@@ -74,3 +74,9 @@ Opções: manter Resend (integração existente; plano gratuito sujeito aos limi
 Resend selecionado e configurado na prévia central_nova. SPF, DKIM e MX de retorno confirmados no DNS público. RESEND_API_KEY salva como secret_text no Pages, sem versionar a credencial. Remetente administracao@speedgtbrasil.com.br e Reply-To speedgtbr@gmail.com.
 
 O provedor aceitou um teste real para speedgtbr@gmail.com com o conteúdo completo do cadastro. Aceite de envio não confirma chegada à caixa de entrada; conferir também spam. Esta ativação cobre a prévia; a branch main/produção não foi alterada.
+
+### E-mail HTML
+
+O cadastro envia HTML com versão alternativa em texto. O logo vem do arquivo `Logo.jpg` na raiz, incorporado pelo build e enviado como imagem inline CID pelo Resend; não depende de um endereço público nem do Cloudflare Access. O template está em `lib/registration-email-template.ts`.
+
+A ficha de formulários pendentes exibe somente os campos do cadastro atual. O menu e a tela Corrida estão desativados na Central; os dados históricos permanecem preservados.
