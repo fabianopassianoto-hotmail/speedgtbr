@@ -15,7 +15,7 @@ try {
   await cp(join(root, "functions/api/championships/[id].js"), join(worker, "championships.js"));
   await cp(join(root, "scripts/pages-worker.mjs"), join(worker, "index.js"));
   await cp(join(root, "scripts/access-auth.mjs"), join(worker, "access-auth.mjs"));
-  await writeFile(join(stage, "_routes.json"), JSON.stringify({ version: 1, include: ["/comece-aqui", "/comece-aqui/", "/cadastro", "/cadastro/", "/central", "/central/*", "/api/championships/*"], exclude: ["/central/assets/*", "/central/brand/*", "/central/og.png", "/central/favicon.svg"] }));
+  await writeFile(join(stage, "_routes.json"), JSON.stringify({ version: 1, include: ["/comece-aqui", "/comece-aqui/", "/admin", "/admin/", "/cadastro", "/cadastro/", "/central", "/central/*", "/api/championships/*"], exclude: ["/central/assets/*", "/central/brand/*", "/central/og.png", "/central/favicon.svg"] }));
   await rm(output, { recursive: true, force: true });
   await rename(stage, output);
   console.log("Site e Central preparados em dist-pages.");

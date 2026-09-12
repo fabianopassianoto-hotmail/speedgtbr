@@ -74,7 +74,7 @@ function HomeRecovery() {
           instantes para tentar novamente.
         </p>
         <a
-          href="/central"
+          href="/admin"
           className="mt-5 flex min-h-12 items-center justify-center bg-[#60A5FA] px-4 font-bold uppercase text-[#0A0C10]"
         >
           Tentar novamente

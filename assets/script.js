@@ -1,7 +1,7 @@
 // Keep previously shared homepage section links working.
 (function () {
   if (location.pathname !== '/' && location.pathname !== '/index.html') return;
-  var routes = {"por-que":"/por-que/","comece-aqui":"/central/cadastro","regras":"/regras/","temporada-3":"/temporada-3/","hall-da-fama":"/hall-da-fama/","equipe":"/organizadores/","apoie":"/apoie/","depoimentos":"/depoimentos/","regulamento":"/regras/#regulamento","punicoes":"/regras/#punicoes","simgrid":"/central/cadastro","whatsapp":"/central/cadastro","cadastro":"/central/cadastro","comece-apoie":"/central/cadastro","como-funciona":"/#como-funciona"};
+  var routes = {"por-que":"/por-que/","comece-aqui":"/cadastro","regras":"/regras/","temporada-3":"/temporada-3/","hall-da-fama":"/hall-da-fama/","equipe":"/organizadores/","apoie":"/apoie/","depoimentos":"/depoimentos/","regulamento":"/regras/#regulamento","punicoes":"/regras/#punicoes","simgrid":"/cadastro","whatsapp":"/cadastro","cadastro":"/cadastro","comece-apoie":"/cadastro","como-funciona":"/#como-funciona"};
   function redirect() {
     var target = routes[location.hash.slice(1)];
     if (target && target !== location.pathname + location.hash) location.replace(target);

@@ -9,27 +9,29 @@ const source = (await readFile(new URL("../scripts/pages-worker.mjs", import.met
 const { default: worker } = await import(`data:text/javascript;base64,${Buffer.from(source).toString("base64")}`);
 
 test("registration shortcut preserves query parameters", async () => {
-  for (const path of ["/cadastro", "/cadastro/", "/comece-aqui", "/comece-aqui/", "/central/central", "/central/central/"]) {
+  for (const path of ["/central/cadastro", "/central/cadastro/", "/cadastro/", "/comece-aqui", "/comece-aqui/", "/central/central", "/central/central/"]) {
     const response = await worker.fetch(new Request(`https://example.com${path}?origem=convite`), {}, {});
     assert.equal(response.status, 307);
-    assert.equal(response.headers.get("location"), "https://example.com/central/cadastro?origem=convite");
+    assert.equal(response.headers.get("location"), "https://example.com/cadastro?origem=convite");
   }
 });
 
 test("public registration works without Access and discards forged identity", async () => {
-  for (const path of ["/central/cadastro", "/central/api/cadastro", "/central/api/cadastro/reenviar"]) {
+  for (const path of ["/cadastro", "/central/api/cadastro", "/central/api/cadastro/reenviar"]) {
     const response = await worker.fetch(new Request(`https://example.com${path}`, { headers: { "cf-access-authenticated-user-email": "forged@example.com" } }), { DB: {} }, {});
     assert.equal(response.status, 200);
-    assert.deepEqual(await response.json(), { path, email: null });
+    assert.deepEqual(await response.json(), { path: path === "/cadastro" ? "/central/cadastro" : path === "/admin" ? "/central" : path, email: null });
   }
-  assert.equal((await worker.fetch(new Request("https://example.com/central"), {}, {})).status, 503);
-  assert.equal((await worker.fetch(new Request("https://example.com/central"), { DB: {} }, {})).status, 200);
+  assert.equal((await worker.fetch(new Request("https://example.com/admin"), {}, {})).status, 503);
+  assert.equal((await worker.fetch(new Request("https://example.com/admin"), { DB: {} }, {})).status, 200);
 });
 
 test("Central forwards reads and edits without credentials or an Access provider", async () => {
   const env = { DB: {} };
-  for (const [path, method] of [["/central", "GET"], ["/central/api/caixa", "POST"], ["/central/api/pilotos/SGT001", "PATCH"], ["/central/api/caixa", "DELETE"]]) {
+  for (const [path, method] of [["/admin", "GET"], ["/central/api/caixa", "POST"], ["/central/api/pilotos/SGT001", "PATCH"], ["/central/api/caixa", "DELETE"]]) {
     const response = await worker.fetch(new Request(`https://example.com${path}`, { method, headers: { "cf-access-authenticated-user-email": "forged@example.com" } }), env, {});
-    assert.deepEqual(await response.json(), { path, email: null });
+    assert.deepEqual(await response.json(), { path: path === "/cadastro" ? "/central/cadastro" : path === "/admin" ? "/central" : path, email: null });
   }
 });
+
+test('old administration URL redirects to admin',async()=>{const response=await worker.fetch(new Request('https://example.com/central'),{},{});assert.equal(response.headers.get('location'),'https://example.com/admin');});
