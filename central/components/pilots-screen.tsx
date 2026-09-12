@@ -29,7 +29,7 @@ import { PilotHistory } from "@/components/pilot-history";
 import { LedgerScreen } from "@/components/ledger-screen";
 import { FilterChips } from "@/components/filter-chips";
 import { Button } from "@/components/ui/button";
-import { PilotCompetitionConfig, RaceEntryScreen } from "@/components/race-entry-screen";
+import { PilotCompetitionConfig } from "@/components/race-entry-screen";
 import { StandingsScreen } from "@/components/standings-screen";
 import { BulletinScreen } from "@/components/bulletin-screen";
 import { CashScreen, type CashEntryDraft } from "@/components/cash-screen";
@@ -70,7 +70,7 @@ import { GENERAL_WHATSAPP_GROUP_URL } from "@/lib/whatsapp-groups";
 import { downloadXlsx } from "@/lib/xlsx-client";
 
 type Filter = string;
-type Screen = "inicio" | "pilotos" | "corrida" | "classificacao" | "boletim" | "caixa" | "fila" | "administracao";
+type Screen = "inicio" | "pilotos" | "classificacao" | "boletim" | "caixa" | "fila" | "administracao";
 type ListRecord = PilotListItem | QueueListItem | PendingFormListItem;
 
 const GENERAL_COMPETITION = "__cadastro_geral__";
@@ -115,7 +115,6 @@ const statusFilters: Array<{ value: Filter; label: string }> = [
 const navItems = [
   { value: "inicio", label: "Início", icon: House, enabled: true },
   { value: "pilotos", label: "Pilotos", icon: Users, enabled: true },
-  { value: "corrida", label: "Corrida", icon: Flag, enabled: true },
   { value: "classificacao", label: "Classificação", icon: Trophy, enabled: true },
   { value: "caixa", label: "Caixa", icon: CircleDollarSign, enabled: true },
   { value: "administracao", label: "Administração", icon: Settings2, enabled: true },
@@ -299,7 +298,7 @@ export function PilotsScreen({
   const [formularios, setFormularios] = useState(initialForms);
   const [cashEntries, setCashEntries] = useState(initialCashEntries);
   const [accessRequests, setAccessRequests] = useState(initialAccessRequests);
-  const [raceResults, setRaceResults] = useState(raceData.resultados);
+  const [raceResults] = useState(raceData.resultados);
   const [racePilots, setRacePilots] = useState(raceData.pilotos);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("todos");
@@ -973,26 +972,6 @@ export function PilotsScreen({
     }
   }
 
-  const currentSeasonPilots: RacePilot[] = pilotos
-    .filter(
-      (pilot) =>
-        Boolean(pilot.serie) &&
-        (pilot.situacao ?? "ativo") === "ativo" &&
-        !pilot.arquivadoEm,
-    )
-    .map((pilot) => ({
-      id: pilot.id,
-      apelido: pilot.apelido,
-      simgrid: pilot.simgrid,
-      temporadaId: currentSeasonId,
-      serie: pilot.serie!,
-      situacao: "ativo",
-      pilotoArquivado: false,
-    }));
-  const activeRacePilots: RacePilot[] = [
-    ...racePilots.filter((pilot) => pilot.temporadaId !== currentSeasonId),
-    ...currentSeasonPilots,
-  ];
   const currentSeasonClassificationPilots: RacePilot[] = pilotos
     .filter(
       (pilot) =>
@@ -1010,9 +989,6 @@ export function PilotsScreen({
       pilotoArquivado: false,
     }));
   const classificationPilots: RacePilot[] = raceData.competicoes.some(c=>c.id===currentSeasonId&&c.ativa&&c.status==="ativa") ? [...racePilots.filter(p=>p.temporadaId!==currentSeasonId),...currentSeasonClassificationPilots] : racePilots;
-  const raceRosterKey = activeRacePilots
-    .map((pilot) => `${pilot.id}:${pilot.serie}`)
-    .join("|");
   const activeCompetitionName =
     raceData.competicoes.find((competition) => competition.status === "ativa")
       ?.nome ?? "Competição não definida";
@@ -1184,21 +1160,6 @@ export function PilotsScreen({
         </section>
 
       </main>
-      </div>
-      <div hidden={activeScreen !== "corrida"}>
-        <RaceEntryScreen
-          key={raceRosterKey}
-          competitions={raceData.competicoes}
-          divisions={raceData.divisoes}
-          stages={raceData.etapas}
-          pilots={classificationPilots}
-          availablePilots={raceData.pilotosDisponiveis}
-          initialResults={raceResults}
-          access={{ papel: access.papel, serie: access.serie }}
-          onOpenPilot={(id) => setSelectedKey({ kind: "piloto", id })}
-          onResultsChange={setRaceResults}
-          onAddPilot={() => { setActiveScreen("pilotos"); setPilotCompetition(raceData.competicoes.find((item)=>item.status==="ativa")?.id ?? GENERAL_COMPETITION); }}
-        />
       </div>
       <div hidden={activeScreen !== "classificacao" && activeScreen !== "boletim"}>
         <div className="mx-auto max-w-6xl px-3 pt-4 md:px-6"><FilterChips label="Classificação" value={activeScreen==="boletim"?"boletim":classificationView} onChange={v=>{setClassificationView(v);setActiveScreen("classificacao")}} options={[{value:"tabela",label:"Classificação"},{value:"boletim",label:"Boletim e exportação"}]}/></div>
@@ -2167,6 +2128,12 @@ function RecordSheet({
               <EditableField label="Apelido de narração" field="apelido" value={record.apelido} editable={editable} required onSave={onSave} />
               <EditableField label="Nome completo" field="nomeCompleto" value={record.nomeCompleto} editable={editable} onSave={onSave} />
               <EditableField label="PSN" field="psn" value={record.psn} editable={editable} mono onSave={onSave} />
+              <ReadOnlyField label="Rua" value={record.rua ?? null} />
+              <ReadOnlyField label="Número" value={record.numero ?? null} />
+              <ReadOnlyField label="Bairro" value={record.bairro ?? null} />
+              <ReadOnlyField label="CEP" value={record.cep ?? null} />
+              <ReadOnlyField label="Complemento" value={record.complemento ?? null} />
+              <ReadOnlyField label="Classificação GT7" value={record.classificacao_gt7 ?? null} />
               <EditableField label="SimGrid" field="simgrid" value={record.simgrid} editable={editable} mono onSave={onSave} />
               <EditableField label="Link do SimGrid" field="simgridUrl" value={record.simgridUrl} editable={editable} mono onSave={onSave} />
               <EditableField label="Data de nascimento" field="dataNascimento" value={record.dataNascimento} editable={editable} inputType="date" mono onSave={onSave} />
@@ -2247,6 +2214,12 @@ function RecordSheet({
               <EditableField label="Apelido de narração" field="apelido" value={record.apelido} editable={editable} required onSave={onSave} />
               <EditableField label="Nome completo" field="nomeCompleto" value={record.nomeCompleto} editable={editable} onSave={onSave} />
               <EditableField label="PSN" field="psn" value={record.psn} editable={editable} mono onSave={onSave} />
+              <ReadOnlyField label="Rua" value={record.rua ?? null} />
+              <ReadOnlyField label="Número" value={record.numero ?? null} />
+              <ReadOnlyField label="Bairro" value={record.bairro ?? null} />
+              <ReadOnlyField label="CEP" value={record.cep ?? null} />
+              <ReadOnlyField label="Complemento" value={record.complemento ?? null} />
+              <ReadOnlyField label="Classificação GT7" value={record.classificacao_gt7 ?? null} />
               <EditableField label="SimGrid" field="simgrid" value={record.simgrid} editable={editable} mono onSave={onSave} />
               <EditableField label="Link do SimGrid" field="simgridUrl" value={record.simgridUrl} editable={editable} mono onSave={onSave} />
               <EditableField label="Data de nascimento" field="dataNascimento" value={record.dataNascimento} editable={editable} inputType="date" mono onSave={onSave} />
@@ -2265,7 +2238,7 @@ function RecordSheet({
               <EditableField label="Curiosidade" field="curiosidade" value={record.curiosidade} editable={editable} multiline onSave={onSave} />
             </PanelSection>
             <PanelSection title="Fila" icon={ListOrdered}>
-              <p className="text-xs text-muted-foreground">As corridas 4Fun são organizadas nas divisões, pela aba Corrida.</p>
+              <p className="text-xs text-muted-foreground">A participação em eventos será organizada pela administração.</p>
               <EditableField label="Conduta" field="conduta" value={record.conduta} editable={editable} multiline onSave={onSave} />
               <NativeSelectField
                 label="Pronto para série ou suplência"
@@ -2564,16 +2537,17 @@ function PendingFormSheet({
             <ReadOnlyField label="Cidade" value={form.cidade} />
             <ReadOnlyField label="UF" value={form.uf} />
           </div>
+          <ReadOnlyField label="Rua" value={form.rua ?? null} />
+          <ReadOnlyField label="Número" value={form.numero ?? null} />
+          <ReadOnlyField label="Bairro" value={form.bairro ?? null} />
+          <ReadOnlyField label="CEP" value={form.cep ?? null} />
+          <ReadOnlyField label="Complemento" value={form.complemento ?? null} />
+          <ReadOnlyField label="Classificação GT7" value={form.classificacao_gt7 ?? null} />
           <ReadOnlyField label="PSN" value={form.psn} mono />
           <ReadOnlyField label="SimGrid" value={form.simgrid} mono />
           <ReadOnlyField label="Link do SimGrid" value={form.simgridUrl} mono />
-          <ReadOnlyField label="Volante ou controle" value={form.volanteOuControle} />
           <ReadOnlyField label="Data de nascimento" value={form.dataNascimento} />
           <ReadOnlyField label="Perfil de pilotagem" value={form.perfilPilotagem} />
-          <ReadOnlyField label="Disponibilidade" value={form.disponibilidade} />
-          <ReadOnlyField label="Carro preferido" value={form.carroPreferido} />
-          <ReadOnlyField label="Pista citada" value={form.pistaCitada} />
-          <ReadOnlyField label="Curiosidade" value={form.curiosidade} />
         </PanelSection>
 
         <PanelSection title="Conferência" icon={Search}>

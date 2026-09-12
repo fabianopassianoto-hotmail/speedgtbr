@@ -14,6 +14,12 @@ export type PersonFields = {
   email: string | null;
   cidade: string | null;
   uf: string | null;
+  rua?: string | null;
+  numero?: string | null;
+  bairro?: string | null;
+  cep?: string | null;
+  complemento?: string | null;
+  classificacao_gt7?: string | null;
   volanteOuControle: string | null;
   perfilPilotagem: string | null;
   disponibilidade: string | null;
@@ -66,6 +72,12 @@ export type PendingFormListItem = {
   email: string | null;
   cidade: string | null;
   uf: string | null;
+  rua?: string | null;
+  numero?: string | null;
+  bairro?: string | null;
+  cep?: string | null;
+  complemento?: string | null;
+  classificacao_gt7?: string | null;
   volanteOuControle: string | null;
   perfilPilotagem: string | null;
   disponibilidade: string | null;
@@ -173,6 +185,12 @@ type PendingFormRow = {
   email: string | null;
   cidade: string | null;
   uf: string | null;
+  rua?: string | null;
+  numero?: string | null;
+  bairro?: string | null;
+  cep?: string | null;
+  complemento?: string | null;
+  classificacao_gt7?: string | null;
   volante_ou_controle: string | null;
   perfil_pilotagem: string | null;
   disponibilidade: string | null;
@@ -195,7 +213,7 @@ export async function getPilotsScreenData(temporadaId?: string) {
       .prepare(
         `SELECT
            p.id, p.apelido, p.nome_completo, p.psn, p.simgrid,
-           p.simgrid_url, p.whatsapp, p.email, p.cidade, p.uf,
+           p.simgrid_url, p.whatsapp, p.email, p.cidade, p.uf, p.rua, p.numero, p.bairro, p.cep, p.complemento, p.classificacao_gt7,
            p.volante_ou_controle, p.perfil_pilotagem, p.disponibilidade,
            p.carro_preferido, p.pista_citada, p.relacoes, p.curiosidade,
            p.observacoes_adm, p.ativo, p.cadastro_status, p.data_nascimento,
@@ -219,7 +237,7 @@ export async function getPilotsScreenData(temporadaId?: string) {
     db
       .prepare(
         `SELECT id, apelido, nome_completo, psn, simgrid, simgrid_url,
-                whatsapp, cidade, uf, email, volante_ou_controle,
+                whatsapp, cidade, uf, rua, numero, bairro, cep, complemento, classificacao_gt7, email, volante_ou_controle,
                 perfil_pilotagem, disponibilidade, carro_preferido,
                 pista_citada, relacoes, curiosidade, observacoes_adm, ativo,
                 cadastro_status, data_nascimento, data_entrada,
@@ -239,7 +257,7 @@ export async function getPilotsScreenData(temporadaId?: string) {
     db
       .prepare(
         `SELECT id, criado_em, nome_completo, psn, simgrid, simgrid_url,
-                whatsapp, email, cidade, uf, volante_ou_controle,
+                whatsapp, email, cidade, uf, rua, numero, bairro, cep, complemento, classificacao_gt7, volante_ou_controle,
                 perfil_pilotagem, disponibilidade, carro_preferido, pista_citada,
                 data_nascimento, curiosidade
          FROM formularios_pendentes
@@ -273,6 +291,12 @@ export async function getPilotsScreenData(temporadaId?: string) {
     email: row.email,
     cidade: row.cidade,
     uf: row.uf,
+    rua: row.rua,
+    numero: row.numero,
+    bairro: row.bairro,
+    cep: row.cep,
+    complemento: row.complemento,
+    classificacao_gt7: row.classificacao_gt7,
     volanteOuControle: row.volante_ou_controle,
     perfilPilotagem: row.perfil_pilotagem,
     disponibilidade: row.disponibilidade,
@@ -311,6 +335,12 @@ export async function getPilotsScreenData(temporadaId?: string) {
     whatsapp: row.whatsapp,
     cidade: row.cidade,
     uf: row.uf,
+    rua: row.rua,
+    numero: row.numero,
+    bairro: row.bairro,
+    cep: row.cep,
+    complemento: row.complemento,
+    classificacao_gt7: row.classificacao_gt7,
     email: row.email,
     volanteOuControle: row.volante_ou_controle,
     perfilPilotagem: row.perfil_pilotagem,
@@ -345,6 +375,12 @@ export async function getPilotsScreenData(temporadaId?: string) {
     email: row.email,
     cidade: row.cidade,
     uf: row.uf,
+    rua: row.rua,
+    numero: row.numero,
+    bairro: row.bairro,
+    cep: row.cep,
+    complemento: row.complemento,
+    classificacao_gt7: row.classificacao_gt7,
     volanteOuControle: row.volante_ou_controle,
     perfilPilotagem: row.perfil_pilotagem,
     disponibilidade: row.disponibilidade,

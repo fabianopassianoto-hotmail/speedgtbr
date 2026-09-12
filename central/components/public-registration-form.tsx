@@ -18,15 +18,16 @@ import {
   useState,
 } from "react";
 
+import { addressFields, approvalNotice, gt7Ratings, registrationLinks, registrationSummary, validateRegistration } from "@/lib/registration";
+
 type FieldKind =
   | "text"
   | "email"
   | "tel"
   | "date"
   | "textarea"
-  | "device"
   | "location"
-  | "simgrid";
+  | "rating";
 
 type RegistrationField = {
   name: string;
@@ -61,6 +62,7 @@ const fields: RegistrationField[] = [
     eyebrow: "Contato",
     label: "Qual é o seu melhor e-mail?",
     placeholder: "voce@exemplo.com",
+    required: true,
     kind: "email",
   },
   {
@@ -68,73 +70,12 @@ const fields: RegistrationField[] = [
     eyebrow: "Identidade na pista",
     label: "Qual é a sua ID da PSN?",
     placeholder: "Sua ID na PlayStation Network",
+    required: true,
     kind: "text",
   },
-  {
-    name: "simgrid",
-    eyebrow: "Identidade na pista",
-    label: "Como encontramos você no SimGrid?",
-    description: "O link é opcional, mas ajuda a evitar cadastros duplicados.",
-    kind: "simgrid",
-  },
-  {
-    name: "cidade",
-    eyebrow: "Localização",
-    label: "De onde você acelera?",
-    description: "Informe sua cidade e o estado.",
-    kind: "location",
-  },
-  {
-    name: "dataNascimento",
-    eyebrow: "Sobre você",
-    label: "Qual é a sua data de nascimento?",
-    kind: "date",
-  },
-  {
-    name: "volanteOuControle",
-    eyebrow: "Setup",
-    label: "Você pilota com volante ou controle?",
-    kind: "device",
-  },
-  {
-    name: "perfilPilotagem",
-    eyebrow: "Na pista",
-    label: "Como você descreve sua pilotagem?",
-    placeholder: "Agressiva, consistente, estrategista…",
-    kind: "textarea",
-  },
-  {
-    name: "disponibilidade",
-    eyebrow: "Agenda",
-    label: "Qual é a sua disponibilidade para correr?",
-    placeholder: "Dias e horários em que costuma estar disponível",
-    kind: "textarea",
-  },
-  {
-    name: "carroPreferido",
-    eyebrow: "Preferências",
-    label: "Qual é o seu carro preferido?",
-    placeholder: "Modelo ou categoria",
-    kind: "text",
-  },
-  {
-    name: "pistaCitada",
-    eyebrow: "Preferências",
-    label: "Qual pista você mais gosta ou conhece?",
-    placeholder: "Interlagos, Spa, Suzuka…",
-    kind: "text",
-  },
-  {
-    name: "curiosidade",
-    eyebrow: "Última volta",
-    label: "Quer contar alguma curiosidade sobre você?",
-    description: "Vale profissão, hobby, história no automobilismo ou algo que renda assunto na transmissão.",
-    placeholder: "Este campo é opcional",
-    kind: "textarea",
-  },
+  { name: "cidade", eyebrow: "Endereço", label: "Qual é o seu endereço?", description: "Cidade e UF são obrigatórios. Os demais detalhes do endereço são opcionais.", required: true, kind: "location" },
+  { name: "classificacaoGt7", eyebrow: "Na pista", label: "Qual sua classificação no Gran Turismo 7?", description: "Informe sua classificação de piloto.", required: true, kind: "rating" },
 ];
-
-const deviceOptions = ["Volante", "Controle", "Volante e controle"];
 
 export function PublicRegistrationForm() {
   const [values, setValues] = useState<Record<string, string>>({});
@@ -144,6 +85,29 @@ export function PublicRegistrationForm() {
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
+
+  const submissionId = useRef("");
+  const sending = useRef(false);
+  const [emailStatus, setEmailStatus] = useState("failed");
+  const [retrying, setRetrying] = useState(false);
+  const [redirectPaused, setRedirectPaused] = useState(false);
+  useEffect(() => {
+    if (status !== "success" || redirectPaused) return;
+    const timer = window.setTimeout(() => window.location.assign(registrationLinks.whatsapp), 8000);
+    return () => window.clearTimeout(timer);
+  }, [status, redirectPaused]);
+
+  async function retryEmail() {
+    setRedirectPaused(true);
+    setRetrying(true);
+    try {
+      const response = await fetch("/central/api/cadastro/reenviar", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ submissionId: submissionId.current }) });
+      const result = await response.json();
+      setEmailStatus(result.emailStatus ?? "failed");
+      setMessage(result.emailStatus === "sent" ? "Orientações enviadas para seu e-mail." : result.error ?? "Não foi possível reenviar agora. Tente novamente em um minuto.");
+    } catch { setMessage("Não foi possível reenviar agora. Seu cadastro continua salvo."); }
+    finally { setRetrying(false); }
+  }
 
   const isWelcome = step === 0;
   const isReview = step === fields.length + 1;
@@ -173,6 +137,10 @@ export function PublicRegistrationForm() {
     if (field.name === "whatsapp" && value.replace(/\D/g, "").length < 10) {
       setMessage("Confira o WhatsApp e informe também o DDD.");
       return false;
+    }
+    if (field.kind === "location") {
+      const error = validateRegistration({ nomeCompleto: "Piloto", whatsapp: "11999999999", email: "piloto@example.com", psn: "Piloto", classificacaoGt7: "E", ...values });
+      if (error) { setMessage(error); return false; }
     }
     return true;
   }
@@ -211,21 +179,27 @@ export function PublicRegistrationForm() {
       setMessage("Confirme que você leu o aviso de privacidade antes de enviar.");
       return;
     }
+    if (sending.current) return;
+    const error = validateRegistration(values);
+    if (error) { setStatus("error"); setMessage(error); return; }
+    sending.current = true;
+    if (!submissionId.current) submissionId.current = crypto.randomUUID();
     setStatus("sending");
     setMessage("");
     try {
       const response = await fetch("/central/api/cadastro", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify(values),
+        body: JSON.stringify({ ...values, submissionId: submissionId.current, privacyAccepted }),
       });
-      const result = (await response.json()) as { error?: string };
+      const result = (await response.json()) as { error?: string; emailStatus?: string };
       if (!response.ok) throw new Error(result.error || "Não foi possível enviar.");
+      setEmailStatus(result.emailStatus ?? "failed");
       setStatus("success");
     } catch (error) {
       setStatus("error");
       setMessage(error instanceof Error ? error.message : "Erro ao enviar.");
-    }
+    } finally { sending.current = false; }
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -249,6 +223,13 @@ export function PublicRegistrationForm() {
           <p className="mt-5 max-w-lg text-base leading-7 text-muted-foreground">
             Seus dados foram enviados e ficarão aguardando a conferência da administração da Speed GT Brasil.
           </p>
+          <p className="mt-4 text-base leading-7">{approvalNotice}</p>
+          <dl className="mt-6 divide-y divide-white/10">{registrationSummary(values).map(([key, label, value]) => <div key={key} className="py-3"><dt className="text-sm text-muted-foreground">{label}</dt><dd className="break-words">{value}</dd></div>)}</dl>
+          <p className="mt-4 text-sm" role="status">{emailStatus === "sent" ? "As orientações foram enviadas para seu e-mail. Confira também o spam." : "Seu cadastro está salvo, mas ainda não confirmamos o envio do e-mail."}</p>
+          {emailStatus !== "sent" && <button type="button" disabled={retrying} onClick={() => void retryEmail()} className="mt-3 min-h-12 text-[#60A5FA] underline disabled:opacity-50">{retrying ? "Reenviando…" : "Tentar enviar e-mail novamente"}</button>}
+          {message && <p role="status" className="mt-2 text-sm">{message}</p>}
+          {!redirectPaused && <><p className="mt-5 text-sm text-muted-foreground">Você será direcionado ao WhatsApp em alguns segundos.</p><button type="button" onClick={() => setRedirectPaused(true)} className="min-h-11 text-sm underline">Permanecer nesta página</button></>}
+          <a href={registrationLinks.whatsapp} className="mt-3 flex min-h-14 items-center justify-center bg-[#60A5FA] px-5 font-bold text-[#0A0C10]">Ir para o grupo do WhatsApp</a>
         </section>
       </main>
     );
@@ -291,12 +272,12 @@ export function PublicRegistrationForm() {
       {isWelcome ? (
         <section key="welcome" className="registration-step mx-auto flex min-h-[calc(100dvh-81px)] max-w-4xl items-center px-5 py-12 sm:px-8">
           <div className="max-w-3xl">
-            <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#60A5FA]">Atualização cadastral</p>
+            <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#60A5FA]">Cadastro de piloto</p>
             <h1 className="font-display mt-4 text-5xl font-bold uppercase leading-[0.95] sm:text-7xl">
               Antes de acelerar,<br />deixe tudo em dia.
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground sm:text-xl">
-              Preencha todos os campos e ajude a Speed GT Brasil a manter seu cadastro completo e atualizado.
+              Responda seis perguntas para entrar na comunidade Speed GT Brasil. Depois da confirmação, você recebe as orientações por e-mail e segue para o WhatsApp.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-4">
               <button
@@ -326,7 +307,7 @@ export function PublicRegistrationForm() {
           </label>
 
           {field && (
-            <section key={field.name} className="registration-step flex min-h-[calc(100dvh-145px)] items-center px-5 py-10 sm:px-10">
+            <section key={field.name} className="registration-step flex min-h-[calc(100dvh-145px)] items-center px-5 py-10 pb-28 sm:px-10">
               <div className="w-full max-w-3xl">
                 <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#00E676]">{field.eyebrow}</p>
                 <label htmlFor={`registration-${field.name}`} className="mt-3 block">
@@ -346,10 +327,6 @@ export function PublicRegistrationForm() {
                     setValue={setValue}
                     inputRef={inputRef}
                     onTextareaKeyDown={handleTextareaKeyDown}
-                    onChooseDevice={(option) => {
-                      setValue("volanteOuControle", option);
-                      window.setTimeout(next, 180);
-                    }}
                   />
                 </div>
 
@@ -357,7 +334,7 @@ export function PublicRegistrationForm() {
                   <p className="mt-4 border-l-2 border-[#E8604C] pl-3 text-sm text-[#FF9A8B]" role="alert">{message}</p>
                 )}
 
-                {field.kind !== "device" && (
+                {(
                   <div className="mt-7 flex flex-wrap items-center gap-4">
                     <button
                       type="submit"
@@ -395,7 +372,7 @@ export function PublicRegistrationForm() {
 
           <footer className="registration-footer fixed inset-x-0 bottom-0 z-30 border-t border-border bg-[#0D1016]/95 px-4 py-3 backdrop-blur">
             <div className="mx-auto flex max-w-5xl items-center justify-between">
-              <button type="button" onClick={back} className="flex min-h-10 items-center gap-2 px-2 text-sm font-semibold text-muted-foreground hover:text-foreground">
+              <button type="button" disabled={status === "sending"} onClick={back} className="flex min-h-10 items-center gap-2 px-2 text-sm font-semibold text-muted-foreground hover:text-foreground">
                 <ArrowLeft className="size-4" aria-hidden="true" /> Voltar
               </button>
               {!isReview && <span className="text-xs text-muted-foreground">As respostas ficam salvas enquanto esta página estiver aberta.</span>}
@@ -413,107 +390,20 @@ function RegistrationControl({
   setValue,
   inputRef,
   onTextareaKeyDown,
-  onChooseDevice,
 }: {
   field: RegistrationField;
   values: Record<string, string>;
   setValue: (name: string, value: string) => void;
   inputRef: MutableRefObject<HTMLInputElement | HTMLTextAreaElement | null>;
   onTextareaKeyDown: (event: KeyboardEvent<HTMLTextAreaElement>) => void;
-  onChooseDevice: (option: string) => void;
 }) {
   const sharedInputClass = "registration-input w-full border-0 border-b-2 border-white/20 bg-transparent px-0 py-3 text-2xl text-foreground outline-none placeholder:text-[#515A69] focus:border-[#60A5FA] focus:ring-0 sm:text-3xl";
 
-  if (field.kind === "device") {
-    return (
-      <>
-        <select
-          name="volanteOuControle"
-          value={values.volanteOuControle ?? ""}
-          onChange={(event) => setValue("volanteOuControle", event.target.value)}
-          className="sr-only"
-          tabIndex={-1}
-          aria-hidden="true"
-        >
-          <option value="">Selecione</option>
-          <option value="Volante">Volante</option>
-          <option value="Controle">Controle</option>
-          <option value="Volante e controle">Volante e controle</option>
-        </select>
-        <div className="grid gap-3 sm:grid-cols-3" role="radiogroup" aria-label={field.label}>
-          {deviceOptions.map((option, index) => {
-            const selected = values.volanteOuControle === option;
-            return (
-              <button
-                key={option}
-                type="button"
-                role="radio"
-                aria-checked={selected}
-                onClick={() => onChooseDevice(option)}
-                className={`registration-choice flex min-h-20 items-center justify-between border p-4 text-left text-base font-bold ${selected ? "border-[#60A5FA] bg-[#60A5FA]/10 text-[#60A5FA]" : "border-white/15 bg-[#131722] text-foreground"}`}
-              >
-                <span><span className="font-data mr-2 text-xs text-muted-foreground">{String.fromCharCode(65 + index)}</span>{option}</span>
-                {selected && <Check className="size-5" aria-hidden="true" />}
-              </button>
-            );
-          })}
-        </div>
-      </>
-    );
+  if (field.kind === "rating") {
+    return <div role="radiogroup" aria-label={field.label} className="grid grid-cols-3 gap-3 sm:grid-cols-7">{gt7Ratings.map(option => <label key={option} className={`flex min-h-20 cursor-pointer items-center justify-center gap-2 border p-3 text-xl font-bold ${values.classificacaoGt7 === option ? "border-[#60A5FA] bg-[#60A5FA]/10" : "border-white/20"}`}><input type="radio" name="classificacaoGt7" value={option} checked={values.classificacaoGt7 === option} onChange={() => setValue("classificacaoGt7", option)} className="accent-[#60A5FA]" required />{option}</label>)}</div>;
   }
-
   if (field.kind === "location") {
-    return (
-      <div className="grid gap-5 sm:grid-cols-[1fr_120px]">
-        <input
-          ref={(element) => { inputRef.current = element; }}
-          id={`registration-${field.name}`}
-          name="cidade"
-          value={values.cidade ?? ""}
-          onChange={(event) => setValue("cidade", event.target.value)}
-          placeholder="Cidade"
-          maxLength={120}
-          className={sharedInputClass}
-        />
-        <input
-          name="uf"
-          value={values.uf ?? ""}
-          onChange={(event) => setValue("uf", event.target.value.toUpperCase())}
-          placeholder="UF"
-          maxLength={2}
-          aria-label="Estado"
-          className={sharedInputClass}
-        />
-      </div>
-    );
-  }
-
-  if (field.kind === "simgrid") {
-    return (
-      <div className="grid gap-5">
-        <input
-          ref={(element) => { inputRef.current = element; }}
-          id={`registration-${field.name}`}
-          name="simgrid"
-          value={values.simgrid ?? ""}
-          onChange={(event) => setValue("simgrid", event.target.value)}
-          placeholder="Nome no SimGrid"
-          maxLength={160}
-          className={sharedInputClass}
-        />
-        <input
-          name="simgridUrl"
-          type="url"
-          inputMode="url"
-          value={values.simgridUrl ?? ""}
-          onChange={(event) => setValue("simgridUrl", event.target.value)}
-          placeholder="Link do perfil (opcional)"
-          aria-label="Link do perfil no SimGrid"
-          maxLength={500}
-          className={`${sharedInputClass} text-lg sm:text-xl`}
-        />
-      </div>
-    );
+    return <div className="grid gap-5 sm:grid-cols-2">{addressFields.map(([name, label]) => <label key={name} className="block text-sm text-muted-foreground">{label}{name === "cidade" || name === "uf" ? " *" : " (opcional)"}<input ref={name === "cep" ? element => { inputRef.current = element; } : undefined} id={name === "cidade" ? "registration-cidade" : undefined} name={name} value={values[name] ?? ""} onChange={event => setValue(name, name === "uf" ? event.target.value.toUpperCase() : event.target.value)} maxLength={name === "uf" ? 2 : name === "cep" ? 9 : 120} required={name === "cidade" || name === "uf"} autoComplete={name === "cep" ? "postal-code" : name === "cidade" ? "address-level2" : name === "uf" ? "address-level1" : "off"} className={sharedInputClass + " text-xl sm:text-2xl"} /></label>)}</div>;
   }
 
   if (field.kind === "textarea") {
@@ -566,35 +456,21 @@ function ReviewStep({
   onPrivacyAccepted: (accepted: boolean) => void;
   onEdit: (fieldName: string) => void;
 }) {
-  const entries = [
-    ["nomeCompleto", "Nome completo", values.nomeCompleto],
-    ["whatsapp", "WhatsApp", values.whatsapp],
-    ["email", "E-mail", values.email],
-    ["psn", "ID da PSN", values.psn],
-    ["simgrid", "SimGrid", [values.simgrid, values.simgridUrl].filter(Boolean).join(" · ")],
-    ["cidade", "Localização", [values.cidade, values.uf].filter(Boolean).join(" · ")],
-    ["dataNascimento", "Nascimento", values.dataNascimento],
-    ["volanteOuControle", "Setup", values.volanteOuControle],
-    ["perfilPilotagem", "Pilotagem", values.perfilPilotagem],
-    ["disponibilidade", "Disponibilidade", values.disponibilidade],
-    ["carroPreferido", "Carro preferido", values.carroPreferido],
-    ["pistaCitada", "Pista preferida", values.pistaCitada],
-    ["curiosidade", "Curiosidade", values.curiosidade],
-  ].filter((entry) => entry[2]);
+  const entries = registrationSummary(values);
 
   return (
     <section key="review" className="registration-step min-h-[calc(100dvh-145px)] px-5 py-10 pb-28 sm:px-10">
       <div className="mx-auto max-w-3xl">
         <p className="text-sm font-bold uppercase tracking-[0.18em] text-[#00E676]">Revisão final</p>
         <h1 className="font-display mt-3 text-4xl font-bold uppercase leading-tight sm:text-6xl">Confira antes da bandeirada.</h1>
-        <p className="mt-4 text-base leading-7 text-muted-foreground">Se algo estiver errado, toque em editar. Os campos não preenchidos continuarão como pendentes para a administração.</p>
+        <p className="mt-4 text-base leading-7 text-muted-foreground">Confira seus dados e toque em editar para corrigir. Ao confirmar, seu cadastro será enviado para análise.</p>
 
         <dl className="mt-8 border-y border-white/10">
           {entries.map(([fieldName, label, value]) => (
             <div key={fieldName} className="grid gap-2 border-b border-white/10 py-4 last:border-b-0 sm:grid-cols-[160px_1fr_auto] sm:items-start">
               <dt className="text-sm font-semibold text-muted-foreground">{label}</dt>
               <dd className="min-w-0 break-words text-base leading-6 text-foreground">{value}</dd>
-              <button type="button" onClick={() => onEdit(fieldName)} className="justify-self-start text-sm font-bold text-[#60A5FA] hover:underline sm:justify-self-end">Editar</button>
+              <button type="button" disabled={status === "sending"} onClick={() => onEdit(fieldName)} className="justify-self-start text-sm font-bold text-[#60A5FA] hover:underline sm:justify-self-end">Editar</button>
             </div>
           ))}
         </dl>
@@ -644,7 +520,7 @@ function ReviewStep({
           className="mt-8 flex min-h-14 w-full items-center justify-center gap-3 bg-[#60A5FA] px-6 text-base font-bold text-[#0A0C10] outline-none focus-visible:ring-2 focus-visible:ring-[#60A5FA] focus-visible:ring-offset-4 focus-visible:ring-offset-[#0A0C10] disabled:opacity-60 sm:w-auto"
         >
           <Send className="size-5" aria-hidden="true" />
-          {status === "sending" ? "Enviando…" : "Enviar para conferência"}
+          {status === "sending" ? "Enviando…" : "Confirmar cadastro"}
         </button>
       </div>
     </section>

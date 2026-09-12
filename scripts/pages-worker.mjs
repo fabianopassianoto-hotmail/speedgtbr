@@ -7,7 +7,7 @@ function unavailable(status, message) {
 export default {
   async fetch(request, env, ctx) {
     const path = new URL(request.url).pathname;
-    if (path === "/cadastro" || path === "/cadastro/") {
+    if (path === "/cadastro" || path === "/cadastro/" || path === "/comece-aqui" || path === "/comece-aqui/" || path === "/central/central" || path === "/central/central/") {
       const target = new URL(request.url);
       target.pathname = "/central/cadastro";
       return Response.redirect(target.href, 307);

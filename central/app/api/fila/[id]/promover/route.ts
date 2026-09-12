@@ -15,6 +15,12 @@ type QueueRow = {
   email: string | null;
   cidade: string | null;
   uf: string | null;
+  rua: string | null;
+  numero: string | null;
+  bairro: string | null;
+  cep: string | null;
+  complemento: string | null;
+  classificacao_gt7: string | null;
   volante_ou_controle: string | null;
   perfil_pilotagem: string | null;
   disponibilidade: string | null;
@@ -66,7 +72,7 @@ export async function POST(
   const queue = await db
     .prepare(
       `SELECT id, apelido, nome_completo, psn, simgrid, simgrid_url,
-              whatsapp, email, cidade, uf, volante_ou_controle,
+              whatsapp, email, cidade, uf, rua, numero, bairro, cep, complemento, classificacao_gt7, volante_ou_controle,
               perfil_pilotagem, disponibilidade, carro_preferido,
               pista_citada, relacoes, curiosidade, observacoes_adm, ativo,
               cadastro_status, data_nascimento, data_entrada
@@ -128,11 +134,11 @@ export async function POST(
       .prepare(
         `INSERT INTO pilotos (
            id, apelido, nome_completo, psn, simgrid, simgrid_url, whatsapp,
-           email, cidade, uf, volante_ou_controle, perfil_pilotagem,
+           email, cidade, uf, rua, numero, bairro, cep, complemento, classificacao_gt7, volante_ou_controle, perfil_pilotagem,
            disponibilidade, carro_preferido, pista_citada, relacoes,
            curiosidade, observacoes_adm, ativo, cadastro_status,
            data_nascimento, data_entrada
-         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       )
       .bind(
         pilotId,
@@ -145,6 +151,12 @@ export async function POST(
         queue.email,
         queue.cidade,
         queue.uf,
+        queue.rua,
+        queue.numero,
+        queue.bairro,
+        queue.cep,
+        queue.complemento,
+        queue.classificacao_gt7,
         queue.volante_ou_controle,
         queue.perfil_pilotagem,
         queue.disponibilidade,

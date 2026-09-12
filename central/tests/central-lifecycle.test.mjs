@@ -38,7 +38,7 @@ async function load(name){
 }
 const admin=await load('app/api/admin/route.ts'),ledger=await load('app/api/livro-caixa/route.ts');
 const post=(body)=>admin.POST(new Request('http://local/api/admin',{method:'POST',body:JSON.stringify(body)}));
-test('additive migration preserves every pilot, participation, result and original payment',()=>{for(const t of Object.keys(before))assert.deepEqual(db.prepare(`SELECT * FROM ${t}`).all(),before[t]);assert.equal(db.prepare('SELECT count(*) n FROM atividades').get().n,0)});
+test('additive migration preserves every pilot, participation, result and original payment',()=>{for(const t of Object.keys(before))assert.deepEqual(db.prepare(`SELECT ${Object.keys(before[t][0]).map(column=>`"${column}"`).join(",")} FROM ${t}`).all(),before[t]);assert.equal(db.prepare('SELECT count(*) n FROM atividades').get().n,0)});
 test('general ledger accepts unrelated income/expense, preserves cents and consolidates original payments once',async()=>{
  for(const [natureza,valor] of [['receita',1000],['despesa',750]])assert.equal((await ledger.POST(new Request('http://local/api/livro-caixa',{method:'POST',body:JSON.stringify({natureza,valor,categoria:'Outros',descricao:'Teste',data:'2026-09-12'})}))).status,200);
  const {entries}=await (await ledger.GET()).json();assert.equal(entries.length,3);assert.equal(entries.reduce((n,e)=>n+(e.natureza==='despesa'?-e.valor:e.valor),0),2750);assert.equal(entries.filter(e=>e.temporada_id===null).length,2);

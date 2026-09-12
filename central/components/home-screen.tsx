@@ -34,7 +34,7 @@ import type {
 } from "@/db/races";
 import { cn } from "@/lib/utils";
 
-type HomeDestination = "pilotos" | "corrida" | "classificacao" | "boletim" | "caixa" | "fila" | "administracao";
+type HomeDestination = "pilotos" | "classificacao" | "boletim" | "caixa" | "fila" | "administracao";
 type PilotLink = Pick<PilotListItem, "id" | "apelido">;
 
 type Props = {
@@ -152,7 +152,7 @@ export function HomeScreen({
     <main className="mx-auto max-w-6xl px-3 pb-28 md:px-6 md:pb-12">
       <div className="flex flex-wrap items-center justify-between gap-3 py-5"><div><p className="text-sm text-primary">{activeCompetition?.nome??"Central da liga"}</p><h1 className="mt-1">Início</h1></div><ActionButton label="Ver classificação" icon={Trophy} onClick={()=>onNavigate("classificacao")}/></div>
       <section className="mb-5 rounded-md border border-border border-l-4 border-l-primary bg-card p-4 sm:p-5">
-        <div className="flex flex-wrap items-center justify-between gap-4"><div><p className="text-sm font-semibold text-primary">Próxima etapa</p><h2 className="mt-2">{nextRace?`${nextRace.stage.etapa}ª · ${nextRace.stage.pista}`:"Calendário concluído"}</h2></div><ActionButton label="Abrir corrida" icon={Flag} onClick={()=>onNavigate("corrida")} primary/></div>
+        <div className="flex flex-wrap items-center justify-between gap-4"><div><p className="text-sm font-semibold text-primary">Próxima etapa</p><h2 className="mt-2">{nextRace?`${nextRace.stage.etapa}ª · ${nextRace.stage.pista}`:"Calendário concluído"}</h2></div><ActionButton label="Ver classificação" icon={Flag} onClick={()=>onNavigate("classificacao")} primary/></div>
         {nextRace?<dl className="mt-4 grid grid-cols-2 gap-x-5 gap-y-3 border-t border-border pt-4 sm:grid-cols-3 lg:grid-cols-6"><StageDetail label="Série" value={nextRace.division.nome}/><StageDetail label="Data" value={formatDate(nextRace.date)}/><StageDetail label="Contagem" value={countdownLabel(nextRace.date)}/><StageDetail label="Duração" value={nextRace.stage.duracao||"A definir"}/><StageDetail label="Formato" value={nextRace.stage.classeOuFormato||"Livre"}/><StageDetail label="Progresso" value={`${completedStages.length}/${competitionStages.length} etapas`}/></dl>:<p className="mt-3 text-sm text-muted-foreground">{competitionStages.length?"Todas as etapas têm registros. Revise os resultados antes de encerrar a temporada.":"Configure as etapas em Administração → Competições."}</p>}
       </section>
       <section className="border-t border-border pt-5">
@@ -176,7 +176,7 @@ export function HomeScreen({
         <BigNumber icon={Users} label="Pilotos da temporada" value={String(seasonPilots.length)} detail={`${activeDivisions.length} séries ativas`} tone="#60A5FA" onClick={() => onNavigate("pilotos")} />
         <BigNumber icon={CreditCard} label="Inscrição pendente" value={String(pendingPayments.length)} detail="Sem pagamento ou isenção" tone={pendingPayments.length ? "#E8604C" : "#00E676"} onClick={() => onNavigate("caixa")} />
         <BigNumber icon={ClipboardCheck} label="Formulários no mês" value={String(formStats.total)} detail={`${formStats.applied} mesclados/cadastrados · ${formStats.pending} pendentes`} tone="#00E676" onClick={() => onNavigate("pilotos")} />
-        <BigNumber icon={Flag} label="Próxima corrida" value={nextRace ? countdownLabel(nextRace.date) : "—"} detail={nextRace ? `${nextRace.division.nome} · ${nextRace.stage.pista}` : "Calendário concluído"} tone="#60A5FA" onClick={() => onNavigate("corrida")} />
+        <BigNumber icon={Flag} label="Próxima corrida" value={nextRace ? countdownLabel(nextRace.date) : "—"} detail={nextRace ? `${nextRace.division.nome} · ${nextRace.stage.pista}` : "Calendário concluído"} tone="#60A5FA" onClick={() => onNavigate("classificacao")} />
         <BigNumber icon={CheckCircle2} label="Presença geral" value={`${attendanceRate}%`} detail={`${presentCount} presenças registradas`} tone="#00E676" onClick={() => onNavigate("classificacao")} />
         <BigNumber icon={TrendingUp} label="Risco de rebaixamento" value={String(relegationRisk.length)} detail="Últimas 5 posições por série" tone="#E8604C" onClick={() => onNavigate("classificacao")} />
       </section>
@@ -230,7 +230,7 @@ export function HomeScreen({
           <SectionHeading eyebrow="Próximos 7 dias" title="Datas importantes" detail="Aniversários e próximas corridas" />
           <div className="border-y border-border">
             {importantDates.map((item) => (
-              <button key={item.key} type="button" onClick={item.pilotId ? () => onOpenPilot(item.pilotId!) : () => onNavigate("corrida")} className="flex min-h-16 w-full items-center gap-3 border-b border-border bg-[#131722] px-3 text-left outline-none last:border-b-0 hover:bg-[#19202A] focus-visible:ring-2 focus-visible:ring-[#60A5FA]">
+              <button key={item.key} type="button" onClick={item.pilotId ? () => onOpenPilot(item.pilotId!) : () => onNavigate("classificacao")} className="flex min-h-16 w-full items-center gap-3 border-b border-border bg-[#131722] px-3 text-left outline-none last:border-b-0 hover:bg-[#19202A] focus-visible:ring-2 focus-visible:ring-[#60A5FA]">
                 <span className="flex size-10 shrink-0 items-center justify-center border border-border text-[#60A5FA]">{item.kind === "corrida" ? <Flag className="size-5" aria-hidden="true" /> : <Cake className="size-5" aria-hidden="true" />}</span>
                 <span className="min-w-0 flex-1"><strong className="block truncate text-sm">{item.title}</strong><span className="mt-1 block truncate text-xs text-muted-foreground">{item.detail}</span></span>
                 <span className="font-data shrink-0 text-xs text-[#60A5FA]">{item.when}</span>
