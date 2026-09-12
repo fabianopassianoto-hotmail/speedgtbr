@@ -25,3 +25,11 @@ test("public registration works without Access and discards forged identity", as
   assert.equal((await worker.fetch(new Request("https://example.com/central"), { DB: {} }, {})).status, 503);
   assert.equal((await worker.fetch(new Request("https://example.com/central"), { DB: {}, ACCESS_TEAM_DOMAIN: "test", ACCESS_AUD: "test" }, {})).status, 401);
 });
+
+test("provider authentication reaches application validation without trusting Access headers", async () => {
+  const env = { DB: {}, SUPABASE_URL: "https://example.supabase.co", SUPABASE_PUBLISHABLE_KEY: "test-key" };
+  for (const path of ["/central", "/central/entrar", "/central/api/auth/login"]) {
+    const response = await worker.fetch(new Request(`https://example.com${path}`, { headers: { "cf-access-authenticated-user-email": "forged@example.com" } }), env, {});
+    assert.deepEqual(await response.json(), { path, email: null });
+  }
+});

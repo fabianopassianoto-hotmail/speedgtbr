@@ -1,5 +1,6 @@
 /** Cloudflare Worker entry point for the vinext-starter template. */
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
+import { auditContext } from "../db/audit-context";
 import handler from "vinext/server/app-router-entry";
 
 interface Env {
@@ -40,7 +41,11 @@ const worker = {
       }, allowedWidths);
     }
 
-    return handler.fetch(request, env, ctx);
+    return auditContext.run({usuario:"Sistema / formulário público"}, async()=>{
+      if(!["GET","HEAD","OPTIONS"].includes(request.method) && request.headers.get("origin") && request.headers.get("origin") !== url.origin) return Response.json({error:"Origem não autorizada."},{status:403});
+      try { return await handler.fetch(request, env, ctx); }
+      catch(error) { console.error("[central]",error); return Response.json({error:"Não foi possível concluir. Confira os dados e tente novamente."},{status:500}); }
+    });
   },
 };
 

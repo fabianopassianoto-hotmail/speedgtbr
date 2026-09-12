@@ -1,3 +1,5 @@
+import { authConfig, getProviderUser } from "@/lib/auth-provider";
+import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 
 export type ChatGPTUser = {
@@ -11,6 +13,7 @@ const ACCESS_EMAIL_HEADER = "cf-access-authenticated-user-email";
 const ACCESS_NAME_HEADER = "cf-access-authenticated-user-name";
 
 export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
+  if (authConfig()) return getProviderUser();
   const requestHeaders = await headers();
   const accessEmail = requestHeaders.get(ACCESS_EMAIL_HEADER);
   const developmentEmail =
@@ -35,6 +38,7 @@ export async function requireChatGPTUser(
 ): Promise<ChatGPTUser> {
   const user = await getChatGPTUser();
   if (user) return user;
+  if (authConfig()) redirect("/central/entrar");
 
   throw new Error(
     `Autenticação ausente para ${returnTo}. Proteja esta rota com Cloudflare Access.`,

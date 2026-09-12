@@ -129,6 +129,7 @@ export function StandingsScreen({
               divisionResults,
               selectedStages,
               competition.totalEtapas,
+              selectedDivisions.map((item) => item.codigo),
             );
             return (
               <DivisionStandings

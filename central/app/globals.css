@@ -606,3 +606,42 @@ div[class~="md:hidden"][class~="space-y-3"] > article:first-child > div:first-of
   .registration-logo-intro { animation: none; opacity: 1; }
   .registration-reveal { animation: none; }
 }
+
+/* Central da Liga: semantic tokens shared by every operational screen. */
+:root { --primary:#60a5fa; --primary-foreground:#071426; --ring:#60a5fa; --sidebar-primary:#60a5fa; --sidebar-ring:#60a5fa; --chart-1:#60a5fa; --accent:#17283e; --muted-foreground:#a6b0c2; --success:#34d399; --warning:#fbbf24; --danger:#f87171; --panel-glass:#121923; }
+body { background-image:none; }
+header { background:#0d141e !important; box-shadow:none; }
+header::after { background:linear-gradient(90deg,#3b82f6,transparent); }
+.league-app { font-size:16px; }
+.league-app .max-w-6xl { max-width:1440px; }
+.league-app header nav button[aria-current=page] { text-shadow:none; }
+.league-app article,.league-app section { box-shadow:none !important; }
+.league-app [class*="text-[10px]"],.league-app [class*="text-[11px]"] { font-size:12px; line-height:1.5; }
+.league-app .filter-label { font-size:12px; }
+.league-app .filter-chip { font-size:14px; min-height:44px; border-radius:6px; }
+.filter-chip[aria-pressed=true] { background:#172e4c; border-color:var(--primary); color:#bfdbfe; }
+:focus-visible { outline:2px solid var(--primary); outline-offset:3px; }
+.league-app input:focus,.league-app select:focus,.league-app textarea:focus { box-shadow:0 0 0 3px #60a5fa22 !important; }
+.league-app table tbody tr:hover { background:#17283e !important; box-shadow:inset 3px 0 var(--primary); }
+.league-app article:hover { border-color:#334155 !important; }
+.league-app .pilot-list-row { min-height:72px; }
+.central-panel { border:1px solid var(--border); background:var(--card); border-radius:6px; padding:20px; }
+.central-field { display:flex; flex-direction:column; gap:6px; font-size:14px; min-width:0; }
+.central-field input,.central-field select,.central-field textarea { min-height:44px; border:1px solid var(--border); padding:10px 12px; width:100%; }
+.central-action { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:44px; padding:10px 16px; background:var(--primary); color:var(--primary-foreground); border-radius:4px; font-size:14px; font-weight:700; }
+.central-action:disabled { opacity:.45; cursor:not-allowed; }
+.central-secondary { background:#172334; color:#dbeafe; border:1px solid #334155; }
+@media(max-width:767px) {
+ .league-app nav.fixed { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
+ .league-app nav.fixed button { min-height:48px; font-size:12px; }
+ .league-app main { padding-bottom:140px; }
+ .league-app .bottom-\[68px\] { bottom:110px; }
+ .league-app [role=dialog] { max-height:100dvh; }
+ .central-panel { padding:16px; }
+}
+
+.league-app .central-panel h2 { font-size:1.3rem; }
+.league-app [data-slot=sheet-content] { max-width:none; }
+.league-app table.min-w-\[920px\] tbody > tr:first-child { background:#17283e !important; }
+.league-app a[class*=bg-] { color:var(--foreground); }
+[role="dialog"] button, [role="dialog"] a { overflow-wrap: anywhere; }

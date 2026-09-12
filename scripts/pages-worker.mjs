@@ -21,9 +21,11 @@ export default {
     if (path === "/central" || path.startsWith("/central/")) {
       if (/^\/central\/(assets|brand)\//.test(path) || /^\/central\/(og\.png|favicon\.svg)$/.test(path)) return env.ASSETS.fetch(request);
       const publicRegistration = /^\/central\/(cadastro|api\/cadastro)\/?$/.test(path);
-      if (!env.DB || (!publicRegistration && (!env.ACCESS_TEAM_DOMAIN || !env.ACCESS_AUD))) return unavailable(503, "A central está em preparação. Volte em breve.");
-      const email = publicRegistration ? null : await authenticatedEmail(request, env);
-      if (!publicRegistration && !email) return unavailable(401, "Entre com uma conta autorizada pelo acesso da comunidade.");
+      const providerAuth = String(env.SUPABASE_URL ?? "").startsWith("https://") && Boolean(env.SUPABASE_PUBLISHABLE_KEY);
+      const publicAuth = /^\/central\/(entrar|conta|api\/auth\/[^/]+)\/?$/.test(path);
+      if (!env.DB || (!providerAuth && !publicAuth && !publicRegistration && (!env.ACCESS_TEAM_DOMAIN || !env.ACCESS_AUD))) return unavailable(503, "A central está em preparação. Volte em breve.");
+      const email = publicRegistration || publicAuth || providerAuth ? null : await authenticatedEmail(request, env);
+      if (!providerAuth && !publicAuth && !publicRegistration && !email) return unavailable(401, "Entre com uma conta autorizada pelo acesso da comunidade.");
       const headers = new Headers(request.headers);
       headers.delete("cf-access-authenticated-user-email");
       headers.delete("cf-access-authenticated-user-name");

@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  Settings2,
+  Maximize2,
   CircleDollarSign,
   ClipboardCheck,
   ClipboardList,
@@ -22,6 +24,9 @@ import {
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { AdminScreen } from "@/components/admin-screen";
+import { PilotHistory } from "@/components/pilot-history";
+import { LedgerScreen } from "@/components/ledger-screen";
 import { FilterChips } from "@/components/filter-chips";
 import { Button } from "@/components/ui/button";
 import { PilotCompetitionConfig, RaceEntryScreen } from "@/components/race-entry-screen";
@@ -65,7 +70,7 @@ import { GENERAL_WHATSAPP_GROUP_URL } from "@/lib/whatsapp-groups";
 import { downloadXlsx } from "@/lib/xlsx-client";
 
 type Filter = string;
-type Screen = "inicio" | "pilotos" | "corrida" | "classificacao" | "boletim" | "caixa" | "fila";
+type Screen = "inicio" | "pilotos" | "corrida" | "classificacao" | "boletim" | "caixa" | "fila" | "administracao";
 type ListRecord = PilotListItem | QueueListItem | PendingFormListItem;
 
 const GENERAL_COMPETITION = "__cadastro_geral__";
@@ -100,7 +105,7 @@ const statusFilters: Array<{ value: Filter; label: string }> = [
   { value: "todos", label: "Todos" },
   { value: "ex_pilotos", label: "Ex-pilotos" },
   { value: "suplentes", label: "Suplentes" },
-  { value: "fila", label: "Fila" },
+  { value: "fila", label: "Fila e avaliação" },
   { value: "formularios", label: "Formulários" },
   { value: "pendentes", label: "Pagamento pendente" },
   { value: "incompletos", label: "Cadastro incompleto" },
@@ -113,7 +118,7 @@ const navItems = [
   { value: "corrida", label: "Corrida", icon: Flag, enabled: true },
   { value: "classificacao", label: "Classificação", icon: Trophy, enabled: true },
   { value: "caixa", label: "Caixa", icon: CircleDollarSign, enabled: true },
-  { value: "fila", label: "Fila", icon: ListOrdered, enabled: true },
+  { value: "administracao", label: "Administração", icon: Settings2, enabled: true },
 ];
 
 const seriesColor: Record<Serie, string> = {
@@ -287,6 +292,7 @@ export function PilotsScreen({
   access: AccessSummary;
   accessRequests: AccessRequest[];
 }) {
+  const currentSeasonId = raceData.competicoes.find(c=>c.ativa&&c.status==="ativa")?.id??"2026";
   const [activeScreen, setActiveScreen] = useState<Screen>("inicio");
   const [pilotos, setPilotos] = useState(initialPilotos);
   const [fila, setFila] = useState(initialFila);
@@ -304,6 +310,9 @@ export function PilotsScreen({
     kind: ListRecord["kind"];
     id: string;
   } | null>(null);
+  const [expanded, setExpanded] = useState(false);
+  const [pilotArea, setPilotArea] = useState("todos");
+  const [cashView, setCashView] = useState("livro");
   const [isDesktop, setIsDesktop] = useState(false);
   const [saveStatus, setSaveStatus] = useState<{
     message: string;
@@ -333,7 +342,8 @@ export function PilotsScreen({
         target?.isContentEditable;
       if (event.key === "/" && !isTyping) {
         event.preventDefault();
-        searchRef.current?.focus();
+        setActiveScreen("pilotos");
+        requestAnimationFrame(()=>searchRef.current?.focus());
       }
     };
     window.addEventListener("keydown", handleShortcut);
@@ -765,7 +775,7 @@ export function PilotsScreen({
       };
       if (!response.ok || !result.entry) throw new Error(result.error || "Não foi possível cadastrar o pagamento.");
       setCashEntries((current) => [result.entry!, ...current]);
-      if (result.entry.pilotoId && result.entry.temporadaId === "2026" && result.status) {
+      if (result.entry.pilotoId && result.entry.temporadaId === currentSeasonId && result.status) {
         updatePaymentStatus(result.entry.pilotoId, result.status.totalPago, result.status.isentoPagamento, result.status.inscricaoPendente);
       }
       setSaveStatus({ message: "Pagamento cadastrado", tone: "success" });
@@ -793,7 +803,7 @@ export function PilotsScreen({
       };
       if (!response.ok) throw new Error(result.error || "Não foi possível excluir o pagamento.");
       setCashEntries((current) => current.filter((item) => item.id !== entry.id));
-      if (result.pilotoId && result.temporadaId === "2026" && result.status) {
+      if (result.pilotoId && result.temporadaId === currentSeasonId && result.status) {
         updatePaymentStatus(result.pilotoId, result.status.totalPago, result.status.isentoPagamento, result.status.inscricaoPendente);
       }
       setSaveStatus({ message: "Pagamento excluído", tone: "success" });
@@ -945,7 +955,7 @@ export function PilotsScreen({
       ];
     });
 
-    if (temporadaId === "2026") {
+    if (temporadaId === currentSeasonId) {
       setPilotos((current) =>
         current.map((pilot) =>
           pilot.id === pilotId
@@ -958,7 +968,7 @@ export function PilotsScreen({
 
   function handleMembershipRemove(pilotId: string, temporadaId: string) {
     setRacePilots((current) => current.filter((pilot) => !(pilot.id === pilotId && pilot.temporadaId === temporadaId)));
-    if (temporadaId === "2026") {
+    if (temporadaId === currentSeasonId) {
       setPilotos((current) => current.map((pilot) => pilot.id === pilotId ? { ...pilot, serie: null, situacao: null, isentoPagamento: false, inscricaoPendente: false } : pilot));
     }
   }
@@ -974,13 +984,13 @@ export function PilotsScreen({
       id: pilot.id,
       apelido: pilot.apelido,
       simgrid: pilot.simgrid,
-      temporadaId: "2026",
+      temporadaId: currentSeasonId,
       serie: pilot.serie!,
       situacao: "ativo",
       pilotoArquivado: false,
     }));
   const activeRacePilots: RacePilot[] = [
-    ...racePilots.filter((pilot) => pilot.temporadaId !== "2026"),
+    ...racePilots.filter((pilot) => pilot.temporadaId !== currentSeasonId),
     ...currentSeasonPilots,
   ];
   const currentSeasonClassificationPilots: RacePilot[] = pilotos
@@ -994,21 +1004,23 @@ export function PilotsScreen({
       id: pilot.id,
       apelido: pilot.apelido,
       simgrid: pilot.simgrid,
-      temporadaId: "2026",
+      temporadaId: currentSeasonId,
       serie: pilot.serie!,
       situacao: pilot.situacao,
       pilotoArquivado: false,
     }));
-  const classificationPilots: RacePilot[] = [
-    ...racePilots.filter((pilot) => pilot.temporadaId !== "2026"),
-    ...currentSeasonClassificationPilots,
-  ];
+  const classificationPilots: RacePilot[] = raceData.competicoes.some(c=>c.id===currentSeasonId&&c.ativa&&c.status==="ativa") ? [...racePilots.filter(p=>p.temporadaId!==currentSeasonId),...currentSeasonClassificationPilots] : racePilots;
   const raceRosterKey = activeRacePilots
     .map((pilot) => `${pilot.id}:${pilot.serie}`)
     .join("|");
   const activeCompetitionName =
     raceData.competicoes.find((competition) => competition.status === "ativa")
       ?.nome ?? "Competição não definida";
+
+  function navigate(screen: Screen) {
+    if(screen === "fila") { setActiveScreen("pilotos"); setPilotArea("entrada"); setFilter("formularios"); setPilotCompetition(GENERAL_COMPETITION); }
+    else setActiveScreen(screen);
+  }
 
   const selectedEditable =
     selected?.kind === "fila"
@@ -1048,7 +1060,7 @@ export function PilotsScreen({
             className="h-7 w-20 shrink-0 object-contain object-right sm:h-9 sm:w-28 md:w-36"
           />
         </div>
-        <div className="mx-auto max-w-6xl px-4 md:px-6"><a href="/" className="inline-flex min-h-11 items-center text-sm font-semibold text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-primary">Voltar ao site Speed GT Brasil</a></div><DesktopNavigation activeScreen={activeScreen} onNavigate={setActiveScreen} />
+        <div className="mx-auto max-w-6xl px-4 md:px-6"><a href="/" className="inline-flex min-h-11 items-center text-sm font-semibold text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-primary">Voltar ao site Speed GT Brasil</a></div><DesktopNavigation activeScreen={activeScreen} onNavigate={navigate} />
       </header>
 
       <div hidden={activeScreen !== "inicio"}>
@@ -1064,7 +1076,7 @@ export function PilotsScreen({
           racePilots={classificationPilots}
           results={raceResults}
           accessRequests={accessRequests}
-          onNavigate={setActiveScreen}
+          onNavigate={navigate}
           onCopyRegistration={copyRegistrationLink}
           registrationCopied={linkCopied}
           onOpenPilot={(id) => setSelectedKey({ kind: "piloto", id })}
@@ -1113,23 +1125,23 @@ export function PilotsScreen({
             />
           </label>
 
+          <div className="mt-4"><FilterChips label="Área" value={pilotArea} onChange={v=>{setPilotArea(v);setQuery("");setFilter(v==="entrada"?"formularios":v==="ex"?"ex_pilotos":"todos");setPilotCompetition(v==="temporada"?raceData.competicoes.find(c=>c.ativa)?.id??GENERAL_COMPETITION:GENERAL_COMPETITION)}} options={[{value:"todos",label:"Todos"},{value:"temporada",label:"Temporada atual"},{value:"entrada",label:"Entrada"},{value:"ex",label:"Ex-pilotos"}]}/></div>
           <div className="mt-3 space-y-2" aria-label="Filtros de pilotos">
-            <FilterChips label="Competição" value={pilotCompetition} onChange={v=>{setPilotCompetition(v);setFilter("todos")}} options={[{value:GENERAL_COMPETITION,label:"Cadastro geral"},...raceData.competicoes.filter(c=>c.status!=="cancelada").map(c=>({value:c.id,label:c.nome}))]}/>
-            <FilterChips label="Exibir" value={filter} onChange={setFilter} options={pilotFilterOptions.map(item=>({value:item.value,label:item.label+" · "+(pilotFilterCounts[item.value]??0)}))}/>
+            <div hidden={pilotArea === "entrada" || pilotArea === "ex"}><FilterChips label="Competição" value={pilotCompetition} onChange={v=>{setPilotCompetition(v);setFilter("todos")}} options={[{value:GENERAL_COMPETITION,label:"Cadastro geral"},...raceData.competicoes.filter(c=>c.status!=="cancelada").map(c=>({value:c.id,label:c.nome}))]}/></div>
+            <FilterChips label="Exibir" value={filter} onChange={setFilter} options={pilotFilterOptions.filter(item=>pilotArea === "entrada"?["formularios","fila","incompletos"].includes(item.value):!["formularios","fila","incompletos"].includes(item.value)).map(item=>({value:item.value,label:item.label+" · "+(pilotFilterCounts[item.value]??0)}))}/>
           </div>
         </section>
 
-        {access.papel === "administrador" && accessRequests.length > 0 && (
-          <AccessRequestsPanel
-            requests={accessRequests}
-            divisions={raceData.divisoes.filter((division) => division.status === "ativa")}
-            onResolved={(id) =>
-              setAccessRequests((current) => current.filter((item) => item.id !== id))
-            }
-          />
-        )}
-
-        <section className="pt-4" aria-live="polite">
+      <div hidden={activeScreen !== "pilotos" || pilotArea !== "entrada" || filter !== "fila"}>
+        <QueueScreen
+          searchQuery={query}
+          people={fila}
+          editable={access.papel === "administrador"}
+          onOpenQueue={(id) => setSelectedKey({ kind: "fila", id })}
+          onSave={saveQueueField}
+        />
+      </div>
+        <section hidden={pilotArea === "entrada" && filter === "fila"} className="pt-4" aria-live="polite">
           <div className="mb-2 flex items-center justify-between gap-3 px-1">
             <p className="text-sm text-muted-foreground">
               {records.length} {records.length === 1 ? "resultado" : "resultados"}
@@ -1170,9 +1182,7 @@ export function PilotsScreen({
             </div>
           )}
         </section>
-        {access.papel === "administrador" && (
-          <PilotCompetitionConfig competitions={raceData.competicoes} divisions={raceData.divisoes} stages={raceData.etapas} enrolledPilots={racePilots} availablePilots={raceData.pilotosDisponiveis} selectedCompetition={pilotCompetition === GENERAL_COMPETITION ? raceData.competicoes.find((item)=>item.status==="ativa")?.id ?? raceData.competicoes[0]?.id ?? "" : pilotCompetition}/>
-        )}
+
       </main>
       </div>
       <div hidden={activeScreen !== "corrida"}>
@@ -1212,7 +1222,10 @@ export function PilotsScreen({
       </div>
       </div>
       <div hidden={activeScreen !== "caixa"}>
-        <CashScreen
+        <div className="mx-auto max-w-6xl px-3 pt-5 md:px-6"><FilterChips label="Caixa" value={cashView} onChange={setCashView} options={[{value:"livro",label:"Livro-caixa"},{value:"inscricoes",label:"Inscrições e pagamentos"}]}/></div>
+        {activeScreen === "caixa" && cashView === "livro" && <LedgerScreen competitions={raceData.competicoes} pilots={pilotos}/>}
+        <div hidden={cashView !== "inscricoes"}><CashScreen
+          memberships={racePilots}
           competitions={raceData.competicoes}
           entries={cashEntries}
           pilots={pilotos}
@@ -1220,33 +1233,29 @@ export function PilotsScreen({
           onOpenPilot={(id) => setSelectedKey({ kind: "piloto", id })}
           onCreateEntry={createCashEntry}
           onDeleteEntry={deleteCashEntry}
-        />
-      </div>
-      <div hidden={activeScreen !== "fila"}>
-        <QueueScreen
-          people={fila}
-          editable={access.papel === "administrador"}
-          onOpenQueue={(id) => setSelectedKey({ kind: "fila", id })}
-          onSave={saveQueueField}
-        />
+        /></div>
       </div>
 
-      <MobileNavigation activeScreen={activeScreen} onNavigate={setActiveScreen} />
+
+      <div hidden={activeScreen !== "administracao"}>
+        {activeScreen === "administracao" && <AdminScreen raceData={raceData} isAdmin={access.papel === "administrador"} requests={accessRequests} onResolved={id=>setAccessRequests(current=>current.filter(r=>r.id!==id))}/>}</div>
+      <MobileNavigation activeScreen={activeScreen} onNavigate={navigate} />
 
       <Sheet
         open={Boolean(selected)}
-        onOpenChange={(open) => !open && setSelectedKey(null)}
+        onOpenChange={(open) => {if(!open){setSelectedKey(null);setExpanded(false)}}}
       >
         <SheetContent
           side={isDesktop ? "right" : "bottom"}
           showCloseButton={false}
           className={cn(
             "gap-0 border-border bg-[#10141B] p-0 text-foreground shadow-none motion-reduce:transition-none",
-            isDesktop
-              ? "w-[min(480px,42vw)] max-w-none"
-              : "h-[92dvh] w-full max-w-none",
+            isDesktop && !expanded
+              ? "w-[min(560px,46vw)] max-w-none"
+              : "!inset-0 !h-dvh !w-screen !max-w-none",
           )}
         >
+          {isDesktop && <button type="button" className="flex min-h-11 items-center justify-center gap-2 border-b border-border bg-card text-primary" onClick={()=>setExpanded(v=>!v)}><Maximize2 className="size-4"/>{expanded?"Recolher ficha":"Expandir ficha"}</button>}
           {selected?.kind === "formulario" ? (
             <PendingFormSheet
               form={selected}
@@ -1988,6 +1997,7 @@ function RecordSheet({
   ) => void;
   onMembershipRemove: (pilotId: string, temporadaId: string) => void;
 }) {
+  const currentSeasonId=raceData.competicoes.find(c=>c.ativa&&c.status==="ativa")?.id??"2026";
   const whatsappUrl = makeWhatsappUrl(record.whatsapp);
 
   return (
@@ -2040,15 +2050,16 @@ function RecordSheet({
       <div className="scrollbar-thin flex-1 overflow-y-auto pb-8">
         {record.kind === "piloto" ? (
           <>
-            <PanelSection title="Campeonato" icon={Trophy}>
-              {record.serie || cashEntries.some((entry)=>entry.pilotoId===record.id&&entry.temporadaId==="2026") ? (
+            <PilotHistory pilotoId={record.id}/>
+            <PanelSection title="Participação e inscrição" icon={Trophy}>
+              {record.serie || cashEntries.some((entry)=>entry.pilotoId===record.id&&entry.temporadaId===currentSeasonId) ? (
                 <PaymentRegistration
                   totalPago={record.totalPago}
                   isentoPagamento={record.isentoPagamento}
                   inscricaoPendente={record.inscricaoPendente}
                   editable={isAdmin}
                   hasEnrollment={Boolean(record.serie)}
-                  entries={cashEntries.filter((entry)=>entry.pilotoId===record.id&&entry.temporadaId==="2026")}
+                  entries={cashEntries.filter((entry)=>entry.pilotoId===record.id&&entry.temporadaId===currentSeasonId)}
                   onRegister={onRegisterPayment}
                   onSetExemption={onSetPaymentExemption}
                   onDelete={onDeletePayment}
@@ -2574,7 +2585,7 @@ function PendingFormSheet({
                 atualizados; os demais dados permanecem como estão.
               </p>
               {!query && matches.length > 0 && (
-                <p className="border-l-2 border-[#60A5FA] bg-[#272B13] p-3 text-sm text-[#E7EF9B]">
+                <p className="border-l-2 border-[#60A5FA] bg-[#152B46] p-3 text-sm text-[#E7EF9B]">
                   Encontramos possíveis cadastros iguais. Confira antes de criar
                   uma pessoa nova.
                 </p>
@@ -2611,7 +2622,7 @@ function PendingFormSheet({
                         onClick={() => setSelectedKey(key)}
                         className={cn(
                           "flex min-h-14 w-full items-center justify-between gap-3 border-b border-border px-3 py-2 text-left outline-none last:border-b-0 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#60A5FA]",
-                          selected ? "bg-[#272B13]" : "bg-[#131722] hover:bg-[#19202A]",
+                          selected ? "bg-[#152B46]" : "bg-[#131722] hover:bg-[#19202A]",
                         )}
                       >
                         <span className="min-w-0">
@@ -2818,7 +2829,7 @@ function PaymentRegistration({
         </div>
         {editable && hasEnrollment && !open && (
           <div className="flex shrink-0 flex-col gap-2">
-            <button type="button" onClick={() => setOpen(true)} className="min-h-11 border border-[#60A5FA] px-3 text-sm font-bold text-[#60A5FA] outline-none hover:bg-[#272B13] focus-visible:ring-2 focus-visible:ring-[#60A5FA]">Registrar pagamento</button>
+            <button type="button" onClick={() => setOpen(true)} className="min-h-11 border border-[#60A5FA] px-3 text-sm font-bold text-[#60A5FA] outline-none hover:bg-[#152B46] focus-visible:ring-2 focus-visible:ring-[#60A5FA]">Registrar pagamento</button>
             <button type="button" disabled={submitting} onClick={toggleExemption} className="min-h-11 border border-[#00E676] px-3 text-sm font-semibold text-[#73FFB0] outline-none focus-visible:ring-2 focus-visible:ring-[#00E676] disabled:opacity-50">{isentoPagamento ? "Remover isenção" : "Marcar isento"}</button>
           </div>
         )}
@@ -3179,6 +3190,8 @@ function ReadOnlyField({
 function searchableText(record: ListRecord): string {
   return normalize(
     [
+      record.id,
+      record.email,
       record.apelido,
       record.nomeCompleto,
       record.psn,

@@ -1,3 +1,4 @@
+import { setAuditActor } from "@/db/audit-context";
 import type { ChatGPTUser } from "@/app/chatgpt-auth";
 import { getD1Binding } from "@/db";
 
@@ -42,6 +43,7 @@ type AccessRequestRow = {
 export async function ensureCurrentUserAccess(
   user: ChatGPTUser,
 ): Promise<UserAccess | null> {
+  setAuditActor(user.fullName ? `${user.fullName} <${user.email}>` : user.email);
   const db = getD1Binding();
   const email = user.email.trim().toLowerCase();
   const found = await db
@@ -67,9 +69,10 @@ export async function ensureCurrentUserAccess(
       found.account_user_id = user.id;
       found.nome ??= user.fullName;
     }
-    return found.ativo ? mapAccess(found) : null;
+    return found.ativo ? {...mapAccess({...found,account_user_id:found.account_user_id??user.id}),papel:"administrador",serie:null} : null;
   }
 
+  if(user.id.startsWith("supabase:"))return null;
   const count = await db
     .prepare("SELECT COUNT(*) AS total FROM usuarios_acessos")
     .first<{ total: number }>();

@@ -70,7 +70,7 @@ export async function PATCH(
   const enrollment = await db
     .prepare(
       `SELECT serie, situacao FROM inscricoes
-       WHERE temporada_id = '2026' AND piloto_id = ?
+       WHERE temporada_id = (SELECT id FROM temporadas WHERE ativa=1 AND status='ativa' AND ciclo='ativa' ORDER BY CASE WHEN tipo_evento='campeonato' THEN 0 ELSE 1 END,rowid DESC LIMIT 1) AND piloto_id = ?
        LIMIT 1`,
     )
     .bind(id)
@@ -100,7 +100,7 @@ export async function PATCH(
       return Response.json({ error: "Participação inválida." }, { status: 400 });
     }
     if (!enrollment) {
-      return Response.json({ error: "Piloto não inscrito em 2026." }, { status: 404 });
+      return Response.json({ error: "Piloto não inscrito na temporada ativa." }, { status: 404 });
     }
     const value = body.value as { serie?: unknown; situacao?: unknown };
     if (value.serie !== "A" && value.serie !== "B" && value.serie !== "C") {
@@ -124,14 +124,14 @@ export async function PATCH(
           `SELECT d.limite_pilotos AS limite, t.pilotos_por_serie AS geral
            FROM temporadas t LEFT JOIN divisoes d
              ON d.temporada_id = t.id AND d.codigo = ?
-           WHERE t.id = '2026'`,
+           WHERE t.id = (SELECT id FROM temporadas WHERE ativa=1 AND status='ativa' AND ciclo='ativa' ORDER BY CASE WHEN tipo_evento='campeonato' THEN 0 ELSE 1 END,rowid DESC LIMIT 1)`,
         )
         .bind(value.serie)
         .first<{ limite: number | null; geral: number }>();
       const activeCount = await db
         .prepare(
           `SELECT COUNT(*) AS total FROM inscricoes
-           WHERE temporada_id = '2026' AND serie = ?
+           WHERE temporada_id = (SELECT id FROM temporadas WHERE ativa=1 AND status='ativa' AND ciclo='ativa' ORDER BY CASE WHEN tipo_evento='campeonato' THEN 0 ELSE 1 END,rowid DESC LIMIT 1) AND serie = ?
              AND COALESCE(situacao, 'ativo') = 'ativo'`,
         )
         .bind(value.serie)
@@ -147,7 +147,7 @@ export async function PATCH(
     await db
       .prepare(
         `UPDATE inscricoes SET serie = ?, situacao = ?
-         WHERE temporada_id = '2026' AND piloto_id = ?`,
+         WHERE temporada_id = (SELECT id FROM temporadas WHERE ativa=1 AND status='ativa' AND ciclo='ativa' ORDER BY CASE WHEN tipo_evento='campeonato' THEN 0 ELSE 1 END,rowid DESC LIMIT 1) AND piloto_id = ?`,
       )
       .bind(value.serie, value.situacao, id)
       .run();
@@ -180,7 +180,7 @@ export async function PATCH(
     await db
       .prepare(
         `UPDATE inscricoes SET ${enrollmentColumns[field]} = ?
-         WHERE temporada_id = '2026' AND piloto_id = ?`,
+         WHERE temporada_id = (SELECT id FROM temporadas WHERE ativa=1 AND status='ativa' AND ciclo='ativa' ORDER BY CASE WHEN tipo_evento='campeonato' THEN 0 ELSE 1 END,rowid DESC LIMIT 1) AND piloto_id = ?`,
       )
       .bind(value, id)
       .run();
@@ -204,14 +204,14 @@ export async function PATCH(
           `SELECT d.limite_pilotos AS limite, t.pilotos_por_serie AS geral
            FROM temporadas t LEFT JOIN divisoes d
              ON d.temporada_id = t.id AND d.codigo = ?
-           WHERE t.id = '2026'`,
+           WHERE t.id = (SELECT id FROM temporadas WHERE ativa=1 AND status='ativa' AND ciclo='ativa' ORDER BY CASE WHEN tipo_evento='campeonato' THEN 0 ELSE 1 END,rowid DESC LIMIT 1)`,
         )
         .bind(body.value)
         .first<{ limite: number | null; geral: number }>();
       const targetCount = await db
         .prepare(
           `SELECT COUNT(*) AS total FROM inscricoes
-           WHERE temporada_id = '2026' AND serie = ?
+           WHERE temporada_id = (SELECT id FROM temporadas WHERE ativa=1 AND status='ativa' AND ciclo='ativa' ORDER BY CASE WHEN tipo_evento='campeonato' THEN 0 ELSE 1 END,rowid DESC LIMIT 1) AND serie = ?
              AND COALESCE(situacao, 'ativo') = 'ativo'`,
         )
         .bind(body.value)
@@ -227,7 +227,7 @@ export async function PATCH(
     await db
       .prepare(
         `UPDATE inscricoes SET serie = ?
-         WHERE temporada_id = '2026' AND piloto_id = ?`,
+         WHERE temporada_id = (SELECT id FROM temporadas WHERE ativa=1 AND status='ativa' AND ciclo='ativa' ORDER BY CASE WHEN tipo_evento='campeonato' THEN 0 ELSE 1 END,rowid DESC LIMIT 1) AND piloto_id = ?`,
       )
       .bind(body.value, id)
       .run();
@@ -256,14 +256,14 @@ export async function PATCH(
           `SELECT d.limite_pilotos AS limite, t.pilotos_por_serie AS geral
            FROM temporadas t LEFT JOIN divisoes d
              ON d.temporada_id = t.id AND d.codigo = ?
-           WHERE t.id = '2026'`,
+           WHERE t.id = (SELECT id FROM temporadas WHERE ativa=1 AND status='ativa' AND ciclo='ativa' ORDER BY CASE WHEN tipo_evento='campeonato' THEN 0 ELSE 1 END,rowid DESC LIMIT 1)`,
         )
         .bind(enrollment.serie)
         .first<{ limite: number | null; geral: number }>();
       const activeCount = await db
         .prepare(
           `SELECT COUNT(*) AS total FROM inscricoes
-           WHERE temporada_id = '2026' AND serie = ?
+           WHERE temporada_id = (SELECT id FROM temporadas WHERE ativa=1 AND status='ativa' AND ciclo='ativa' ORDER BY CASE WHEN tipo_evento='campeonato' THEN 0 ELSE 1 END,rowid DESC LIMIT 1) AND serie = ?
              AND COALESCE(situacao, 'ativo') = 'ativo'`,
         )
         .bind(enrollment.serie)
@@ -279,7 +279,7 @@ export async function PATCH(
     await db
       .prepare(
         `UPDATE inscricoes SET situacao = ?
-         WHERE temporada_id = '2026' AND piloto_id = ?`,
+         WHERE temporada_id = (SELECT id FROM temporadas WHERE ativa=1 AND status='ativa' AND ciclo='ativa' ORDER BY CASE WHEN tipo_evento='campeonato' THEN 0 ELSE 1 END,rowid DESC LIMIT 1) AND piloto_id = ?`,
       )
       .bind(body.value, id)
       .run();

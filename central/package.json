@@ -12,7 +12,7 @@
     "start": "vinext start",
     "test": "npm run build && node --test tests/*.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
-    "db:generate": "bash scripts/sites-env.sh -- drizzle-kit generate",
+    "db:generate": "drizzle-kit generate",
     "db:migrate:local": "wrangler d1 migrations apply DB --local --config wrangler.local.jsonc",
     "db:import:local": "wrangler d1 execute DB --local --file export/data/d1-data.sql --config wrangler.local.jsonc",
     "db:migrate:remote": "wrangler d1 migrations apply DB --remote --config wrangler.jsonc",

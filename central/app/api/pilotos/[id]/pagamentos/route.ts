@@ -1,3 +1,4 @@
+import {currentSeasonId} from "@/db/current-season";
 import { getChatGPTUser } from "@/app/chatgpt-auth";
 import { getD1Binding } from "@/db";
 import { ensureCurrentUserAccess } from "@/db/access";
@@ -61,7 +62,7 @@ async function getPaymentTotals(pilotId: string) {
        FROM inscricoes i
        LEFT JOIN caixa cx
          ON cx.temporada_id = i.temporada_id AND cx.piloto_id = i.piloto_id
-       WHERE i.temporada_id = '2026' AND i.piloto_id = ?
+       WHERE i.temporada_id = (SELECT id FROM temporadas WHERE ativa=1 AND status='ativa' AND ciclo='ativa' ORDER BY CASE WHEN tipo_evento='campeonato' THEN 0 ELSE 1 END,rowid DESC LIMIT 1) AND i.piloto_id = ?
        GROUP BY i.pagamento_isento`,
     )
     .bind(pilotId)
@@ -102,14 +103,14 @@ export async function PATCH(
     .prepare(
       `UPDATE inscricoes
        SET pagamento_isento = ?
-       WHERE temporada_id = '2026' AND piloto_id = ?
+       WHERE temporada_id = (SELECT id FROM temporadas WHERE ativa=1 AND status='ativa' AND ciclo='ativa' ORDER BY CASE WHEN tipo_evento='campeonato' THEN 0 ELSE 1 END,rowid DESC LIMIT 1) AND piloto_id = ?
        RETURNING piloto_id`,
     )
     .bind(body.isento ? 1 : 0, id)
     .first<{ piloto_id: string }>();
   if (!updated) {
     return Response.json(
-      { error: "Piloto não inscrito em 2026." },
+      { error: "Piloto não inscrito na temporada ativa." },
       { status: 404 },
     );
   }
@@ -151,7 +152,7 @@ export async function POST(
       `SELECT p.apelido
        FROM pilotos p
        INNER JOIN inscricoes i
-         ON i.piloto_id = p.id AND i.temporada_id = '2026'
+         ON i.piloto_id = p.id AND i.temporada_id = (SELECT id FROM temporadas WHERE ativa=1 AND status='ativa' AND ciclo='ativa' ORDER BY CASE WHEN tipo_evento='campeonato' THEN 0 ELSE 1 END,rowid DESC LIMIT 1)
        WHERE p.id = ?
        LIMIT 1`,
     )
@@ -160,7 +161,7 @@ export async function POST(
 
   if (!pilot) {
     return Response.json(
-      { error: "Piloto não inscrito em 2026." },
+      { error: "Piloto não inscrito na temporada ativa." },
       { status: 404 },
     );
   }
@@ -171,7 +172,7 @@ export async function POST(
     .prepare(
       `INSERT INTO caixa
          (temporada_id, data, piloto_id, nome, tipo, valor, observacao)
-       VALUES ('2026', ?, ?, ?, ?, ?, NULL)
+       VALUES ((SELECT id FROM temporadas WHERE ativa=1 AND status='ativa' AND ciclo='ativa' ORDER BY CASE WHEN tipo_evento='campeonato' THEN 0 ELSE 1 END,rowid DESC LIMIT 1), ?, ?, ?, ?, ?, NULL)
        RETURNING id`,
     )
     .bind(body.data, id, pilot.apelido, tipo, valor)
@@ -188,7 +189,7 @@ export async function POST(
     id: inserted.id,
     entry: {
       id: inserted.id,
-      temporadaId: "2026",
+      temporadaId: await currentSeasonId(),
       data: body.data,
       pilotoId: id,
       nome: pilot.apelido,
@@ -228,7 +229,7 @@ export async function DELETE(
   const payment = await db
     .prepare(
       `SELECT id FROM caixa
-       WHERE id = ? AND temporada_id = '2026' AND piloto_id = ?
+       WHERE id = ? AND temporada_id = (SELECT id FROM temporadas WHERE ativa=1 AND status='ativa' AND ciclo='ativa' ORDER BY CASE WHEN tipo_evento='campeonato' THEN 0 ELSE 1 END,rowid DESC LIMIT 1) AND piloto_id = ?
        LIMIT 1`,
     )
     .bind(Number(body.pagamentoId), id)

@@ -1,3 +1,14 @@
+## Atualização de 12 de setembro de 2026 — versão 34
+
+Origem: `423767c9f131a991f4576fa29c7ef3816a33b855`. Inclui interface da liga,
+ciclo de temporadas, livro-caixa, auditoria e login opcional por e-mail.
+Aplique a migration `0014_fresh_maestro.sql` antes de publicar esta versão.
+Cloudflare Access continua como alternativa quando Supabase não está configurado.
+Para usar Supabase, configure as variáveis no ambiente e libere as rotas da aplicação
+na política externa do Access; a autenticação e a autorização passam a ser validadas
+pelo aplicativo. O cadastro público e o atalho `/cadastro` foram preservados.
+Nenhum banco hospedado foi alterado durante esta exportação.
+
 # Migração — Speed GT Brasil
 
 ## Atualização da exportação — 11 de setembro de 2026

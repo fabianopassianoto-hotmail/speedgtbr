@@ -37,8 +37,9 @@ export default async function Home() {
             <p className="mt-3 leading-7 text-muted-foreground">
               {accessRequest.status === "negado"
                 ? "Sua solicitação foi analisada e não foi aprovada. Fale com um administrador da Speed GT Brasil."
-                : "Sua conta está autenticada e a solicitação já foi enviada. Max ou outro administrador precisa aprová-la antes do primeiro acesso."}
+                : "Cadastro recebido. Seu acesso será liberado após aprovação."}
             </p>
+            <a href="/central/api/auth/logout" className="mt-5 inline-flex min-h-11 items-center text-primary">Sair da conta</a>
             <p className="font-data mt-4 text-sm text-muted-foreground">
               {user.email}
             </p>

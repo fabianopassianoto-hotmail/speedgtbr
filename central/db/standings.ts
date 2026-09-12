@@ -18,6 +18,7 @@ export function buildStandings(
   results: RaceResult[],
   stages: RaceStage[],
   totalStages: number,
+  divisionCodes: string[] = ["A","B","C"],
 ): StandingRow[] {
   const rows = pilots.map((pilot) => {
     const pilotResults = results.filter((result) => result.pilotoId === pilot.id);
@@ -57,16 +58,7 @@ export function buildStandings(
     return {
       ...row,
       rank,
-      movement:
-        row.pilot.serie === "A"
-          ? rank <= 10
-            ? "permanece"
-            : "desce"
-          : rank <= 5
-            ? "sobe"
-            : rank <= 10
-              ? "permanece"
-              : "desce",
+      movement: divisionCodes.indexOf(row.pilot.serie)>0 && index<5 ? "sobe" : divisionCodes.indexOf(row.pilot.serie)<divisionCodes.length-1 && index>=Math.max(0,rows.length-5) ? "desce" : "permanece",
     };
   });
 }

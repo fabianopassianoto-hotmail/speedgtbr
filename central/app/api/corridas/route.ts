@@ -16,7 +16,7 @@ export async function POST(request:Request){
  const db=getD1Binding();
  const [stage,competition,division,roster,previous]=await Promise.all([
   db.prepare(`SELECT multiplicador FROM calendario WHERE temporada_id=? AND etapa=?`).bind(temporadaId,etapa).first<{multiplicador:number}>(),
-  db.prepare(`SELECT gera_classificacao,status FROM temporadas WHERE id=?`).bind(temporadaId).first<{gera_classificacao:number;status:string}>(),
+  db.prepare(`SELECT gera_classificacao,CASE WHEN ciclo<>'ativa' THEN ciclo ELSE status END status FROM temporadas WHERE id=?`).bind(temporadaId).first<{gera_classificacao:number;status:string}>(),
   db.prepare(`SELECT status,aberto_suplentes FROM divisoes WHERE temporada_id=? AND codigo=?`).bind(temporadaId,serie).first<{status:string;aberto_suplentes:number}>(),
   db.prepare(`SELECT i.piloto_id,i.situacao FROM inscricoes i JOIN pilotos p ON p.id=i.piloto_id WHERE i.temporada_id=? AND i.serie=? AND COALESCE(i.situacao, 'ativo') IN ('ativo','suplente') AND p.arquivado_em IS NULL ORDER BY i.piloto_id`).bind(temporadaId,serie).all<{piloto_id:string;situacao:string|null}>(),
   db.prepare(`SELECT c.piloto_id,c.suplente FROM corridas c JOIN inscricoes i ON i.temporada_id=c.temporada_id AND i.piloto_id=c.piloto_id WHERE c.temporada_id=? AND c.etapa=? AND i.serie=?`).bind(temporadaId,etapa,serie).all<{piloto_id:string;suplente:number}>()

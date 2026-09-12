@@ -34,7 +34,7 @@ import type {
 } from "@/db/races";
 import { cn } from "@/lib/utils";
 
-type HomeDestination = "pilotos" | "corrida" | "classificacao" | "boletim" | "caixa" | "fila";
+type HomeDestination = "pilotos" | "corrida" | "classificacao" | "boletim" | "caixa" | "fila" | "administracao";
 type PilotLink = Pick<PilotListItem, "id" | "apelido">;
 
 type Props = {
@@ -150,56 +150,28 @@ export function HomeScreen({
 
   return (
     <main className="mx-auto max-w-6xl px-3 pb-28 md:px-6 md:pb-12">
-      <section className="grid gap-4 border-b border-border py-5 lg:grid-cols-[1.45fr_.75fr]">
-        <div className="relative overflow-hidden border border-border bg-[#131722] p-5 sm:p-6">
-          <div className="absolute inset-y-0 right-0 w-1/3 bg-[linear-gradient(135deg,transparent_32%,rgba(229,255,0,.08)_32%,rgba(229,255,0,.08)_36%,transparent_36%,transparent_54%,rgba(229,255,0,.05)_54%,rgba(229,255,0,.05)_58%,transparent_58%)]" aria-hidden="true" />
-          <div className="relative">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#60A5FA]">Panorama geral</p>
-            <h1 className="font-display mt-2 max-w-2xl text-4xl font-bold uppercase leading-[.92] sm:text-6xl">
-              {activeCompetition?.nome ?? "Central da liga"}
-            </h1>
-            <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">
-              {access.papel === "administrador"
-                ? "Operação da liga, evolução esportiva e pontos que precisam de atenção agora."
-                : `Visão da temporada para a coordenação da Série ${access.serie ?? "—"}.`}
-            </p>
-            <div className="mt-5 flex flex-wrap gap-2">
-              <ActionButton label="Lançar corrida" icon={Flag} onClick={() => onNavigate("corrida")} primary />
-              <ActionButton label="Ver classificação" icon={Trophy} onClick={() => onNavigate("classificacao")} />
-            </div>
-          </div>
+      <div className="flex flex-wrap items-center justify-between gap-3 py-5"><div><p className="text-sm text-primary">{activeCompetition?.nome??"Central da liga"}</p><h1 className="mt-1">Início</h1></div><ActionButton label="Ver classificação" icon={Trophy} onClick={()=>onNavigate("classificacao")}/></div>
+      <section className="mb-5 rounded-md border border-border border-l-4 border-l-primary bg-card p-4 sm:p-5">
+        <div className="flex flex-wrap items-center justify-between gap-4"><div><p className="text-sm font-semibold text-primary">Próxima etapa</p><h2 className="mt-2">{nextRace?`${nextRace.stage.etapa}ª · ${nextRace.stage.pista}`:"Calendário concluído"}</h2></div><ActionButton label="Abrir corrida" icon={Flag} onClick={()=>onNavigate("corrida")} primary/></div>
+        {nextRace?<dl className="mt-4 grid grid-cols-2 gap-x-5 gap-y-3 border-t border-border pt-4 sm:grid-cols-3 lg:grid-cols-6"><StageDetail label="Série" value={nextRace.division.nome}/><StageDetail label="Data" value={formatDate(nextRace.date)}/><StageDetail label="Contagem" value={countdownLabel(nextRace.date)}/><StageDetail label="Duração" value={nextRace.stage.duracao||"A definir"}/><StageDetail label="Formato" value={nextRace.stage.classeOuFormato||"Livre"}/><StageDetail label="Progresso" value={`${completedStages.length}/${competitionStages.length} etapas`}/></dl>:<p className="mt-3 text-sm text-muted-foreground">{competitionStages.length?"Todas as etapas têm registros. Revise os resultados antes de encerrar a temporada.":"Configure as etapas em Administração → Competições."}</p>}
+      </section>
+      <section className="border-t border-border pt-5">
+        <SectionHeading eyebrow="Atenção agora" title="Precisa da sua atenção" detail="Pendências e riscos que pedem ação" />
+        {forms.length + pendingPayments.length + disciplinaryRisk.length + accessRequests.length === 0 && <div className="flex gap-3 rounded border border-border bg-card p-5"><CheckCircle2 className="text-green-400"/><p>Tudo em dia. Nenhuma ação pendente agora.</p></div>}
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {forms.length > 0 && <AlertCard icon={ClipboardCheck} title="Formulários aguardando análise · Revisar" value={forms.length} detail={`${formStats.total} recebidos no mês · ${formStats.discarded} descartados`} tone="#FBBF24" onClick={() => onNavigate("fila")} />}
+          {pendingPayments.length > 0 && <AlertCard icon={CreditCard} title="Inscrições sem pagamento · Resolver" value={pendingPayments.length} detail="Pilotos sem pagamento ou isenção" people={pendingPayments} tone="#E8604C" onOpenPilot={onOpenPilot} onClick={() => onNavigate("caixa")} />}
+          {disciplinaryRisk.length > 0 && <AlertCard icon={ShieldAlert} title="Faltas e risco disciplinar · Consultar" value={disciplinaryRisk.length} detail="2+ faltas injustificadas ou punição" people={disciplinaryRisk} tone="#E8604C" onOpenPilot={onOpenPilot} onClick={() => onNavigate("classificacao")} />}
+          {accessRequests.length > 0 && <AlertCard icon={UserCheck} title="Acessos aguardando aprovação" value={accessRequests.length} detail={access.papel === "administrador" ? "Solicitações pendentes de revisão" : "Visível somente para administradores"} tone="#60A5FA" onClick={() => onNavigate("administracao")} />}
         </div>
-
-        <article className="border-l-4 border-[#00E676] bg-[#131722] p-5 sm:p-6">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#73FFB0]">Etapa atual</p>
-              <h2 className="font-display mt-2 text-3xl font-bold uppercase leading-none">
-                {nextRace ? `${nextRace.stage.etapa}ª · ${nextRace.stage.pista}` : "Temporada concluída"}
-              </h2>
-            </div>
-            <CalendarDays className="size-6 shrink-0 text-[#00E676]" aria-hidden="true" />
-          </div>
-          {nextRace ? (
-            <dl className="mt-5 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-border pt-4 text-sm">
-              <StageDetail label="Série" value={nextRace.division.nome} />
-              <StageDetail label="Data" value={formatDate(nextRace.date)} />
-              <StageDetail label="Contagem" value={countdownLabel(nextRace.date)} />
-              <StageDetail label="Duração" value={nextRace.stage.duracao || "A definir"} />
-              <StageDetail label="Formato" value={nextRace.stage.classeOuFormato || "Livre"} />
-              <StageDetail label="Progresso" value={`${completedStages.length}/${competitionStages.length} etapas`} />
-            </dl>
-          ) : (
-            <p className="mt-4 text-sm leading-6 text-muted-foreground">
-              {competitionStages.length ? `${completedStages.length} etapas registradas.` : "Calendário ainda não configurado."}
-            </p>
-          )}
-          <button type="button" onClick={() => onNavigate("corrida")} className="mt-5 flex min-h-11 w-full items-center justify-between border-t border-border pt-3 text-sm font-bold text-[#73FFB0] outline-none focus-visible:ring-2 focus-visible:ring-[#00E676]">
-            Abrir controle da corrida <ArrowRight className="size-4" aria-hidden="true" />
-          </button>
-        </article>
       </section>
 
+      <section className="grid gap-3 py-5 sm:grid-cols-3" aria-label="Acompanhamento da temporada">
+        <BigNumber icon={CheckCircle2} label="Presença" value={knownAttendance.length?`${attendanceRate}%`:"—"} detail={`${presentCount} presenças registradas`} tone="#34D399" onClick={()=>onNavigate("classificacao")}/>
+        <BigNumber icon={ClipboardCheck} label="Formulários" value={String(formStats.total)} detail={`${forms.length} aguardando análise`} tone="#60A5FA" onClick={()=>onNavigate("fila")}/>
+        <BigNumber icon={ShieldAlert} label="Risco disciplinar" value={String(disciplinaryRisk.length)} detail="Faltas e punições" tone={disciplinaryRisk.length?"#F87171":"#94A3B8"} onClick={()=>onNavigate("classificacao")}/>
+      </section>
+      <details className="mt-3"><summary className="min-h-12 cursor-pointer border-y border-border py-4 font-semibold">Mais informações da temporada</summary>
       <section className="grid gap-3 py-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6" aria-label="Principais números da liga">
         <BigNumber icon={Users} label="Pilotos da temporada" value={String(seasonPilots.length)} detail={`${activeDivisions.length} séries ativas`} tone="#60A5FA" onClick={() => onNavigate("pilotos")} />
         <BigNumber icon={CreditCard} label="Inscrição pendente" value={String(pendingPayments.length)} detail="Sem pagamento ou isenção" tone={pendingPayments.length ? "#E8604C" : "#00E676"} onClick={() => onNavigate("caixa")} />
@@ -207,19 +179,6 @@ export function HomeScreen({
         <BigNumber icon={Flag} label="Próxima corrida" value={nextRace ? countdownLabel(nextRace.date) : "—"} detail={nextRace ? `${nextRace.division.nome} · ${nextRace.stage.pista}` : "Calendário concluído"} tone="#60A5FA" onClick={() => onNavigate("corrida")} />
         <BigNumber icon={CheckCircle2} label="Presença geral" value={`${attendanceRate}%`} detail={`${presentCount} presenças registradas`} tone="#00E676" onClick={() => onNavigate("classificacao")} />
         <BigNumber icon={TrendingUp} label="Risco de rebaixamento" value={String(relegationRisk.length)} detail="Últimas 5 posições por série" tone="#E8604C" onClick={() => onNavigate("classificacao")} />
-      </section>
-
-      <section className="border-t border-border pt-5">
-        <SectionHeading eyebrow="Atenção agora" title="Alertas prioritários" detail="Pendências e riscos que pedem ação" />
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <AlertCard icon={ClipboardCheck} title="Formulários aguardando análise" value={forms.length} detail={`${formStats.total} recebidos no mês · ${formStats.discarded} descartados`} tone="#60A5FA" onClick={() => onNavigate("pilotos")} />
-          <AlertCard icon={CreditCard} title="Inscrições sem pagamento" value={pendingPayments.length} detail="Pilotos sem pagamento ou isenção" people={pendingPayments} tone="#E8604C" onOpenPilot={onOpenPilot} onClick={() => onNavigate("caixa")} />
-          <AlertCard icon={ShieldAlert} title="Faltas e risco disciplinar" value={disciplinaryRisk.length} detail="2+ faltas injustificadas ou punição" people={disciplinaryRisk} tone="#E8604C" onOpenPilot={onOpenPilot} onClick={() => onNavigate("classificacao")} />
-          <AlertCard icon={Grid3X3} title="Vagas livres nas séries" value={vacancies} detail={`${activeQueue.filter((person) => person.prontoParaSerie).length} pessoas prontas na fila`} tone="#00E676" onClick={() => onNavigate("fila")} />
-          <AlertCard icon={UserCheck} title="Suplentes para a Série C" value={substitutePilots.length} detail="Lista de interessados mais quentes" people={substitutePilots} tone="#60A5FA" onOpenPilot={onOpenPilot} onClick={() => onNavigate("pilotos")} />
-          <AlertCard icon={UserCheck} title="Acessos aguardando aprovação" value={accessRequests.length} detail={access.papel === "administrador" ? "Solicitações pendentes de revisão" : "Visível somente para administradores"} tone="#60A5FA" onClick={() => onNavigate("pilotos")} />
-          <AlertCard icon={TrendingUp} title="Faixa de rebaixamento" value={relegationRisk.length} detail="Posições provisórias de maior risco" people={relegationRisk} tone="#E8604C" onOpenPilot={onOpenPilot} onClick={() => onNavigate("classificacao")} />
-        </div>
       </section>
 
       <section className="grid gap-6 border-t border-border pt-6 lg:grid-cols-[1.2fr_.8fr]">
@@ -296,6 +255,7 @@ export function HomeScreen({
           </button>
         )}
       </section>
+      </details>
     </main>
   );
 }
@@ -365,7 +325,7 @@ function getLargestMovement(divisions: RaceDivision[], pilots: RacePilot[], resu
       if (pilot && places > 0 && (!best || places > best.places)) best = { apelido: pilot.apelido, division: division.nome, places };
     });
   }
-  return best;
+  return best as { apelido:string;division:string;places:number } | null;
 }
 
 function pilotsFromIds(racePilots: RacePilot[], ids: Set<string>): PilotLink[] {

@@ -16,12 +16,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import type { RaceCompetition } from "@/db/races";
+import type { RaceCompetition, RacePilot } from "@/db/races";
 import type { CashEntry } from "@/db/finance";
 import type { PilotListItem } from "@/db/pilots";
 import { downloadXlsx } from "@/lib/xlsx-client";
 
 type Props = {
+  memberships: RacePilot[];
   competitions: RaceCompetition[];
   entries: CashEntry[];
   pilots: PilotListItem[];
@@ -41,14 +42,17 @@ export type CashEntryDraft = {
   observacao: string;
 };
 
-export function CashScreen({ competitions, entries, pilots, isAdmin, onOpenPilot, onCreateEntry, onDeleteEntry }: Props) {
+export function CashScreen({ competitions, memberships, entries, pilots, isAdmin, onOpenPilot, onCreateEntry, onDeleteEntry }: Props) {
+  const currentSeasonId=competitions.find(c=>c.ativa&&c.status==="ativa")?.id??"2026";
+  const [season,setSeason]=useState(currentSeasonId);
   const [query, setQuery] = useState("");
   const [paymentFilter,setPaymentFilter]=useState("todos");
   const [scope,setScope]=useState("todos");
   const [message, setMessage] = useState("");
   const [showEntryForm, setShowEntryForm] = useState(false);
-  const currentEntries = entries.filter((entry) => entry.temporadaId === "2026");
-  const pool = scope === "serie" ? pilots.filter(p=>Boolean(p.serie)&&p.situacao!=="saiu"&&!p.arquivadoEm) : pilots;
+  const currentEntries = entries.filter((entry) => entry.temporadaId === season);
+  const seasonPilots=pilots.map(p=>{const i=memberships.find(i=>i.temporadaId===season&&i.id===p.id);const totalPago=currentEntries.filter(e=>e.pilotoId===p.id).reduce((n,e)=>n+e.valor,0);const isentoPagamento=season===currentSeasonId?p.isentoPagamento:Boolean(i?.pagamentoIsento);return {...p,serie:i?.serie??null,situacao:i?.situacao??null,totalPago,isentoPagamento,inscricaoPendente:Boolean(i)&&!isentoPagamento&&totalPago<2000}});
+  const pool = scope === "serie" ? seasonPilots.filter(p=>Boolean(p.serie)&&p.situacao!=="saiu"&&!p.arquivadoEm) : seasonPilots;
   const paid = pool.filter(p=>p.totalPago>0);
   const pending = pool.filter(p=>p.totalPago===0&&!p.isentoPagamento);
   const exempt = pool.filter(p=>p.isentoPagamento);
@@ -89,10 +93,11 @@ export function CashScreen({ competitions, entries, pilots, isAdmin, onOpenPilot
   return (
     <main className="mx-auto max-w-6xl px-3 pb-28 md:px-6 md:pb-12">
       <section className="sticky top-0 z-30 -mx-3 border-b border-border bg-background/95 px-3 pb-3 pt-4 backdrop-blur md:-mx-6 md:px-6 md:pt-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#60A5FA]">Financeiro · temporada 2026</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#60A5FA]">Financeiro · inscrições por temporada</p>
         <div className="flex flex-wrap items-end justify-between gap-3"><h1 className="font-display mt-1 text-4xl font-bold uppercase leading-none md:text-5xl">Caixa</h1><div className="flex flex-wrap gap-2"><button type="button" onClick={()=>setShowEntryForm((value)=>!value)} className="flex min-h-11 items-center gap-2 border border-[#60A5FA] px-3 text-sm font-bold text-[#60A5FA]"><Plus className="size-4"/>{showEntryForm?"Fechar cadastro":"Cadastrar pagamento"}</button><button type="button" onClick={exportPendingPayments} className="flex min-h-11 items-center gap-2 bg-[#60A5FA] px-3 text-sm font-bold text-[#0A0C10]"><FileSpreadsheet className="size-4"/>Exportar quem falta pagar</button></div></div>
       </section>
 
+      <label className="central-field mt-4 max-w-md">Temporada de inscrição<select value={season} onChange={e=>setSeason(e.target.value)}>{competitions.map(c=><option key={c.id} value={c.id}>{c.nome}</option>)}</select></label>
       {showEntryForm&&<CashEntryForm competitions={competitions} pilots={pilots} onSave={async(entry)=>{const ok=await onCreateEntry(entry);if(ok){setShowEntryForm(false);setMessage("Pagamento cadastrado.");}return ok;}}/>}
 
       <div className="mt-4"><FilterChips label="Pilotos" value={scope} onChange={setScope} options={[{value:"todos",label:"Todos os pilotos"},{value:"serie",label:"Com série"}]}/></div>
@@ -134,7 +139,7 @@ export function CashScreen({ competitions, entries, pilots, isAdmin, onOpenPilot
         {message && <p className="mt-2 text-sm text-muted-foreground" aria-live="polite">{message}</p>}
       </section>
 
-      <CashSettings competitions={competitions}/>
+
       <section className="mt-6">
         <div className="border-b border-border pb-3">
           <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Histórico</p>
@@ -148,7 +153,7 @@ export function CashScreen({ competitions, entries, pilots, isAdmin, onOpenPilot
 
 function CashEntryForm({competitions,pilots,onSave}:{competitions:RaceCompetition[];pilots:PilotListItem[];onSave:(entry:CashEntryDraft)=>Promise<boolean>}){
   const active=competitions.filter((item)=>item.status!=="cancelada");
-  const [temporadaId,setTemporadaId]=useState(active.find((item)=>item.id==="2026")?.id??active[0]?.id??"");
+  const [temporadaId,setTemporadaId]=useState(active.find((item)=>item.ativa&&item.status==="ativa")?.id??active[0]?.id??"");
   const [data,setData]=useState(()=>new Intl.DateTimeFormat("en-CA",{timeZone:"America/Sao_Paulo"}).format(new Date()));
   const [pilotoId,setPilotoId]=useState("");
   const [nome,setNome]=useState("");

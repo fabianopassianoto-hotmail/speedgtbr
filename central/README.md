@@ -1,6 +1,6 @@
 # Speed GT Brasil — Central
 
-Export da versão 33 do projeto Speed GT Brasil, preparado para Cloudflare
+Export da versão 34 do projeto Speed GT Brasil, preparado para Cloudflare
 Workers no caminho `/central`. Consulte [MIGRATION.md](./MIGRATION.md) antes de
 configurar o banco, autenticação ou deploy.
 

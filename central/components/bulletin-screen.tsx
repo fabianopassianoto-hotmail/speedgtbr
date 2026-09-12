@@ -66,6 +66,7 @@ export function BulletinScreen({ competitions, divisions, stages, pilots, result
         accumulatedResults,
         competitionStages.filter((item) => item.etapa <= stage.etapa),
         competition.totalEtapas,
+        competitionDivisions.map((item) => item.codigo),
       )
     : [];
   const absences = stageResults.filter((result) => result.compareceu === false);

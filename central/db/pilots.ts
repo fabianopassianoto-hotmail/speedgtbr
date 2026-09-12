@@ -1,3 +1,4 @@
+import {currentSeasonId} from "@/db/current-season";
 import { getD1Binding } from "@/db";
 
 export type Serie = "A" | "B" | "C";
@@ -181,7 +182,8 @@ type PendingFormRow = {
   curiosidade: string | null;
 };
 
-export async function getPilotsScreenData(temporadaId = "2026") {
+export async function getPilotsScreenData(temporadaId?: string) {
+  temporadaId ??= await currentSeasonId();
   const db = getD1Binding();
   const currentMonth = new Intl.DateTimeFormat("en-CA", {
     timeZone: "America/Sao_Paulo",

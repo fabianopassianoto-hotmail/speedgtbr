@@ -50,6 +50,9 @@ export const temporadas = sqliteTable(
     id: text("id").primaryKey(),
     nome: text("nome").notNull(),
     ativa: integer("ativa", { mode: "boolean" }).notNull(),
+    ciclo: text("ciclo").notNull().default("ativa"),
+    encerradaEm: text("encerrada_em"),
+    temporadaAnteriorId: text("temporada_anterior_id"),
     totalEtapas: integer("total_etapas").notNull(),
     pilotosPorSerie: integer("pilotos_por_serie").notNull(),
     tipoEvento: text("tipo_evento").notNull().default("campeonato"),
@@ -415,3 +418,21 @@ export const caixaConfiguracao = sqliteTable("caixa_configuracao", {
   freteTemporada: integer("frete_temporada").notNull().default(0),
   saldoCaixa: integer("saldo_caixa").notNull().default(0),
 });
+
+export const classificacoesOficiais = sqliteTable("classificacoes_oficiais", {
+ temporadaId: text("temporada_id").primaryKey().references(()=>temporadas.id,{onDelete:"restrict"}),
+ encerradaEm: text("encerrada_em").notNull(), usuario: text("usuario").notNull(), dados: text("dados").notNull(),
+});
+export const livroCaixa = sqliteTable("livro_caixa", {
+ id: text("id").primaryKey(), natureza:text("natureza").notNull(), categoria:text("categoria").notNull(),
+ descricao:text("descricao").notNull(),valor:integer("valor").notNull(),data:text("data").notNull(),
+ responsavel:text("responsavel").notNull(),comprovante:text("comprovante"),
+ pilotoId:text("piloto_id").references(()=>pilotos.id,{onDelete:"restrict"}),
+ temporadaId:text("temporada_id").references(()=>temporadas.id,{onDelete:"restrict"}),
+},t=>[check("ck_livro_natureza",sql`${t.natureza} IN ('receita','despesa')`),check("ck_livro_valor",sql`${t.valor}>0`),index("idx_livro_temporada_data").on(t.temporadaId,t.data)]);
+export const atividadeContexto=sqliteTable("atividade_contexto",{id:integer("id").primaryKey(),usuario:text("usuario").notNull()});
+export const atividades=sqliteTable("atividades",{
+ id:integer("id").primaryKey({autoIncrement:true}),usuario:text("usuario").notNull(),dataHora:text("data_hora").notNull(),
+ acao:text("acao").notNull(),entidade:text("entidade").notNull(),identificador:text("identificador").notNull(),
+ anterior:text("anterior"),novo:text("novo"),
+},t=>[index("idx_atividades_data").on(t.dataHora)]);

@@ -173,9 +173,8 @@ test("builds a responsive standings screen from recorded results", async () => {
   assert.match(pilotsScreen, /<StandingsScreen/);
   assert.match(standings, /O campeonato ainda não começou/);
   assert.match(standings, /Etapas não lançadas aparecem como[\s\S]*pendentes, nunca como zero/);
-  assert.match(standingsEngine, /row\.pilot\.serie === "A"/);
-  assert.match(standingsEngine, /rank <= 10[\s\S]*?"permanece"[\s\S]*?: "desce"/);
-  assert.match(standingsEngine, /rank <= 5[\s\S]*?"sobe"/);
+  assert.match(standingsEngine, /divisionCodes\.indexOf\(row\.pilot\.serie\)>0 && index<5/);
+  assert.match(standingsEngine, /rows\.length-5\) \? "desce" : "permanece"/);
   assert.match(standings, /division\.codigo !== "A"/);
   assert.match(standingsEngine, /result\.confirmou === true/);
   assert.match(standingsEngine, /3ª falta ou mais · rebaixamento indicado/);
@@ -287,7 +286,7 @@ test("organizes race configuration and preserves grid departure history", async 
 
   assert.match(raceEntry, /label="Gerenciar"/);
   assert.match(raceEntry, /export function PilotCompetitionConfig/);
-  assert.match(raceEntry, /mode="competition"/);
+  assert.match(raceEntry, /mode="pilot"/);
   assert.match(raceEntry, /Adicionar piloto à competição/);
   assert.match(raceEntry, /value:"remover_inscricao",label:"Retirar do grid"/);
   assert.match(raceEntry, /Código interno \(opcional\)/);
@@ -362,7 +361,7 @@ test("builds bulletin, cash and queue as active screens", async () => {
 
   assert.match(pilotsScreen, /value:"boletim",label:"Boletim e exportação"/);
   assert.match(pilotsScreen, /value: "caixa", label: "Caixa", icon: CircleDollarSign, enabled: true/);
-  assert.match(pilotsScreen, /value: "fila", label: "Fila", icon: ListOrdered, enabled: true/);
+  assert.match(pilotsScreen, /value: "fila", label: "Fila e avaliação"/);
   assert.match(pilotsScreen, /<BulletinScreen/);
   assert.match(pilotsScreen, /<CashScreen/);
   assert.match(pilotsScreen, /<QueueScreen/);
