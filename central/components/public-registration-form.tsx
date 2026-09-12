@@ -229,11 +229,13 @@ export function PublicRegistrationForm() {
           </p>
           <p className="mt-4 text-base leading-7">{approvalNotice}</p>
           <dl className="mt-6 divide-y divide-white/10">{registrationSummary(values).map(([key, label, value]) => <div key={key} className="py-3"><dt className="text-sm text-muted-foreground">{label}</dt><dd className="break-words">{value}</dd></div>)}</dl>
-          <p className="mt-4 text-sm" role="status">{emailStatus === "sent" ? "As orientações foram enviadas para seu e-mail. Confira também o spam." : "Seu cadastro está salvo, mas ainda não confirmamos o envio do e-mail."}</p>
+          <p className="mt-4 text-sm" role="status">{emailStatus === "sent" ? "As orientações foram enviadas para seu e-mail." : "Seu cadastro está salvo, mas ainda não confirmamos o envio do e-mail."}</p>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">Confira sua caixa de entrada e procure a mensagem de <strong className="break-words text-foreground">administracao@speedgtbrasil.com.br</strong>. Se não encontrar, verifique também as pastas de spam ou lixo eletrônico. O e-mail contém o tutorial do SimGrid e as orientações para participar dos campeonatos.</p>
           {emailStatus !== "sent" && <button type="button" disabled={retrying} onClick={() => void retryEmail()} className="mt-3 min-h-12 text-[#60A5FA] underline disabled:opacity-50">{retrying ? "Reenviando…" : "Tentar enviar e-mail novamente"}</button>}
           {message && <p role="status" className="mt-2 text-sm">{message}</p>}
           {!redirectPaused && <><p className="mt-5 text-sm text-muted-foreground">Você será direcionado ao WhatsApp em alguns segundos.</p><button type="button" onClick={() => setRedirectPaused(true)} className="min-h-11 text-sm underline">Permanecer nesta página</button></>}
           <a href={registrationLinks.whatsapp} className="mt-3 flex min-h-14 items-center justify-center bg-[#60A5FA] px-5 font-bold text-[#0A0C10]">Ir para o grupo do WhatsApp</a>
+          <CommunitySupportNotice />
         </section>
       </main>
     );
@@ -480,8 +482,9 @@ function ReviewStep({
         </dl>
 
         <aside className="mt-7 border-l-4 border-[#60A5FA] bg-[#131722] p-4 sm:p-5">
-          <h2 className="text-base font-bold text-[#60A5FA]">Os próximos passos chegam por e-mail</h2>
+          <h2 className="text-base font-bold text-[#60A5FA]">Confira seu e-mail após confirmar o cadastro</h2>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">Vamos enviar para o e-mail informado um tutorial de como participar dos nossos campeonatos pelo SimGrid. O cadastro no SimGrid é necessário para se inscrever em um campeonato, mas você não precisa fazê-lo agora. Prepare sua conta quando decidir participar.</p>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">Após confirmar, confira sua caixa de entrada e procure a mensagem de <strong className="break-words text-foreground">administracao@speedgtbrasil.com.br</strong>. Se ela não aparecer, verifique também as pastas de spam ou lixo eletrônico.</p>
         </aside>
 
         <div className="mt-7 border border-white/10 bg-[#131722] p-4 sm:p-5">
@@ -533,5 +536,16 @@ function ReviewStep({
         </button>
       </div>
     </section>
+  );
+}
+
+function CommunitySupportNotice() {
+  return (
+    <aside className="mt-8 border-t border-white/10 pt-6">
+      <h2 className="text-base font-bold text-foreground">Que tal apoiar a comunidade?</h2>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">Se quiser contribuir com a Speed GT Brasil, você pode fazer um Pix de qualquer valor. O apoio é totalmente voluntário e não é condição para aprovar seu cadastro ou entrar no grupo.</p>
+      <p className="mt-3 text-sm text-muted-foreground">Chave Pix (e-mail): <strong className="select-all break-words text-[#60A5FA]">speedgtbr@gmail.com</strong></p>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">Toda contribuição é bem-vinda. Obrigado por fazer parte da nossa comunidade!</p>
+    </aside>
   );
 }
