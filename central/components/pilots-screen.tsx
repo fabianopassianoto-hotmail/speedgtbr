@@ -2533,6 +2533,10 @@ function PendingFormSheet({
           <ReadOnlyField label="Complemento" value={form.complemento ?? null} />
           <ReadOnlyField label="Classificação GT7" value={form.classificacao_gt7 ?? null} />
           <ReadOnlyField label="PSN" value={form.psn} mono />
+          <ReadOnlyField label="SimGrid" value={form.simgrid} mono />
+          <ReadOnlyField label="Link do SimGrid" value={form.simgridUrl} mono />
+          <ReadOnlyField label="Data de nascimento" value={form.dataNascimento} />
+          <ReadOnlyField label="Perfil de pilotagem" value={form.perfilPilotagem} />
         </PanelSection>
 
         <PanelSection title="Conferência" icon={Search}>

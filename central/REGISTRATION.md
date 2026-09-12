@@ -79,4 +79,4 @@ O provedor aceitou um teste real para speedgtbr@gmail.com com o conteúdo comple
 
 O cadastro envia HTML com versão alternativa em texto. O logo vem do arquivo `Logo.jpg` na raiz, incorporado pelo build e enviado como imagem inline CID pelo Resend; não depende de um endereço público nem do Cloudflare Access. O template está em `lib/registration-email-template.ts`.
 
-A ficha de formulários pendentes exibe somente os campos do cadastro atual. O menu e a tela Corrida estão desativados na Central; os dados históricos permanecem preservados.
+A ficha interna de formulários pendentes preserva os campos anteriores, incluindo SimGrid, link do SimGrid, data de nascimento e perfil de pilotagem. Apenas disponibilidade, volante ou controle, carro preferido, pista citada e curiosidade foram retirados da exibição. O menu e a tela Corrida estão desativados na Central; os dados históricos permanecem preservados.
