@@ -5,7 +5,7 @@ import test from 'node:test';
 import ts from 'typescript';
 const moduleUrl = source => 'data:text/javascript;base64,' + Buffer.from(ts.transpileModule(source, {compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText).toString('base64');
 const registrationUrl = moduleUrl(readFileSync(new URL('../lib/registration.ts',import.meta.url),'utf8'));
-const {validateRegistration,registrationSummary,welcomeEmailText} = await import(registrationUrl);
+const {validateRegistration,validateAddress,validateEmail,registrationSummary,welcomeEmailText} = await import(registrationUrl);
 const templateUrl = moduleUrl(readFileSync(new URL('../lib/registration-email-template.ts',import.meta.url),'utf8').replace('"./registration"',JSON.stringify(registrationUrl)));
 const {welcomeEmailHtml} = await import(templateUrl);
 const logo = readFileSync(new URL('../../Logo.jpg',import.meta.url)).toString('base64');
@@ -97,4 +97,12 @@ test('HTML welcome escapes names and retains all onboarding links with an inline
  assert.match(html,/src="cid:speedgt-logo"/);
  for(const url of ['Jz9Zg4z1q302rXOlaI8KKk','instagram.com/speedgtbr','dI8-pXOOAvc','communities/speed-gt-brasil','discord.com/register','steampowered.com/join/']) assert.ok(html.includes(url));
  assert.match(html,/aprovação de um administrador/);
+});
+
+test('requires all six address fields, keeps complement optional and validates email independently',()=>{
+ for(const field of ['cep','rua','numero','bairro','cidade','uf']) for(const value of ['', '   ']) assert.ok(validateRegistration({...valid,[field]:value}));
+ assert.equal(validateRegistration({...valid,complemento:''}),null);
+ assert.equal(validateEmail('piloto@example.com'),null);
+ for(const value of ['piloto','piloto@','piloto@dominio','piloto @dominio.com']) assert.ok(validateEmail(value));
+ assert.equal(validateAddress({...valid,email:'invalido'}),null);
 });

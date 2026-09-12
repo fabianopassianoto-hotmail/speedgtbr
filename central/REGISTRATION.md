@@ -4,7 +4,7 @@ Implementação da issue #1 na branch central_nova.
 
 ## Comportamento
 
-Seis grupos: nome, telefone, e-mail, PSN, endereço e classificação GT7 (S, A+, A, B, C, D, E). Cidade e UF obrigatórios; rua, número, bairro, CEP e complemento opcionais enquanto não houver decisão de exigir endereço completo. Demais perguntas removidas apenas do formulário público. Dados históricos preservados.
+Seis grupos: nome, telefone, e-mail, PSN, endereço e classificação GT7 (S, A+, A, B, C, D, E). CEP, rua, número, bairro, cidade e UF obrigatórios; complemento opcional. O e-mail é validado na própria etapa e o endereço é validado separadamente. Demais perguntas removidas apenas do formulário público. Dados históricos preservados.
 
 A confirmação salva o cadastro como pendente, mostra os dados e o aviso de aprovação. Após oito segundos abre o WhatsApp; há botão direto e opção de permanecer na página. Reenviar e-mail pausa o redirecionamento. Aprovar na Central não aprova automaticamente a solicitação no WhatsApp: a administração precisa conferir a configuração de aprovação do grupo.
 

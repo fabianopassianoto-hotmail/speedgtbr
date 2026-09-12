@@ -18,7 +18,7 @@ import {
   useState,
 } from "react";
 
-import { addressFields, approvalNotice, gt7Ratings, registrationLinks, registrationSummary, validateRegistration } from "@/lib/registration";
+import { addressFields, approvalNotice, gt7Ratings, registrationLinks, registrationSummary, validateAddress, validateEmail, validateRegistration } from "@/lib/registration";
 
 type FieldKind =
   | "text"
@@ -73,7 +73,7 @@ const fields: RegistrationField[] = [
     required: true,
     kind: "text",
   },
-  { name: "cidade", eyebrow: "Endereço", label: "Qual é o seu endereço?", description: "Cidade e UF são obrigatórios. Os demais detalhes do endereço são opcionais.", required: true, kind: "location" },
+  { name: "cidade", eyebrow: "Endereço", label: "Qual é o seu endereço?", description: "CEP, rua, número, bairro, cidade e UF são obrigatórios. Complemento é opcional.", required: true, kind: "location" },
   { name: "classificacaoGt7", eyebrow: "Na pista", label: "Qual sua classificação no Gran Turismo 7?", description: "Informe sua classificação de piloto.", required: true, kind: "rating" },
 ];
 
@@ -138,8 +138,12 @@ export function PublicRegistrationForm() {
       setMessage("Confira o WhatsApp e informe também o DDD.");
       return false;
     }
+    if (field.name === "email") {
+      const error = validateEmail(value);
+      if (error) { setMessage(error); return false; }
+    }
     if (field.kind === "location") {
-      const error = validateRegistration({ nomeCompleto: "Piloto", whatsapp: "11999999999", email: "piloto@example.com", psn: "Piloto", classificacaoGt7: "E", ...values });
+      const error = validateAddress(values);
       if (error) { setMessage(error); return false; }
     }
     return true;
@@ -403,7 +407,7 @@ function RegistrationControl({
     return <div role="radiogroup" aria-label={field.label} className="grid grid-cols-3 gap-3 sm:grid-cols-7">{gt7Ratings.map(option => <label key={option} className={`flex min-h-20 cursor-pointer items-center justify-center gap-2 border p-3 text-xl font-bold ${values.classificacaoGt7 === option ? "border-[#60A5FA] bg-[#60A5FA]/10" : "border-white/20"}`}><input type="radio" name="classificacaoGt7" value={option} checked={values.classificacaoGt7 === option} onChange={() => setValue("classificacaoGt7", option)} className="accent-[#60A5FA]" required />{option}</label>)}</div>;
   }
   if (field.kind === "location") {
-    return <div className="grid gap-5 sm:grid-cols-2">{addressFields.map(([name, label]) => <label key={name} className="block text-sm text-muted-foreground">{label}{name === "cidade" || name === "uf" ? " *" : " (opcional)"}<input ref={name === "cep" ? element => { inputRef.current = element; } : undefined} id={name === "cidade" ? "registration-cidade" : undefined} name={name} value={values[name] ?? ""} onChange={event => setValue(name, name === "uf" ? event.target.value.toUpperCase() : event.target.value)} maxLength={name === "uf" ? 2 : name === "cep" ? 9 : 120} required={name === "cidade" || name === "uf"} autoComplete={name === "cep" ? "postal-code" : name === "cidade" ? "address-level2" : name === "uf" ? "address-level1" : "off"} className={sharedInputClass + " text-xl sm:text-2xl"} /></label>)}</div>;
+    return <div className="grid gap-5 sm:grid-cols-2">{addressFields.map(([name, label]) => <label key={name} className="block text-sm text-muted-foreground">{label}{name !== "complemento" ? " *" : " (opcional)"}<input ref={name === "cep" ? element => { inputRef.current = element; } : undefined} id={name === "cidade" ? "registration-cidade" : undefined} name={name} value={values[name] ?? ""} onChange={event => setValue(name, name === "uf" ? event.target.value.toUpperCase() : event.target.value)} maxLength={name === "uf" ? 2 : name === "cep" ? 9 : 120} required={name !== "complemento"} autoComplete={name === "cep" ? "postal-code" : name === "cidade" ? "address-level2" : name === "uf" ? "address-level1" : "off"} className={sharedInputClass + " text-xl sm:text-2xl"} /></label>)}</div>;
   }
 
   if (field.kind === "textarea") {
@@ -474,6 +478,11 @@ function ReviewStep({
             </div>
           ))}
         </dl>
+
+        <aside className="mt-7 border-l-4 border-[#60A5FA] bg-[#131722] p-4 sm:p-5">
+          <h2 className="text-base font-bold text-[#60A5FA]">Os próximos passos chegam por e-mail</h2>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">Vamos enviar para o e-mail informado um tutorial de como participar dos nossos campeonatos pelo SimGrid. O cadastro no SimGrid é necessário para se inscrever em um campeonato, mas você não precisa fazê-lo agora. Prepare sua conta quando decidir participar.</p>
+        </aside>
 
         <div className="mt-7 border border-white/10 bg-[#131722] p-4 sm:p-5">
           <details className="privacy-notice group">

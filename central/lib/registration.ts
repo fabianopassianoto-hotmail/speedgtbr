@@ -13,14 +13,28 @@ export const registrationFields = ["nomeCompleto", "whatsapp", "email", "psn", .
 export type RegistrationValues = Record<(typeof registrationFields)[number], string>;
 export const brazilStates = "AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS RO RR SC SP SE TO".split(" ");
 
+export function validateEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim()) ? null : "Informe um e-mail válido.";
+}
+
+export function validateAddress(values: Record<string, string>) {
+  for (const [key, label] of addressFields) {
+    if (key !== "complemento" && !values[key]?.trim()) return "Informe o campo obrigatório: " + label + ".";
+  }
+  if (!/^\d{5}-?\d{3}$/.test(values.cep.trim())) return "Informe um CEP válido com oito números.";
+  if (!brazilStates.includes(values.uf.trim().toUpperCase())) return "Informe uma UF válida.";
+  return null;
+}
+
 export function validateRegistration(values: Record<string, string>) {
   if (Object.values(values).some(value => value.length > 500)) return "Um dos campos ultrapassou o tamanho permitido.";
   if ((values.nomeCompleto ?? "").trim().length < 3) return "Informe seu nome completo.";
   if (!/^\d{10,13}$/.test((values.whatsapp ?? "").replace(/\D/g, ""))) return "Informe um telefone válido com DDD.";
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email ?? "")) return "Informe um e-mail válido.";
+  const emailError = validateEmail(values.email ?? "");
+  if (emailError) return emailError;
   if (!values.psn?.trim()) return "Informe sua ID da PSN.";
-  if (!values.cidade?.trim() || !brazilStates.includes(values.uf?.toUpperCase())) return "Informe cidade e UF válidas.";
-  if (values.cep && !/^\d{5}-?\d{3}$/.test(values.cep)) return "Informe um CEP válido com oito números.";
+  const addressError = validateAddress(values);
+  if (addressError) return addressError;
   if (!gt7Ratings.includes(values.classificacaoGt7 as typeof gt7Ratings[number])) return "Selecione sua classificação no Gran Turismo 7.";
   return null;
 }
