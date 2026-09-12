@@ -1,3 +1,5 @@
+A Central permite consulta e edição completas sem login. Consulte AUTH-SETUP.md.
+
 # Speed GT Brasil — Central
 
 Export da versão 34 do projeto Speed GT Brasil, preparado para Cloudflare

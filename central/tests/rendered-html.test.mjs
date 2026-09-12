@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-test("protects the page and the database bootstrap with authentication", async () => {
+test("retains the access helper interface used by the page and bootstrap", async () => {
   const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const bootstrapRoute = await readFile(
     new URL("../app/api/admin/bootstrap/route.ts", import.meta.url),
@@ -252,7 +252,7 @@ test("includes queue records in the general all-pilots view", async () => {
   );
 });
 
-test("requires an administrator to approve access requests", async () => {
+test("removes access approval from the public page while preserving historical records", async () => {
   const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
   const accessRoute = await readFile(
     new URL("../app/api/acessos/[id]/route.ts", import.meta.url),
@@ -263,8 +263,8 @@ test("requires an administrator to approve access requests", async () => {
     "utf8",
   );
 
-  assert.match(page, /ensureCurrentAccessRequest\(user\)/);
-  assert.match(page, /getPendingAccessRequests\(\)/);
+  assert.doesNotMatch(page, /ensureCurrentAccessRequest\(user\)/);
+  assert.doesNotMatch(page, /getPendingAccessRequests\(\)/);
   assert.match(accessRoute, /access\.papel !== "administrador"/);
   assert.match(accessRoute, /não pode aprovar o próprio acesso/);
   assert.match(migration, /CREATE TABLE `solicitacoes_acesso`/);

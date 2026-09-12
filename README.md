@@ -44,14 +44,10 @@ Configure no Pages:
 - Versão do Node: 22.13 ou superior.
 - Compatibility flag: nodejs_compat.
 - Binding D1: DB, associado ao banco da central.
-- ACCESS_TEAM_DOMAIN: domínio da equipe, como equipe.cloudflareaccess.com.
-- ACCESS_AUD: identificador da aplicação Cloudflare Access.
 
-Configure Access para proteger /central e /central/* na URL de prévia.
-O endereço /cadastro redireciona para o formulário completo em /central/cadastro.
-O formulário e sua API não exigem configuração de Access, mas precisam do D1.
-Se houver uma política de Access no domínio, configure exceções para /cadastro, /central/cadastro,
- /central/api/cadastro e assets em /central/assets/* e /central/brand/*.
+A Central tem acesso direto, sem login, com consulta e edição completas.
+Se houver uma política externa de Cloudflare Access, retire-a na hospedagem.
+O endereço /cadastro encaminha para /central/cadastro.
 O Worker verifica a assinatura do JWT do Access antes de aceitar a identidade.
 Sem banco e Access configurados, mostra uma mensagem de preparação e não abre os dados.
 

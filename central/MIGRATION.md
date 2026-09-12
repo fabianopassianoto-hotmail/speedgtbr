@@ -1,3 +1,9 @@
+## Acesso direto, sem login
+
+A Central agora permite consulta e edição completas sem autenticação.
+Configurações de login descritas nas seções históricas abaixo não são mais necessárias.
+Novas atividades são identificadas como “Acesso público”.
+
 ## Atualização de 12 de setembro de 2026 — versão 34
 
 Origem: `423767c9f131a991f4576fa29c7ef3816a33b855`. Inclui interface da liga,

@@ -1047,7 +1047,7 @@ export function PilotsScreen({
                 Central da liga
               </p>
               <p className="truncate text-xs text-muted-foreground">
-                {activeCompetitionName} · {access.papel === "administrador" ? "Administrador" : `Coordenação Série ${access.serie ?? "pendente"}`}
+                {activeCompetitionName} · {access.papel === "administrador" ? "Acesso livre" : `Coordenação Série ${access.serie ?? "pendente"}`}
               </p>
             </div>
           </div>

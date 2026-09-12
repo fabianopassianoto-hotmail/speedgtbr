@@ -1,6 +1,5 @@
 import central from "./central/index.js";
 import { onRequestGet } from "./championships.js";
-import { authenticatedEmail } from "./access-auth.mjs";
 
 function unavailable(status, message) {
   return new Response('<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Central | Speed GT Brasil</title><body style="margin:0;background:#0B0B0E;color:#F4F1EA;font:18px Arial;padding:48px"><main><h1 style="color:#60A5FA">Central</h1><p>' + message + '</p><a style="color:#60A5FA" href="/">Voltar ao site</a></main></body></html>', { status, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
@@ -20,16 +19,10 @@ export default {
     }
     if (path === "/central" || path.startsWith("/central/")) {
       if (/^\/central\/(assets|brand)\//.test(path) || /^\/central\/(og\.png|favicon\.svg)$/.test(path)) return env.ASSETS.fetch(request);
-      const publicRegistration = /^\/central\/(cadastro|api\/cadastro)\/?$/.test(path);
-      const providerAuth = String(env.SUPABASE_URL ?? "").startsWith("https://") && Boolean(env.SUPABASE_PUBLISHABLE_KEY);
-      const publicAuth = /^\/central\/(entrar|conta|api\/auth\/[^/]+)\/?$/.test(path);
-      if (!env.DB || (!providerAuth && !publicAuth && !publicRegistration && (!env.ACCESS_TEAM_DOMAIN || !env.ACCESS_AUD))) return unavailable(503, "A central está em preparação. Volte em breve.");
-      const email = publicRegistration || publicAuth || providerAuth ? null : await authenticatedEmail(request, env);
-      if (!providerAuth && !publicAuth && !publicRegistration && !email) return unavailable(401, "Entre com uma conta autorizada pelo acesso da comunidade.");
+      if (!env.DB) return unavailable(503, "A central está em preparação. Volte em breve.");
       const headers = new Headers(request.headers);
       headers.delete("cf-access-authenticated-user-email");
       headers.delete("cf-access-authenticated-user-name");
-      if (email) headers.set("cf-access-authenticated-user-email", email);
       return central.fetch(new Request(request, { headers }), env, ctx);
     }
     return env.ASSETS.fetch(request);

@@ -22,14 +22,14 @@ test("public registration works without Access and discards forged identity", as
     assert.equal(response.status, 200);
     assert.deepEqual(await response.json(), { path, email: null });
   }
-  assert.equal((await worker.fetch(new Request("https://example.com/central"), { DB: {} }, {})).status, 503);
-  assert.equal((await worker.fetch(new Request("https://example.com/central"), { DB: {}, ACCESS_TEAM_DOMAIN: "test", ACCESS_AUD: "test" }, {})).status, 401);
+  assert.equal((await worker.fetch(new Request("https://example.com/central"), {}, {})).status, 503);
+  assert.equal((await worker.fetch(new Request("https://example.com/central"), { DB: {} }, {})).status, 200);
 });
 
-test("provider authentication reaches application validation without trusting Access headers", async () => {
-  const env = { DB: {}, SUPABASE_URL: "https://example.supabase.co", SUPABASE_PUBLISHABLE_KEY: "test-key" };
-  for (const path of ["/central", "/central/entrar", "/central/api/auth/login"]) {
-    const response = await worker.fetch(new Request(`https://example.com${path}`, { headers: { "cf-access-authenticated-user-email": "forged@example.com" } }), env, {});
+test("Central forwards reads and edits without credentials or an Access provider", async () => {
+  const env = { DB: {} };
+  for (const [path, method] of [["/central", "GET"], ["/central/api/caixa", "POST"], ["/central/api/pilotos/SGT001", "PATCH"], ["/central/api/caixa", "DELETE"]]) {
+    const response = await worker.fetch(new Request(`https://example.com${path}`, { method, headers: { "cf-access-authenticated-user-email": "forged@example.com" } }), env, {});
     assert.deepEqual(await response.json(), { path, email: null });
   }
 });

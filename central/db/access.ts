@@ -44,6 +44,7 @@ export async function ensureCurrentUserAccess(
   user: ChatGPTUser,
 ): Promise<UserAccess | null> {
   setAuditActor(user.fullName ? `${user.fullName} <${user.email}>` : user.email);
+  if (user.id === "central-public") return { id: 0, accountUserId: user.id, email: user.email, nome: user.displayName, papel: "administrador", serie: null, ativo: true };
   const db = getD1Binding();
   const email = user.email.trim().toLowerCase();
   const found = await db
