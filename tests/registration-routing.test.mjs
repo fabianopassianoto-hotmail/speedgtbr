@@ -35,3 +35,9 @@ test("Central forwards reads and edits without credentials or an Access provider
 });
 
 test('old administration URL redirects to admin',async()=>{const response=await worker.fetch(new Request('https://example.com/central'),{},{});assert.equal(response.headers.get('location'),'https://example.com/admin');});
+
+test('production blocks anonymous administration while keeping registration public',async()=>{
+ const env={DB:{},REQUIRE_ADMIN_ACCESS:'true'};
+ for(const path of ['/admin','/central/api/pilotos/SGT001','/central/api/admin']) assert.equal((await worker.fetch(new Request('https://example.com'+path),env,{})).status,403);
+ for(const path of ['/cadastro','/central/api/cadastro','/central/api/cadastro/reenviar']) assert.equal((await worker.fetch(new Request('https://example.com'+path),env,{})).status,200);
+});

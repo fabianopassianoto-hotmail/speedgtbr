@@ -1,4 +1,5 @@
 import central from "./central/index.js";
+import { authenticatedEmail } from "./access-auth.mjs";
 import { onRequestGet } from "./championships.js";
 
 function unavailable(status, message) {
@@ -24,6 +25,8 @@ export default {
     if (path === "/admin" || path === "/cadastro" || path.startsWith("/central/")) {
       if (/^\/central\/(assets|brand)\//.test(path) || /^\/central\/(og\.png|favicon\.svg)$/.test(path)) return env.ASSETS.fetch(request);
       if (!env.DB) return unavailable(503, "A central está em preparação. Volte em breve.");
+      const publicRegistration = path === "/cadastro" || /^\/central\/api\/cadastro(?:\/reenviar)?\/?$/.test(path);
+      if (env.REQUIRE_ADMIN_ACCESS === "true" && !publicRegistration && !await authenticatedEmail(request, env)) return unavailable(403, "Acesso administrativo restrito. Entre com uma conta autorizada pela administração.");
       const headers = new Headers(request.headers);
       headers.delete("cf-access-authenticated-user-email");
       headers.delete("cf-access-authenticated-user-name");
