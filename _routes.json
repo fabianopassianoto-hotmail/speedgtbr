@@ -1,1 +1,1 @@
-{"version":1,"include":["/api/championships/*","/admin", "/admin/", "/cadastro","/cadastro/","/central","/central/*","/comece-aqui","/comece-aqui/"],"exclude":[]}
+{"version":1,"include":["/api/championships/*","/admin","/admin/","/cadastro","/cadastro/","/central","/central/*","/comece-aqui","/comece-aqui/","/ádmin","/ádmin/","/%C3%A1dmin","/%C3%A1dmin/","/ádmin","/ádmin/","/a%CC%81dmin","/a%CC%81dmin/"],"exclude":[]}

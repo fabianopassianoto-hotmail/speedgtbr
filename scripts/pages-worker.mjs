@@ -9,6 +9,15 @@ export default {
   async fetch(request, env, ctx) {
     const path = new URL(request.url).pathname;
     const target = new URL(request.url);
+    let decodedPath = path;
+    try { decodedPath = decodeURIComponent(path).normalize("NFC"); } catch { /* Keep malformed paths unchanged. */ }
+    const accentedAdmin = decodedPath === "/ádmin" || decodedPath === "/ádmin/";
+    const productionAlias = env.REQUIRE_ADMIN_ACCESS === "true" && target.hostname === "speedgtbr.pages.dev" && (path === "/admin" || path === "/admin/" || accentedAdmin);
+    if (accentedAdmin || productionAlias) {
+      if (productionAlias) target.hostname = "www.speedgtbrasil.com.br";
+      target.pathname = "/admin";
+      return Response.redirect(target.href, 307);
+    }
     if (["/comece-aqui", "/comece-aqui/", "/central/central", "/central/central/", "/central/cadastro", "/central/cadastro/", "/cadastro/"].includes(path)) {
       target.pathname = "/cadastro";
       return Response.redirect(target.href, 307);

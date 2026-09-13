@@ -41,3 +41,14 @@ test('production blocks anonymous administration while keeping registration publ
  for(const path of ['/admin','/central/api/pilotos/SGT001','/central/api/admin']) assert.equal((await worker.fetch(new Request('https://example.com'+path),env,{})).status,403);
  for(const path of ['/cadastro','/central/api/cadastro','/central/api/cadastro/reenviar']) assert.equal((await worker.fetch(new Request('https://example.com'+path),env,{})).status,200);
 });
+
+test('mobile accented address and production Pages alias lead to the protected admin URL',async()=>{
+ for(const path of ['/ádmin','/ádmin/','/a\u0301dmin']) {
+ const response=await worker.fetch(new Request('https://www.speedgtbrasil.com.br'+path+'?origem=celular'),{},{});
+ assert.equal(response.status,307);assert.equal(response.headers.get('location'),'https://www.speedgtbrasil.com.br/admin?origem=celular');
+ }
+ for(const path of ['/admin','/admin/','/ádmin']) {
+ const response=await worker.fetch(new Request('https://speedgtbr.pages.dev'+path),{REQUIRE_ADMIN_ACCESS:'true'},{});
+ assert.equal(response.headers.get('location'),'https://www.speedgtbrasil.com.br/admin');
+ }
+});
