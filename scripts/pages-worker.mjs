@@ -26,7 +26,11 @@ export default {
       if (/^\/central\/(assets|brand)\//.test(path) || /^\/central\/(og\.png|favicon\.svg)$/.test(path)) return env.ASSETS.fetch(request);
       if (!env.DB) return unavailable(503, "A central está em preparação. Volte em breve.");
       const publicRegistration = path === "/cadastro" || /^\/central\/api\/cadastro(?:\/reenviar)?\/?$/.test(path);
-      if (env.REQUIRE_ADMIN_ACCESS === "true" && !publicRegistration && !await authenticatedEmail(request, env)) return unavailable(403, "Acesso administrativo restrito. Entre com uma conta autorizada pela administração.");
+      if (env.REQUIRE_ADMIN_ACCESS === "true" && !publicRegistration) {
+        const email = await authenticatedEmail(request, env);
+        const allowed = email && await env.DB.prepare("SELECT id FROM usuarios_acessos WHERE lower(email) = ? AND ativo = 1 AND papel = 'administrador' LIMIT 1").bind(email).first();
+        if (!allowed) return unavailable(403, "Acesso administrativo restrito. Entre com uma conta autorizada pela administração.");
+      }
       const headers = new Headers(request.headers);
       headers.delete("cf-access-authenticated-user-email");
       headers.delete("cf-access-authenticated-user-name");

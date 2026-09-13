@@ -4,7 +4,8 @@ export async function authenticatedEmail(request, env) {
   const team = env.ACCESS_TEAM_DOMAIN;
   const audience = env.ACCESS_AUD;
   if (!team || !audience || !/^[a-z0-9-]+\.cloudflareaccess\.com$/.test(team)) return null;
-  const token = request.headers.get("cf-access-jwt-assertion");
+  const sessionCookie = request.headers.get("cookie")?.split(";").map(value => value.trim()).find(value => value.startsWith("CF_Authorization="))?.slice("CF_Authorization=".length);
+  const token = request.headers.get("cf-access-jwt-assertion") || sessionCookie;
   if (!token) return null;
   try {
     const [headerPart, payloadPart, signaturePart, extra] = token.split(".");

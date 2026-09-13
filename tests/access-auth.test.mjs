@@ -22,9 +22,14 @@ test("Access accepts signed identities and rejects forged, expired and foreign t
     assert.equal(await authenticatedEmail(request(await token({ ...claims, aud: ["other"] })), env), null);
     assert.equal(await authenticatedEmail(request(await token({ ...claims, exp: 1 })), env), null);
     const signed = await token(claims);
+    const cookieRequest = value => new Request("https://example.com/central/api/admin", { headers: { cookie: "CF_Authorization=" + value } });
+    assert.equal(await authenticatedEmail(cookieRequest(signed), env), "admin@example.com");
+    assert.equal(await authenticatedEmail(cookieRequest(await token({ ...claims, aud: ["other"] })), env), null);
+    assert.equal(await authenticatedEmail(cookieRequest(await token({ ...claims, exp: 1 })), env), null);
     const parts = signed.split(".");
     parts[1] = encode({ ...claims, email: "forged@example.com" });
     assert.equal(await authenticatedEmail(request(parts.join(".")), env), null);
+    assert.equal(await authenticatedEmail(cookieRequest(parts.join(".")), env), null);
     assert.equal(await authenticatedEmail(request(signed), {}), null);
   } finally {
     globalThis.fetch = originalFetch;
