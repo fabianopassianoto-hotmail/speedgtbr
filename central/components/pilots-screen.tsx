@@ -1037,6 +1037,7 @@ export function PilotsScreen({
           />
         </div>
         <div className="mx-auto max-w-6xl px-4 md:px-6"><a href="/" className="inline-flex min-h-11 items-center text-sm font-semibold text-primary underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-primary">Voltar ao site Speed GT Brasil</a></div><DesktopNavigation activeScreen={activeScreen} onNavigate={navigate} />
+        <MobileNavigation activeScreen={activeScreen} onNavigate={navigate} />
       </header>
 
       <div hidden={activeScreen !== "inicio"}>
@@ -1428,7 +1429,7 @@ function MobileNavigation({
 }) {
   return (
     <nav
-      className="scrollbar-none fixed inset-x-0 bottom-0 z-40 flex overflow-x-auto border-t border-border bg-[#0D1016] pb-[max(env(safe-area-inset-bottom),0.25rem)] md:hidden"
+      className="grid grid-cols-2 gap-2 border-t border-border bg-[#0D1016] p-3 md:hidden"
       aria-label="Navegação principal"
     >
       {navItems.map(({ value, label, icon: Icon, enabled }) => {
@@ -1443,12 +1444,12 @@ function MobileNavigation({
           title={enabled ? undefined : "Tela ainda não construída"}
           onClick={() => enabled && onNavigate(value as Screen)}
           className={cn(
-            "flex min-h-16 min-w-0 flex-1 flex-col items-center justify-center gap-1 px-1 text-[10px] font-semibold leading-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#60A5FA]",
+            "flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-md border border-border px-2 py-3 text-xs font-semibold leading-snug focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#60A5FA]",
             active ? "text-[#60A5FA]" : "text-[#6F788B]",
           )}
         >
           <Icon className="size-5" aria-hidden="true" />
-          <span className="max-w-full truncate">{value==="classificacao"?"Classif.":label}</span>
+          <span>{label}</span>
         </button>
         );
       })}
