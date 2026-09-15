@@ -2128,12 +2128,12 @@ function RecordSheet({
               <EditableField label="Apelido de narração" field="apelido" value={record.apelido} editable={editable} required onSave={onSave} />
               <EditableField label="Nome completo" field="nomeCompleto" value={record.nomeCompleto} editable={editable} onSave={onSave} />
               <EditableField label="PSN" field="psn" value={record.psn} editable={editable} mono onSave={onSave} />
-              <ReadOnlyField label="Rua" value={record.rua ?? null} />
-              <ReadOnlyField label="Número" value={record.numero ?? null} />
-              <ReadOnlyField label="Bairro" value={record.bairro ?? null} />
-              <ReadOnlyField label="CEP" value={record.cep ?? null} />
-              <ReadOnlyField label="Complemento" value={record.complemento ?? null} />
-              <ReadOnlyField label="Classificação GT7" value={record.classificacao_gt7 ?? null} />
+              <EditableField label="Rua" field="rua" value={record.rua ?? null} editable={editable} onSave={onSave} />
+              <EditableField label="Número" field="numero" value={record.numero ?? null} editable={editable} onSave={onSave} />
+              <EditableField label="Bairro" field="bairro" value={record.bairro ?? null} editable={editable} onSave={onSave} />
+              <EditableField label="CEP" field="cep" value={record.cep ?? null} editable={editable} mono onSave={onSave} />
+              <EditableField label="Complemento" field="complemento" value={record.complemento ?? null} editable={editable} onSave={onSave} />
+              <EditableField label="Classificação GT7" field="classificacao_gt7" value={record.classificacao_gt7 ?? null} editable={editable} onSave={onSave} />
               <EditableField label="SimGrid" field="simgrid" value={record.simgrid} editable={editable} mono onSave={onSave} />
               <EditableField label="Link do SimGrid" field="simgridUrl" value={record.simgridUrl} editable={editable} mono onSave={onSave} />
               <EditableField label="Data de nascimento" field="dataNascimento" value={record.dataNascimento} editable={editable} inputType="date" mono onSave={onSave} />
