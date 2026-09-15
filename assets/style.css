@@ -110,6 +110,7 @@ body::before {
 .nav-group summary { cursor: pointer; color: #C4C4C4; padding: .7rem 0; white-space: nowrap; }
 .nav-group summary:hover, .nav-group[open] summary { color: #F4F1EA; }
 .nav-submenu { min-width: 230px; padding: .4rem; background: #15151A; border: 1px solid #36363e; }
+.nav-submenu-rules { max-height: min(70dvh, 560px); overflow-y: auto; }
 .nav-submenu a { display: block; padding: .7rem .8rem; color: #C4C4C4; font-size: .85rem; }
 .nav-submenu a:hover, .nav-submenu a[aria-current] { background: #222229; color: #F4F1EA; }
 #site-header :focus-visible, .season-links a:focus-visible, .championship-link:focus-visible { outline: 2px solid #FFCB00; outline-offset: 4px; }
@@ -258,6 +259,7 @@ body::before {
 .float-wa:hover { transform: scale(1.08); }
 
 /* Post body (Blog widget) */
+#regras h2[id], #regulamento { scroll-margin-top: 110px; }
 .post-body { color: #C4C4C4; font-size: clamp(1rem, 1.2vw, 1.125rem); line-height: 1.7; }
 .post-body h1, .post-body h2, .post-body h3, .post-body h4 {
   font-family: 'Saira', sans-serif; color: #F4F1EA; letter-spacing: -0.01em;
