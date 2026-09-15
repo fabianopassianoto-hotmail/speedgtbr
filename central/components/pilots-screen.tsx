@@ -2118,16 +2118,16 @@ function RecordSheet({
                 onSave={onSave}
               />
               <EditableField label="E-mail" field="email" value={record.email} editable={editable} onSave={onSave} />
-              <div className="grid grid-cols-[1fr_84px] gap-2">
-                <EditableField label="Cidade" field="cidade" value={record.cidade} editable={editable} onSave={onSave} />
-                <EditableField label="UF" field="uf" value={record.uf} editable={editable} onSave={onSave} />
-              </div>
             </PanelSection>
 
             <PanelSection title="Identificação" icon={UserRound}>
               <EditableField label="Apelido de narração" field="apelido" value={record.apelido} editable={editable} required onSave={onSave} />
               <EditableField label="Nome completo" field="nomeCompleto" value={record.nomeCompleto} editable={editable} onSave={onSave} />
               <EditableField label="PSN" field="psn" value={record.psn} editable={editable} mono onSave={onSave} />
+              <div className="grid grid-cols-[1fr_120px] gap-2">
+                <EditableField label="Cidade" field="cidade" value={record.cidade} editable={editable} onSave={onSave} />
+                <EditableField label="Estado (UF)" field="uf" value={record.uf} editable={editable} onSave={onSave} />
+              </div>
               <EditableField label="Rua" field="rua" value={record.rua ?? null} editable={editable} onSave={onSave} />
               <EditableField label="Número" field="numero" value={record.numero ?? null} editable={editable} onSave={onSave} />
               <EditableField label="Bairro" field="bairro" value={record.bairro ?? null} editable={editable} onSave={onSave} />
@@ -2143,10 +2143,6 @@ function RecordSheet({
 
             <PanelSection title="Na pista" icon={Flag}>
               <NativeSelectField label="Volante ou controle" value={record.volanteOuControle ?? "pendente"} options={[{value:"pendente",label:"Pendente"},{value:"Volante",label:"Volante"},{value:"Controle",label:"Controle"},{value:"Volante e controle",label:"Volante e controle"}]} editable={editable} onSave={(value)=>onSave("volanteOuControle",value==="pendente"?null:value)} />
-              <EditableField label="Perfil de pilotagem" field="perfilPilotagem" value={record.perfilPilotagem} editable={editable} onSave={onSave} />
-              <EditableField label="Disponibilidade" field="disponibilidade" value={record.disponibilidade} editable={editable} onSave={onSave} />
-              <EditableField label="Carro preferido" field="carroPreferido" value={record.carroPreferido} editable={editable} onSave={onSave} />
-              <EditableField label="Pista citada" field="pistaCitada" value={record.pistaCitada} editable={editable} onSave={onSave} />
             </PanelSection>
 
             <PanelSection title="Para a narração" icon={ClipboardList}>
