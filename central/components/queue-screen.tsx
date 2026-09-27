@@ -73,7 +73,7 @@ export function QueueScreen({
                 <span className="font-data mt-1 block truncate text-xs text-muted-foreground">{person.id} · {person.simgrid || person.psn || person.nomeCompleto || "Cadastro pendente"}</span>
               </button>
               <div className="flex shrink-0 flex-col items-end gap-1">
-                {person.classificacao_gt7 && <span className="border border-[#00E676] px-2 py-1 text-[10px] font-bold uppercase leading-none tracking-wide text-[#73FFB0]">GT7 {person.classificacao_gt7}</span>}
+                {person.classificacao_gt7 && <span className="border border-[#00E676] px-2 py-1 text-[10px] font-bold uppercase leading-none tracking-wide text-[#73FFB0]">{person.classificacao_gt7}</span>}
                 <span className={cn("border px-2 py-1 text-[10px] font-bold uppercase", person.prontoParaSerie ? "border-[#00E676] text-[#73FFB0]" : "border-amber-700 text-amber-300")}>{person.prontoParaSerie ? "Pronto" : "Em avaliação"}</span>
               </div>
             </div>
