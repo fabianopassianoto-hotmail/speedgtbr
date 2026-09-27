@@ -27,6 +27,7 @@ export type RaceStage = {
 };
 export type RacePilot = {
   id: string; apelido: string; simgrid: string | null; temporadaId: string; serie: string;
+  classificacao_gt7: string | null;
   situacao: "ativo" | "suplente" | "inativo" | "saiu" | null;
   pilotoArquivado: boolean;
   pagamentoIsento?: boolean;
@@ -55,7 +56,7 @@ export async function getRaceEntryData() {
     db.prepare(`SELECT temporada_id,codigo,nome,cor,ordem,aberto_suplentes,limite_pilotos,data_inicio,frequencia_dias,regra_carro,carro_padrao,fabricante_padrao,status,arquivada_em,motivo_arquivamento,whatsapp_group_url FROM divisoes ORDER BY temporada_id,ordem,nome`).all<any>(),
     db.prepare(`SELECT DISTINCT temporada_id,serie FROM inscricoes ORDER BY temporada_id,serie`).all<any>(),
     db.prepare(`SELECT temporada_id,etapa,pista,classe_ou_formato,duracao,data,multiplicador,observacao,regra_carro,carro_padrao,fabricante_padrao FROM calendario ORDER BY temporada_id,etapa`).all<any>(),
-    db.prepare(`SELECT p.id,p.apelido,p.simgrid,p.arquivado_em,i.temporada_id,i.serie,i.situacao,i.pagamento_isento FROM pilotos p JOIN inscricoes i ON i.piloto_id=p.id ORDER BY i.temporada_id,i.serie,p.apelido COLLATE NOCASE`).all<any>(),
+    db.prepare(`SELECT p.id,p.apelido,p.simgrid,p.classificacao_gt7,p.arquivado_em,i.temporada_id,i.serie,i.situacao,i.pagamento_isento FROM pilotos p JOIN inscricoes i ON i.piloto_id=p.id ORDER BY i.temporada_id,i.serie,p.apelido COLLATE NOCASE`).all<any>(),
     db.prepare(`SELECT temporada_id,etapa,piloto_id,confirmou,compareceu,falta_justificada,posicao_final,volta_mais_rapida,punicao,abandono_motivo,observacao,pontos,carro,fabricante,origem_carro,suplente,pontos_suplente FROM corridas ORDER BY temporada_id,etapa,piloto_id`).all<any>(),
     db.prepare(`SELECT id,apelido,simgrid,'piloto' AS kind
                 FROM pilotos WHERE arquivado_em IS NULL
@@ -88,7 +89,7 @@ export async function getRaceEntryData() {
     competicoes: competitions.results.map((r:any):RaceCompetition => ({ id:r.id,nome:r.nome,ativa:Boolean(r.ativa),totalEtapas:r.total_etapas,tipoEvento:r.tipo_evento,geraClassificacao:Boolean(r.gera_classificacao),pilotosPorSerie:r.pilotos_por_serie,regraCarro:r.regra_carro,carroPadrao:r.carro_padrao,fabricantePadrao:r.fabricante_padrao,status:r.status!=="ativa"?r.status:r.ciclo,arquivadaEm:r.arquivada_em,motivoArquivamento:r.motivo_arquivamento,whatsappGroupUrl:r.whatsapp_group_url??GENERAL_WHATSAPP_GROUP_URL })),
     divisoes: divisoes.sort((a,b)=>a.temporadaId.localeCompare(b.temporadaId)||a.ordem-b.ordem),
     etapas: stages.results.map((r:any):RaceStage => ({ temporadaId:r.temporada_id,etapa:r.etapa,pista:r.pista,classeOuFormato:r.classe_ou_formato,duracao:r.duracao,data:r.data,multiplicador:r.multiplicador,observacao:r.observacao,regraCarro:r.regra_carro,carroPadrao:r.carro_padrao,fabricantePadrao:r.fabricante_padrao })),
-    pilotos: pilots.results.map((r:any):RacePilot => ({ id:r.id,apelido:r.apelido,simgrid:r.simgrid,temporadaId:r.temporada_id,serie:r.serie,situacao:r.situacao,pilotoArquivado:Boolean(r.arquivado_em),pagamentoIsento:Boolean(r.pagamento_isento) })),
+    pilotos: pilots.results.map((r:any):RacePilot => ({ id:r.id,apelido:r.apelido,simgrid:r.simgrid,classificacao_gt7:r.classificacao_gt7??null,temporadaId:r.temporada_id,serie:r.serie,situacao:r.situacao,pilotoArquivado:Boolean(r.arquivado_em),pagamentoIsento:Boolean(r.pagamento_isento) })),
     resultados: results.results.map((r:any):RaceResult => ({ suplente:Boolean(r.suplente),pontosSuplente:r.pontos_suplente??null,temporadaId:r.temporada_id,etapa:r.etapa,pilotoId:r.piloto_id,confirmou:r.confirmou===null?null:Boolean(r.confirmou),compareceu:r.compareceu===null?null:Boolean(r.compareceu),faltaJustificada:r.falta_justificada===null?null:Boolean(r.falta_justificada),posicaoFinal:r.posicao_final,voltaMaisRapida:Boolean(r.volta_mais_rapida),punicao:r.punicao,abandonoMotivo:r.abandono_motivo,observacao:r.observacao,pontos:r.pontos,carro:r.carro,fabricante:r.fabricante,origemCarro:r.origem_carro })),
     pilotosDisponiveis: available.results as AvailableRacePilot[],
   };
