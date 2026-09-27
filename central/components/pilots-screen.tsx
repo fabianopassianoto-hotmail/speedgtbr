@@ -1484,8 +1484,15 @@ function TimingRow({
         {record.id}
       </span>
       <span className="min-w-0 self-center py-3 pr-3">
-        <span className="font-display block truncate text-2xl font-bold uppercase leading-none md:text-3xl">
-          {record.apelido}
+        <span className="flex min-w-0 items-center gap-2">
+          <span className="font-display min-w-0 truncate text-2xl font-bold uppercase leading-none md:text-3xl">
+            {record.apelido}
+          </span>
+          {record.classificacao_gt7 && (
+            <span className="shrink-0 border border-[#00E676] px-2 py-1 text-[10px] font-bold uppercase leading-none tracking-wide text-[#73FFB0]">
+              GT7 {record.classificacao_gt7}
+            </span>
+          )}
         </span>
         <span className="font-data mt-1 block truncate text-xs text-muted-foreground md:text-sm">
           {record.simgrid || record.nomeCompleto || "Pendente"}
@@ -1499,9 +1506,7 @@ function TimingRow({
         )}
       </span>
       <span className="flex flex-col items-end justify-center gap-1 py-2 pr-3">
-        {record.classificacao_gt7 && (
-          <StatusLabel tone="rating">GT7 {record.classificacao_gt7}</StatusLabel>
-        )}
+
         {record.kind === "fila" && <StatusLabel tone="neutral">Fila</StatusLabel>}
         {record.kind === "formulario" && (
           <StatusLabel tone="warning">Aguardando aprovação</StatusLabel>
@@ -1534,7 +1539,7 @@ function StatusLabel({
   tone,
 }: {
   children: React.ReactNode;
-  tone: "warning" | "danger" | "neutral" | "rating";
+  tone: "warning" | "danger" | "neutral";
 }) {
   return (
     <span
@@ -1543,7 +1548,6 @@ function StatusLabel({
         tone === "warning" && "border-[#60A5FA] text-[#60A5FA]",
         tone === "danger" && "border-[#E8604C] text-[#FF8A78]",
         tone === "neutral" && "border-[#515A69] text-[#C4CBD8]",
-        tone === "rating" && "border-[#00E676] text-[#73FFB0]",
       )}
     >
       {children}
