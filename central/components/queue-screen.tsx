@@ -72,7 +72,10 @@ export function QueueScreen({
                 <strong className="font-display block truncate text-2xl uppercase leading-none">{person.apelido}</strong>
                 <span className="font-data mt-1 block truncate text-xs text-muted-foreground">{person.id} · {person.simgrid || person.psn || person.nomeCompleto || "Cadastro pendente"}</span>
               </button>
-              <span className={cn("shrink-0 border px-2 py-1 text-[10px] font-bold uppercase", person.prontoParaSerie ? "border-[#00E676] text-[#73FFB0]" : "border-amber-700 text-amber-300")}>{person.prontoParaSerie ? "Pronto" : "Em avaliação"}</span>
+              <div className="flex shrink-0 flex-col items-end gap-1">
+                {person.classificacao_gt7 && <span className="border border-[#00E676] px-2 py-1 text-[10px] font-bold uppercase leading-none tracking-wide text-[#73FFB0]">GT7 {person.classificacao_gt7}</span>}
+                <span className={cn("border px-2 py-1 text-[10px] font-bold uppercase", person.prontoParaSerie ? "border-[#00E676] text-[#73FFB0]" : "border-amber-700 text-amber-300")}>{person.prontoParaSerie ? "Pronto" : "Em avaliação"}</span>
+              </div>
             </div>
             <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto]">
               <button type="button" disabled={!editable || savingId === person.id} onClick={() => save(person, "prontoParaSerie", !person.prontoParaSerie)} className="min-h-10 border border-[#00E676] px-3 text-sm font-semibold text-[#73FFB0] outline-none focus-visible:ring-2 focus-visible:ring-[#00E676] disabled:opacity-50">{person.prontoParaSerie ? "Retirar marcação de pronto" : "Pronto para série ou suplência"}</button>

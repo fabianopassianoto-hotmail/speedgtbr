@@ -125,7 +125,8 @@ export function CashScreen({ competitions, memberships, entries, pilots, isAdmin
                 <strong className="font-display block truncate text-2xl uppercase leading-none">{pilot.apelido}</strong>
                 <span className="font-data mt-1 block text-xs text-muted-foreground">{pilot.serie ? `Série ${pilot.serie}` : "Sem série"} · {pilot.id}{pilot.arquivadoEm ? " · Arquivado" : pilot.situacao==="saiu"?" · Saiu":""}</span>
               </button>
-              <div className="text-right md:text-left">
+              <div className="flex flex-col items-end gap-1 text-right md:items-start md:text-left">
+                {pilot.classificacao_gt7 && <span className="border border-[#00E676] px-2 py-1 text-[10px] font-bold uppercase leading-none tracking-wide text-[#73FFB0]">GT7 {pilot.classificacao_gt7}</span>}
                 <strong className="font-data block text-sm">{formatCurrency(pilot.totalPago)}</strong>
                 <span className={pilot.isentoPagamento ? "text-xs text-[#00E676]" : pilot.totalPago===0 ? "text-xs text-[#60A5FA]" : "text-xs text-[#00E676]"}>
                   {pilot.totalPago>0 ? (pilot.inscricaoPendente?"Pagamento parcial":pilot.isentoPagamento?"Pagou · Isento":"Pagou") : pilot.isentoPagamento?"Isento":"Não pagou"}

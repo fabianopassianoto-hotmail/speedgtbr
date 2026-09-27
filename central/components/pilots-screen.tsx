@@ -946,6 +946,7 @@ export function PilotsScreen({
           id: pilotId,
           apelido: pilot.apelido,
           simgrid: pilot.simgrid,
+          classificacao_gt7: pilot.classificacao_gt7 ?? null,
           temporadaId,
           serie,
           situacao,
@@ -983,6 +984,7 @@ export function PilotsScreen({
       id: pilot.id,
       apelido: pilot.apelido,
       simgrid: pilot.simgrid,
+      classificacao_gt7: pilot.classificacao_gt7 ?? null,
       temporadaId: currentSeasonId,
       serie: pilot.serie!,
       situacao: pilot.situacao,
@@ -1497,6 +1499,9 @@ function TimingRow({
         )}
       </span>
       <span className="flex flex-col items-end justify-center gap-1 py-2 pr-3">
+        {record.classificacao_gt7 && (
+          <StatusLabel tone="rating">GT7 {record.classificacao_gt7}</StatusLabel>
+        )}
         {record.kind === "fila" && <StatusLabel tone="neutral">Fila</StatusLabel>}
         {record.kind === "formulario" && (
           <StatusLabel tone="warning">Aguardando aprovação</StatusLabel>
@@ -1529,7 +1534,7 @@ function StatusLabel({
   tone,
 }: {
   children: React.ReactNode;
-  tone: "warning" | "danger" | "neutral";
+  tone: "warning" | "danger" | "neutral" | "rating";
 }) {
   return (
     <span
@@ -1538,6 +1543,7 @@ function StatusLabel({
         tone === "warning" && "border-[#60A5FA] text-[#60A5FA]",
         tone === "danger" && "border-[#E8604C] text-[#FF8A78]",
         tone === "neutral" && "border-[#515A69] text-[#C4CBD8]",
+        tone === "rating" && "border-[#00E676] text-[#73FFB0]",
       )}
     >
       {children}
@@ -1550,6 +1556,7 @@ type MembershipStatus = "ativo" | "suplente" | "inativo" | "saiu";
 function PilotMembershipPanel({
   pilotId,
   pilotName,
+  pilotRating,
   whatsapp,
   competitions,
   divisions,
@@ -1561,6 +1568,7 @@ function PilotMembershipPanel({
 }: {
   pilotId: string;
   pilotName: string;
+  pilotRating: string | null;
   whatsapp: string | null;
   competitions: RaceCompetition[];
   divisions: RaceDivision[];
@@ -1643,6 +1651,7 @@ function PilotMembershipPanel({
         id: pilotId,
         apelido: pilotName,
         simgrid: existing?.simgrid ?? null,
+        classificacao_gt7: existing?.classificacao_gt7 ?? pilotRating,
         temporadaId,
         serie,
         situacao,
@@ -2049,6 +2058,7 @@ function RecordSheet({
               <PilotMembershipPanel
                 pilotId={record.id}
                 pilotName={record.apelido}
+                pilotRating={record.classificacao_gt7 ?? null}
                 whatsapp={record.whatsapp}
                 competitions={raceData.competicoes}
                 divisions={raceData.divisoes}
