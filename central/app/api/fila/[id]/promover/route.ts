@@ -1,5 +1,6 @@
 import { getChatGPTUser } from "@/app/chatgpt-auth";
 import { getD1Binding } from "@/db";
+import { currentSeasonId } from "@/db/current-season";
 import { ensureCurrentUserAccess } from "@/db/access";
 
 export const dynamic = "force-dynamic";
@@ -69,6 +70,19 @@ export async function POST(
   }
 
   const db = getD1Binding();
+  const temporadaId = await currentSeasonId();
+  const division = await db
+    .prepare(
+      `SELECT d.status FROM divisoes d
+       JOIN temporadas t ON t.id = d.temporada_id
+       WHERE d.temporada_id = ? AND d.codigo = ?
+         AND t.status = 'ativa' AND t.ciclo = 'ativa'`,
+    )
+    .bind(temporadaId, body.serie)
+    .first<{ status: string }>();
+  if (!division || division.status !== "ativa") {
+    return Response.json({ error: "Selecione uma série ativa da temporada atual." }, { status: 400 });
+  }
   const queue = await db
     .prepare(
       `SELECT id, apelido, nome_completo, psn, simgrid, simgrid_url,
@@ -93,17 +107,17 @@ export async function POST(
           `SELECT COALESCE(d.limite_pilotos, CASE WHEN t.id='2026' AND ? IN ('A','B') THEN 14 WHEN t.id='2026' AND ?='C' THEN 15 ELSE t.pilotos_por_serie END) AS limite
          FROM temporadas t LEFT JOIN divisoes d
            ON d.temporada_id = t.id AND d.codigo = ?
-         WHERE t.id = '2026'`,
+         WHERE t.id = ?`,
       )
-      .bind(body.serie, body.serie, body.serie)
+      .bind(body.serie, body.serie, body.serie, temporadaId)
       .first<{ limite: number }>();
     const activeCount = await db
       .prepare(
         `SELECT COUNT(*) AS total FROM inscricoes
-         WHERE temporada_id = '2026' AND serie = ?
+         WHERE temporada_id = ? AND serie = ?
            AND COALESCE(situacao, 'ativo') = 'ativo'`,
       )
-      .bind(body.serie)
+      .bind(temporadaId, body.serie)
       .first<{ total: number }>();
     const limit = Number(limitRow?.limite ?? 15);
     if (Number(activeCount?.total ?? 0) >= limit) {
@@ -173,9 +187,9 @@ export async function POST(
     db
       .prepare(
         `INSERT INTO inscricoes (temporada_id, piloto_id, serie, situacao)
-         VALUES ('2026', ?, ?, ?)`,
+         VALUES (?, ?, ?, ?)`,
       )
-      .bind(pilotId, body.serie, body.situacao),
+      .bind(temporadaId, pilotId, body.serie, body.situacao),
     db
       .prepare(
         "UPDATE fila SET promovido_para_piloto_id = ? WHERE id = ?",

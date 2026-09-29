@@ -106,3 +106,37 @@ test('requires all six address fields, keeps complement optional and validates e
  for(const value of ['piloto','piloto@','piloto@dominio','piloto @dominio.com']) assert.ok(validateEmail(value));
  assert.equal(validateAddress({...valid,email:'invalido'}),null);
 });
+
+
+test('series assignment survives reload in the current season for active and reserve pilots', async () => {
+  const {sqlite,db}=database();
+  sqlite.exec("INSERT INTO temporadas(id,nome,ativa,total_etapas,pilotos_por_serie) VALUES ('2026','Anterior',0,2,15),('2027','Atual',1,2,15); INSERT INTO divisoes(temporada_id,codigo,nome,ordem,limite_pilotos) VALUES ('2027','A','Série A',1,1),('2027','B','Série B',2,15); INSERT INTO fila(id,apelido) VALUES ('FIL001','Titular'),('FIL002','Reserva'),('FIL003','Excedente');");
+  globalThis.registrationTestDB=db;
+  const inject=source=>source
+    .replace('import { getD1Binding } from "@/db";', 'const getD1Binding = () => globalThis.registrationTestDB;')
+    .replace('import {getD1Binding} from "@/db";', 'const getD1Binding = () => globalThis.registrationTestDB;')
+    .replace('import { getChatGPTUser } from "@/app/chatgpt-auth";', 'const getChatGPTUser = async () => ({email:"admin@example.com"});')
+    .replace('import { ensureCurrentUserAccess } from "@/db/access";', 'const ensureCurrentUserAccess = async () => ({papel:"administrador"});');
+  const seasonUrl=moduleUrl(inject(readFileSync(new URL('../db/current-season.ts',import.meta.url),'utf8')));
+  const routeSource=inject(readFileSync(new URL('../app/api/fila/[id]/promover/route.ts',import.meta.url),'utf8')).replace('"@/db/current-season"',JSON.stringify(seasonUrl));
+  const {POST}=await import(moduleUrl(routeSource));
+  const listingSource=inject(readFileSync(new URL('../db/pilots.ts',import.meta.url),'utf8')).replace('"@/db/current-season"',JSON.stringify(seasonUrl));
+  const {getPilotsScreenData}=await import(moduleUrl(listingSource));
+  try {
+    for(const [id,situacao] of [['FIL001','ativo'],['FIL002','suplente']]) {
+      const response=await POST(request({serie:'A',situacao}),{params:Promise.resolve({id})});
+      assert.equal(response.status,200,JSON.stringify(await response.clone().json()));
+      const {pilotoId}=await response.json();
+      const reloaded=await getPilotsScreenData();
+      const pilot=reloaded.pilotos.find(p=>p.id===pilotoId);
+      assert.equal(pilot.serie,'A');assert.equal(pilot.situacao,situacao);
+      assert.ok(!reloaded.fila.some(p=>p.id===id));
+      assert.equal(sqlite.prepare("SELECT COUNT(*) n FROM inscricoes WHERE temporada_id='2026'").get().n,0);
+      assert.equal((await POST(request({serie:'A',situacao}),{params:Promise.resolve({id})})).status,404);
+    }
+    assert.equal((await POST(request({serie:'A',situacao:'ativo'}),{params:Promise.resolve({id:'FIL003'})})).status,409);
+    assert.equal(sqlite.prepare("SELECT promovido_para_piloto_id FROM fila WHERE id='FIL003'").get().promovido_para_piloto_id,null);
+    sqlite.exec("UPDATE divisoes SET status='arquivada' WHERE temporada_id='2027' AND codigo='B'");
+    assert.equal((await POST(request({serie:'B',situacao:'suplente'}),{params:Promise.resolve({id:'FIL003'})})).status,400);
+  } finally {sqlite.close();}
+});

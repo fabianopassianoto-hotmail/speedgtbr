@@ -7,11 +7,9 @@ import {
   ClipboardCheck,
   ClipboardList,
   Copy,
-  Flag,
   House,
   ImageDown,
   FileSpreadsheet,
-  ListOrdered,
   MessageCircle,
   Search,
   Trophy,
@@ -44,7 +42,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { QueueScreen } from "@/components/queue-screen";
 import { HomeScreen } from "@/components/home-screen";
 import { Input } from "@/components/ui/input";
 import {
@@ -105,7 +102,7 @@ const statusFilters: Array<{ value: Filter; label: string }> = [
   { value: "todos", label: "Todos" },
   { value: "ex_pilotos", label: "Ex-pilotos" },
   { value: "suplentes", label: "Suplentes" },
-  { value: "fila", label: "Fila e avaliação" },
+  { value: "fila", label: "Sem série" },
   { value: "formularios", label: "Formulários" },
   { value: "pendentes", label: "Pagamento pendente" },
   { value: "incompletos", label: "Cadastro incompleto" },
@@ -1110,16 +1107,7 @@ export function PilotsScreen({
           </div>
         </section>
 
-      <div hidden={activeScreen !== "pilotos" || pilotArea !== "entrada" || filter !== "fila"}>
-        <QueueScreen
-          searchQuery={query}
-          people={fila}
-          editable={access.papel === "administrador"}
-          onOpenQueue={(id) => setSelectedKey({ kind: "fila", id })}
-          onSave={saveQueueField}
-        />
-      </div>
-        <section hidden={pilotArea === "entrada" && filter === "fila"} className="pt-4" aria-live="polite">
+        <section className="pt-4" aria-live="polite">
           <div className="mb-2 flex items-center justify-between gap-3 px-1">
             <p className="text-sm text-muted-foreground">
               {records.length} {records.length === 1 ? "resultado" : "resultados"}
@@ -1233,6 +1221,7 @@ export function PilotsScreen({
             />
           ) : selected ? (
             <RecordSheet
+              key={`${selected.kind}:${selected.id}`}
               record={selected}
               raceData={{ ...raceData, pilotos: racePilots, resultados: raceResults }}
               editable={Boolean(selectedEditable)}
@@ -1502,7 +1491,6 @@ function TimingRow({
         {record.classificacao_gt7 && (
           <StatusLabel tone="rating">{record.classificacao_gt7}</StatusLabel>
         )}
-        {record.kind === "fila" && <StatusLabel tone="neutral">Fila</StatusLabel>}
         {record.kind === "formulario" && (
           <StatusLabel tone="warning">Aguardando aprovação</StatusLabel>
         )}
@@ -1563,9 +1551,11 @@ function PilotMembershipPanel({
   enrollments,
   editable,
   startedSeasonIds,
+  onStageMembership,
   onMembershipChange,
   onMembershipRemove,
 }: {
+  onStageMembership?: (temporadaId: string, serie: string, situacao: MembershipStatus) => void;
   pilotId: string;
   pilotName: string;
   pilotRating: string | null;
@@ -1628,6 +1618,16 @@ function PilotMembershipPanel({
     situacao: MembershipStatus,
     previousSerie?: string,
   ) {
+    if (onStageMembership) {
+      setMemberships(current => {
+        const existing = current.find(item => item.temporadaId === temporadaId);
+        const updated: RacePilot = {id: pilotId, apelido: pilotName, simgrid: existing?.simgrid ?? null, classificacao_gt7: pilotRating, temporadaId, serie, situacao, pilotoArquivado: false};
+        return existing ? current.map(item => item.temporadaId === temporadaId ? updated : item) : [...current, updated];
+      });
+      onStageMembership(temporadaId, serie, situacao);
+      setMessage("Alteração pendente. Clique em Salvar cadastro.");
+      return true;
+    }
     setMessage("Salvando…");
     setInvite(null);
     const response = await fetch(`/central/api/pilotos/${pilotId}/inscricoes`, {
@@ -1921,14 +1921,14 @@ function PersonArchiveControls({record,editable}:{record:PilotListItem|QueueList
 }
 
 function RecordSheet({
-  record,
+  record: savedRecord,
   raceData,
   editable,
   isAdmin,
   campeonatoIniciado,
   cashEntries,
   saveStatus,
-  onSave,
+  onSave: persistField,
   onRegisterPayment,
   onSetPaymentExemption,
   onDeletePayment,
@@ -1967,6 +1967,50 @@ function RecordSheet({
   ) => void;
   onMembershipRemove: (pilotId: string, temporadaId: string) => void;
 }) {
+  const [changes, setChanges] = useState<Record<string, unknown>>({});
+  const [assignment, setAssignment] = useState<{serie: Serie | ""; situacao: "ativo" | "suplente"}>({serie: "", situacao: "ativo"});
+  const [membershipChanges, setMembershipChanges] = useState<Record<string, {serie: string; situacao: MembershipStatus}>>({});
+  const [saving, setSaving] = useState(false);
+  const [formMessage, setFormMessage] = useState("");
+  const record = { ...savedRecord, ...changes } as typeof savedRecord;
+  async function onSave(field: string, value: unknown) {
+    setChanges(current => ({...current, [field]: value}));
+    setFormMessage("Alterações não salvas.");
+    return true;
+  }
+  async function saveRegistration() {
+    if (!record.apelido.trim()) { setFormMessage("O apelido é obrigatório."); return; }
+    setSaving(true);
+    setFormMessage("Salvando cadastro…");
+    try {
+      for (const [field, value] of Object.entries(changes)) {
+        if (!await persistField(field, value)) {
+          setFormMessage("Não foi possível salvar todo o cadastro. Confira o erro e tente novamente.");
+          return;
+        }
+      }
+      for (const [temporadaId, membership] of Object.entries(membershipChanges)) {
+        const response = await fetch(`/central/api/pilotos/${record.id}/inscricoes`, {
+          method: "POST", headers: {"content-type": "application/json"},
+          body: JSON.stringify({temporadaId, ...membership}),
+        });
+        const result = await response.json() as {error?: string};
+        if (!response.ok) throw new Error(result.error ?? "Não foi possível salvar a participação.");
+        onMembershipChange(record.id, temporadaId, membership.serie, membership.situacao);
+      }
+      if (record.kind === "fila" && assignment.serie) {
+        if (!await onPromote(assignment.serie, assignment.situacao)) {
+          setFormMessage("Os dados pessoais foram salvos, mas a entrada na série falhou. Confira o erro e tente novamente.");
+          return;
+        }
+      }
+      setChanges({});
+      setMembershipChanges({});
+      setFormMessage("Cadastro salvo.");
+    } catch (error) {
+      setFormMessage(error instanceof Error ? error.message : "Não foi possível salvar todo o cadastro. Tente novamente.");
+    } finally { setSaving(false); }
+  }
   const currentSeasonId=raceData.competicoes.find(c=>c.ativa&&c.status==="ativa")?.id??"2026";
   const whatsappUrl = makeWhatsappUrl(record.whatsapp);
 
@@ -1982,7 +2026,7 @@ function RecordSheet({
                 : record.serie
                   ? `Série ${record.serie}`
                   : "Sem divisão atual"
-              : "Fila"}
+              : "Sem série"}
           </StatusLabel>
           {saveStatus && (
             <span
@@ -2018,6 +2062,7 @@ function RecordSheet({
       </SheetHeader>
 
       <div className="scrollbar-thin flex-1 overflow-y-auto pb-8">
+        <fieldset disabled={saving} className="min-w-0">
         {record.kind === "piloto" ? (
           <>
             <PilotHistory pilotoId={record.id}/>
@@ -2065,6 +2110,10 @@ function RecordSheet({
                 enrollments={raceData.pilotos.filter((pilot) => pilot.id === record.id)}
                 editable={editable && isAdmin}
                 startedSeasonIds={new Set(raceData.resultados.map((result)=>result.temporadaId))}
+                onStageMembership={(temporadaId, serie, situacao) => {
+                  setMembershipChanges(current => ({...current, [temporadaId]: {serie, situacao}}));
+                  setFormMessage("Alterações não salvas.");
+                }}
                 onMembershipChange={onMembershipChange}
                 onMembershipRemove={onMembershipRemove}
               />
@@ -2078,7 +2127,7 @@ function RecordSheet({
                     continuarão marcados como pendentes.
                   </p>
                   <div className="mt-3 space-y-3">
-                    <EditableField
+                    <RegistrationField
                       label="Data da saída"
                       field="saidaEm"
                       value={record.saidaEm}
@@ -2087,7 +2136,7 @@ function RecordSheet({
                       mono
                       onSave={onSave}
                     />
-                    <EditableField
+                    <RegistrationField
                       label="Motivo da saída"
                       field="motivoSaida"
                       value={record.motivoSaida}
@@ -2095,7 +2144,7 @@ function RecordSheet({
                       multiline
                       onSave={onSave}
                     />
-                    <EditableField
+                    <RegistrationField
                       label="Previsão de volta"
                       field="previsaoVolta"
                       value={record.previsaoVolta}
@@ -2119,7 +2168,7 @@ function RecordSheet({
                   {record.whatsapp}
                 </a>
               )}
-              <EditableField
+              <RegistrationField
                 label="WhatsApp"
                 field="whatsapp"
                 value={record.whatsapp}
@@ -2127,41 +2176,37 @@ function RecordSheet({
                 mono
                 onSave={onSave}
               />
-              <EditableField label="E-mail" field="email" value={record.email} editable={editable} onSave={onSave} />
+              <RegistrationField label="E-mail" field="email" value={record.email} editable={editable} onSave={onSave} />
             </PanelSection>
 
             <PanelSection title="Identificação" icon={UserRound}>
-              <EditableField label="Apelido de narração" field="apelido" value={record.apelido} editable={editable} required onSave={onSave} />
-              <EditableField label="Nome completo" field="nomeCompleto" value={record.nomeCompleto} editable={editable} onSave={onSave} />
-              <EditableField label="PSN" field="psn" value={record.psn} editable={editable} mono onSave={onSave} />
+              <RegistrationField label="Apelido de narração" field="apelido" value={record.apelido} editable={editable} required onSave={onSave} />
+              <RegistrationField label="Nome completo" field="nomeCompleto" value={record.nomeCompleto} editable={editable} onSave={onSave} />
+              <RegistrationField label="PSN" field="psn" value={record.psn} editable={editable} mono onSave={onSave} />
               <div className="grid grid-cols-[1fr_120px] gap-2">
-                <EditableField label="Cidade" field="cidade" value={record.cidade} editable={editable} onSave={onSave} />
-                <EditableField label="Estado (UF)" field="uf" value={record.uf} editable={editable} onSave={onSave} />
+                <RegistrationField label="Cidade" field="cidade" value={record.cidade} editable={editable} onSave={onSave} />
+                <RegistrationField label="Estado (UF)" field="uf" value={record.uf} editable={editable} onSave={onSave} />
               </div>
-              <EditableField label="Rua" field="rua" value={record.rua ?? null} editable={editable} onSave={onSave} />
-              <EditableField label="Número" field="numero" value={record.numero ?? null} editable={editable} onSave={onSave} />
-              <EditableField label="Bairro" field="bairro" value={record.bairro ?? null} editable={editable} onSave={onSave} />
-              <EditableField label="CEP" field="cep" value={record.cep ?? null} editable={editable} mono onSave={onSave} />
-              <EditableField label="Complemento" field="complemento" value={record.complemento ?? null} editable={editable} onSave={onSave} />
-              <EditableField label="Classificação GT7" field="classificacao_gt7" value={record.classificacao_gt7 ?? null} editable={editable} onSave={onSave} />
-              <EditableField label="SimGrid" field="simgrid" value={record.simgrid} editable={editable} mono onSave={onSave} />
-              <EditableField label="Link do SimGrid" field="simgridUrl" value={record.simgridUrl} editable={editable} mono onSave={onSave} />
-              <EditableField label="Data de nascimento" field="dataNascimento" value={record.dataNascimento} editable={editable} inputType="date" mono onSave={onSave} />
-              <EditableField label="Entrada na Speed GT" field="dataEntrada" value={record.dataEntrada} editable={editable && isAdmin} inputType="date" mono onSave={onSave} />
+              <RegistrationField label="Rua" field="rua" value={record.rua ?? null} editable={editable} onSave={onSave} />
+              <RegistrationField label="Número" field="numero" value={record.numero ?? null} editable={editable} onSave={onSave} />
+              <RegistrationField label="Bairro" field="bairro" value={record.bairro ?? null} editable={editable} onSave={onSave} />
+              <RegistrationField label="CEP" field="cep" value={record.cep ?? null} editable={editable} mono onSave={onSave} />
+              <RegistrationField label="Complemento" field="complemento" value={record.complemento ?? null} editable={editable} onSave={onSave} />
+              <RegistrationField label="Classificação GT7" field="classificacao_gt7" value={record.classificacao_gt7 ?? null} editable={editable} onSave={onSave} />
+              <RegistrationField label="SimGrid" field="simgrid" value={record.simgrid} editable={editable} mono onSave={onSave} />
+              <RegistrationField label="Link do SimGrid" field="simgridUrl" value={record.simgridUrl} editable={editable} mono onSave={onSave} />
+              <RegistrationField label="Data de nascimento" field="dataNascimento" value={record.dataNascimento} editable={editable} inputType="date" mono onSave={onSave} />
+              <RegistrationField label="Entrada na Speed GT" field="dataEntrada" value={record.dataEntrada} editable={editable && isAdmin} inputType="date" mono onSave={onSave} />
               {record.dataEntrada && <p className="border-l-2 border-[#60A5FA] bg-[#10141B] p-3 text-sm text-muted-foreground">Aniversário na liga: {formatDayMonth(record.dataEntrada)} · entrada em {formatShortDate(record.dataEntrada)}</p>}
             </PanelSection>
 
-            <PanelSection title="Na pista" icon={Flag}>
-              <NativeSelectField label="Volante ou controle" value={record.volanteOuControle ?? "pendente"} options={[{value:"pendente",label:"Pendente"},{value:"Volante",label:"Volante"},{value:"Controle",label:"Controle"},{value:"Volante e controle",label:"Volante e controle"}]} editable={editable} onSave={(value)=>onSave("volanteOuControle",value==="pendente"?null:value)} />
-            </PanelSection>
-
             <PanelSection title="Para a narração" icon={ClipboardList}>
-              <EditableField label="Relações" field="relacoes" value={record.relacoes} editable={editable} multiline onSave={onSave} />
-              <EditableField label="Curiosidade" field="curiosidade" value={record.curiosidade} editable={editable} multiline onSave={onSave} />
+              <RegistrationField label="Relações" field="relacoes" value={record.relacoes} editable={editable} multiline onSave={onSave} />
+              <RegistrationField label="Curiosidade" field="curiosidade" value={record.curiosidade} editable={editable} multiline onSave={onSave} />
             </PanelSection>
 
             <PanelSection title="Administração" icon={UserRound}>
-              <EditableField label="Observações administrativas" field="observacoesAdm" value={record.observacoesAdm} editable={editable} multiline onSave={onSave} />
+              <RegistrationField label="Observações administrativas" field="observacoesAdm" value={record.observacoesAdm} editable={editable} multiline onSave={onSave} />
               <NativeSelectField
                 label="Registro da pessoa"
                 value={record.ativo === null ? "pendente" : record.ativo ? "ativo" : "inativo"}
@@ -2195,7 +2240,7 @@ function RecordSheet({
         ) : (
           <>
             <PanelSection title="Entrada na série" icon={UserPlus}>
-              <PromotionPanel editable={editable} ready={record.prontoParaSerie===true} onPromote={onPromote} />
+              <PromotionPanel editable={editable && isAdmin && !saving} value={assignment} onChange={setAssignment} />
             </PanelSection>
             <PanelSection title="Contato" icon={MessageCircle}>
               {whatsappUrl && (
@@ -2209,57 +2254,35 @@ function RecordSheet({
                   {record.whatsapp}
                 </a>
               )}
-              <EditableField label="WhatsApp" field="whatsapp" value={record.whatsapp} editable={editable} mono onSave={onSave} />
-              <EditableField label="E-mail" field="email" value={record.email} editable={editable} onSave={onSave} />
+              <RegistrationField label="WhatsApp" field="whatsapp" value={record.whatsapp} editable={editable} mono onSave={onSave} />
+              <RegistrationField label="E-mail" field="email" value={record.email} editable={editable} onSave={onSave} />
               <div className="grid grid-cols-[1fr_84px] gap-2">
-                <EditableField label="Cidade" field="cidade" value={record.cidade} editable={editable} onSave={onSave} />
-                <EditableField label="UF" field="uf" value={record.uf} editable={editable} onSave={onSave} />
+                <RegistrationField label="Cidade" field="cidade" value={record.cidade} editable={editable} onSave={onSave} />
+                <RegistrationField label="UF" field="uf" value={record.uf} editable={editable} onSave={onSave} />
               </div>
             </PanelSection>
             <PanelSection title="Identificação" icon={UserRound}>
-              <EditableField label="Apelido de narração" field="apelido" value={record.apelido} editable={editable} required onSave={onSave} />
-              <EditableField label="Nome completo" field="nomeCompleto" value={record.nomeCompleto} editable={editable} onSave={onSave} />
-              <EditableField label="PSN" field="psn" value={record.psn} editable={editable} mono onSave={onSave} />
+              <RegistrationField label="Apelido de narração" field="apelido" value={record.apelido} editable={editable} required onSave={onSave} />
+              <RegistrationField label="Nome completo" field="nomeCompleto" value={record.nomeCompleto} editable={editable} onSave={onSave} />
+              <RegistrationField label="PSN" field="psn" value={record.psn} editable={editable} mono onSave={onSave} />
               <ReadOnlyField label="Rua" value={record.rua ?? null} />
               <ReadOnlyField label="Número" value={record.numero ?? null} />
               <ReadOnlyField label="Bairro" value={record.bairro ?? null} />
               <ReadOnlyField label="CEP" value={record.cep ?? null} />
               <ReadOnlyField label="Complemento" value={record.complemento ?? null} />
               <ReadOnlyField label="Classificação GT7" value={record.classificacao_gt7 ?? null} />
-              <EditableField label="SimGrid" field="simgrid" value={record.simgrid} editable={editable} mono onSave={onSave} />
-              <EditableField label="Link do SimGrid" field="simgridUrl" value={record.simgridUrl} editable={editable} mono onSave={onSave} />
-              <EditableField label="Data de nascimento" field="dataNascimento" value={record.dataNascimento} editable={editable} inputType="date" mono onSave={onSave} />
-              <EditableField label="Entrada na Speed GT" field="dataEntrada" value={record.dataEntrada} editable={editable} inputType="date" mono onSave={onSave} />
+              <RegistrationField label="SimGrid" field="simgrid" value={record.simgrid} editable={editable} mono onSave={onSave} />
+              <RegistrationField label="Link do SimGrid" field="simgridUrl" value={record.simgridUrl} editable={editable} mono onSave={onSave} />
+              <RegistrationField label="Data de nascimento" field="dataNascimento" value={record.dataNascimento} editable={editable} inputType="date" mono onSave={onSave} />
+              <RegistrationField label="Entrada na Speed GT" field="dataEntrada" value={record.dataEntrada} editable={editable} inputType="date" mono onSave={onSave} />
               {record.dataEntrada && <p className="border-l-2 border-[#60A5FA] bg-[#10141B] p-3 text-sm text-muted-foreground">Aniversário na liga: {formatDayMonth(record.dataEntrada)} · entrada em {formatShortDate(record.dataEntrada)}</p>}
             </PanelSection>
-            <PanelSection title="Na pista" icon={Flag}>
-              <NativeSelectField label="Volante ou controle" value={record.volanteOuControle ?? "pendente"} options={[{value:"pendente",label:"Pendente"},{value:"Volante",label:"Volante"},{value:"Controle",label:"Controle"},{value:"Volante e controle",label:"Volante e controle"}]} editable={editable} onSave={(value)=>onSave("volanteOuControle",value==="pendente"?null:value)} />
-              <EditableField label="Perfil de pilotagem" field="perfilPilotagem" value={record.perfilPilotagem} editable={editable} onSave={onSave} />
-              <EditableField label="Disponibilidade" field="disponibilidade" value={record.disponibilidade} editable={editable} onSave={onSave} />
-              <EditableField label="Carro preferido" field="carroPreferido" value={record.carroPreferido} editable={editable} onSave={onSave} />
-              <EditableField label="Pista citada" field="pistaCitada" value={record.pistaCitada} editable={editable} onSave={onSave} />
-            </PanelSection>
             <PanelSection title="Para a narração" icon={ClipboardList}>
-              <EditableField label="Relações" field="relacoes" value={record.relacoes} editable={editable} multiline onSave={onSave} />
-              <EditableField label="Curiosidade" field="curiosidade" value={record.curiosidade} editable={editable} multiline onSave={onSave} />
-            </PanelSection>
-            <PanelSection title="Fila" icon={ListOrdered}>
-              <p className="text-xs text-muted-foreground">A participação em eventos será organizada pela administração.</p>
-              <EditableField label="Conduta" field="conduta" value={record.conduta} editable={editable} multiline onSave={onSave} />
-              <NativeSelectField
-                label="Pronto para série ou suplência"
-                value={record.prontoParaSerie === null ? "pendente" : record.prontoParaSerie ? "sim" : "nao"}
-                options={[
-                  { value: "pendente", label: "Sem definição" },
-                  { value: "sim", label: "Sim" },
-                  { value: "nao", label: "Não" },
-                ]}
-                editable={editable}
-                onSave={(value) => onSave("prontoParaSerie", value === "pendente" ? null : value === "sim")}
-              />
+              <RegistrationField label="Relações" field="relacoes" value={record.relacoes} editable={editable} multiline onSave={onSave} />
+              <RegistrationField label="Curiosidade" field="curiosidade" value={record.curiosidade} editable={editable} multiline onSave={onSave} />
             </PanelSection>
             <PanelSection title="Administração" icon={UserRound}>
-              <EditableField label="Observações administrativas" field="observacoesAdm" value={record.observacoesAdm} editable={editable} multiline onSave={onSave} />
+              <RegistrationField label="Observações administrativas" field="observacoesAdm" value={record.observacoesAdm} editable={editable} multiline onSave={onSave} />
               <NativeSelectField
                 label="Registro da pessoa"
                 value={record.ativo === null ? "pendente" : record.ativo ? "ativo" : "inativo"}
@@ -2286,92 +2309,47 @@ function RecordSheet({
             </PanelSection>
           </>
         )}
+        </fieldset>
       </div>
+      {editable && <div className="border-t border-border bg-[#10141B] p-4">
+        <p role="status" className="mb-2 text-sm text-muted-foreground">{formMessage || "Edite os dados e clique em Salvar cadastro para gravar todas as alterações."}</p>
+        <button type="button" disabled={saving} onClick={saveRegistration} className="min-h-11 w-full bg-[#60A5FA] px-4 font-bold text-[#0A0C10] disabled:opacity-50">
+          {saving ? "Salvando…" : "Salvar cadastro"}
+        </button>
+      </div>}
     </>
   );
 }
 
-function PromotionPanel({
-  ready,
-  editable,
-  onPromote,
-}: {
-  ready: boolean;
+function PromotionPanel({editable, value, onChange}: {
   editable: boolean;
-  onPromote: (
-    serie: Serie,
-    situacao: "ativo" | "suplente",
-  ) => Promise<boolean>;
+  value: {serie: Serie | ""; situacao: "ativo" | "suplente"};
+  onChange: (value: {serie: Serie | ""; situacao: "ativo" | "suplente"}) => void;
 }) {
-  const [serie, setSerie] = useState<Serie | "">("");
-  const [situacao, setSituacao] = useState<"ativo" | "suplente">("ativo");
-  const [submitting, setSubmitting] = useState(false);
+  return <div className="grid grid-cols-2 gap-2">
+    <label><span className="mb-1 block text-xs text-muted-foreground">Série</span>
+      <select value={value.serie} disabled={!editable} onChange={event => onChange({...value, serie: event.target.value as Serie | ""})} className="h-11 w-full border border-border bg-[#0D1118] px-3">
+        <option value="">Sem série</option>
+        {["A", "B", "C"].map(serie => <option key={serie} value={serie}>Série {serie}</option>)}
+      </select>
+    </label>
+    <label><span className="mb-1 block text-xs text-muted-foreground">Entrada</span>
+      <select value={value.situacao} disabled={!editable} onChange={event => onChange({...value, situacao: event.target.value as "ativo" | "suplente"})} className="h-11 w-full border border-border bg-[#0D1118] px-3">
+        <option value="ativo">Piloto ativo</option><option value="suplente">Suplente</option>
+      </select>
+    </label>
+  </div>;
+}
 
-  async function submit() {
-    if (!serie) return;
-    setSubmitting(true);
-    await onPromote(serie, situacao);
-    setSubmitting(false);
-  }
-
-  return (
-    <div className="border-l-2 border-[#60A5FA] bg-[#131722] p-3">
-      <p className="font-semibold">Promover para o campeonato</p>
-      <p className="mt-1 text-sm leading-6 text-muted-foreground">
-        Os dados desta ficha serão mantidos. A pessoa sai da fila e recebe um
-        novo código de piloto.
-      </p>
-      {!ready&&<p className="mt-2 text-sm text-[#60A5FA]">Marque a avaliação como pronta para série ou suplência antes de promover.</p>}
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        <label>
-          <span className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-            Série
-          </span>
-          <select
-            value={serie}
-            disabled={!editable || submitting}
-            onChange={(event) => setSerie(event.target.value as Serie)}
-            className="h-11 w-full border border-border bg-[#0D1118] px-3 outline-none focus:border-[#60A5FA] focus:ring-2 focus:ring-[#60A5FA]/30"
-          >
-            <option value="">Escolha a série</option>
-            <option value="A">Série A</option>
-            <option value="B">Série B</option>
-            <option value="C">Série C</option>
-          </select>
-        </label>
-        <label>
-          <span className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-            Entrada
-          </span>
-          <select
-            value={situacao}
-            disabled={!editable || submitting}
-            onChange={(event) =>
-              setSituacao(event.target.value as "ativo" | "suplente")
-            }
-            className="h-11 w-full border border-border bg-[#0D1118] px-3 outline-none focus:border-[#60A5FA] focus:ring-2 focus:ring-[#60A5FA]/30"
-          >
-            <option value="ativo">Piloto ativo</option>
-            <option value="suplente">Suplente</option>
-          </select>
-        </label>
-      </div>
-      <button
-        type="button"
-        disabled={!editable || !ready || !serie || submitting}
-        onClick={submit}
-        className="mt-3 flex min-h-11 w-full items-center justify-center gap-2 bg-[#60A5FA] px-3 text-sm font-bold text-[#0A0C10] outline-none focus-visible:ring-2 focus-visible:ring-[#60A5FA] focus-visible:ring-offset-2 focus-visible:ring-offset-[#131722] disabled:opacity-50"
-      >
-        <UserPlus className="size-4" aria-hidden="true" />
-        {submitting ? "Promovendo…" : "Promover agora"}
-      </button>
-      {!editable && (
-        <p className="mt-2 text-xs text-muted-foreground">
-          Somente o administrador pode promover pessoas da fila.
-        </p>
-      )}
-    </div>
-  );
+function RegistrationField({label, field, value, editable, required, mono, multiline, inputType = "text", onSave}: {
+  label: string; field: string; value: string | null; editable: boolean; required?: boolean; mono?: boolean; multiline?: boolean; inputType?: "text" | "date";
+  onSave: (field: string, value: unknown) => Promise<boolean>;
+}) {
+  const className = cn("w-full border border-border bg-[#0D1118] px-3 py-2 text-base outline-none focus:border-[#60A5FA]", mono && "font-data", multiline ? "min-h-24" : "h-11");
+  return <label className="block"><span className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">{label}</span>
+    {multiline ? <textarea value={value ?? ""} disabled={!editable} onChange={event => void onSave(field, event.target.value)} className={className} />
+      : <input type={inputType} required={required} value={value ?? ""} disabled={!editable} onChange={event => void onSave(field, event.target.value)} className={className} />}
+  </label>;
 }
 
 function PendingFormSheet({
@@ -2586,7 +2564,7 @@ function PendingFormSheet({
               </label>
               {query && matches.length === 0 && (
                 <p className="border-l-2 border-[#60A5FA] bg-[#131722] p-3 text-sm text-muted-foreground">
-                  Nenhuma pessoa encontrada. Você pode adicionar este cadastro à fila abaixo.
+                  Nenhuma pessoa encontrada. Você pode adicionar este cadastro abaixo.
                 </p>
               )}
               {matches.length > 0 && (
@@ -2618,7 +2596,7 @@ function PendingFormSheet({
                             ? person.serie
                               ? `Série ${person.serie}`
                               : "Sem divisão"
-                            : "Fila"}
+                            : "Sem série"}
                         </StatusLabel>
                       </button>
                     );
@@ -2667,7 +2645,7 @@ function PendingFormSheet({
                   className="mt-3 flex min-h-11 w-full items-center justify-center gap-2 bg-[#60A5FA] px-3 text-sm font-bold text-[#0A0C10] outline-none focus-visible:ring-2 focus-visible:ring-[#60A5FA] focus-visible:ring-offset-2 focus-visible:ring-offset-[#10141B] disabled:opacity-50"
                 >
                   <UserPlus className="size-4" aria-hidden="true" />
-                  Adicionar à fila
+                  Adicionar cadastro
                 </button>
               </div>
 
