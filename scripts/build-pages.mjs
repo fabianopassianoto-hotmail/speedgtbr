@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const output = join(root, "dist-pages");
 const stage = await mkdtemp(join(root, ".pages-stage-"));
-const publicFiles = ["index.html", "assets", "apoie", "campeonatos", "comece-aqui", "depoimentos", "hall-da-fama", "organizadores", "por-que", "regras", "temporada-3", "_headers"];
+const publicFiles = ["index.html", "assets", "apoie", "campeonatos", "comece-aqui", "depoimentos", "hall-da-fama", "organizadores", "por-que", "regimento-interno", "regras", "temporada-3", "_headers"];
 try {
   for (const entry of publicFiles) await cp(join(root, entry), join(stage, entry), { recursive: true });
   await cp(join(root, "central/dist/client/central"), join(stage, "central"), { recursive: true });
