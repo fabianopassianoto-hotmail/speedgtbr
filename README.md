@@ -9,9 +9,9 @@ Não há processo de build obrigatório.
 
 ## Páginas independentes
 
-A página inicial contém a apresentação. Cada item interno do menu tem sua própria pasta com `index.html`: `por-que`, `comece-aqui`, `regras`, `temporada-3`, `hall-da-fama`, `organizadores`, `apoie`, `depoimentos` e `campeonatos`.
+A página inicial contém a apresentação. Cada item interno do menu tem sua própria pasta com `index.html`: `por-que`, `comece-aqui`, `regras`, `temporada-3`, `hall-da-fama`, `organizadores`, `regimento-interno`, `apoie`, `depoimentos` e `campeonatos`.
 
-Edite o conteúdo no HTML da página correspondente. CSS e JavaScript são compartilhados em `assets/`. Cabeçalho e rodapé estão presentes em todas as páginas; alterações nesses trechos devem ser replicadas nos dez arquivos HTML. Não é necessário build. Publique a pasta completa no Cloudflare Pages. O item Recursos mantém o portal externo. Links antigos da página inicial são encaminhados pelo JavaScript.
+Edite o conteúdo no HTML da página correspondente. CSS e JavaScript são compartilhados em `assets/`. Cabeçalho e rodapé estão presentes em todas as páginas; alterações nesses trechos devem ser replicadas em todas as páginas HTML. Não é necessário build. Publique a pasta completa no Cloudflare Pages. O item Recursos mantém o portal externo. Links antigos da página inicial são encaminhados pelo JavaScript.
 
 ## Campeonatos ativos (branch frame)
 
