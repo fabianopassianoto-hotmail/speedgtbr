@@ -144,7 +144,10 @@ export async function POST(
       return Response.json({ error: "Pessoa não encontrada." }, { status: 404 });
     }
 
-    const filled = submittedColumns.filter(([source]) => form[source] !== null);
+    const filled = submittedColumns.filter(([source]) => {
+      const value = form[source];
+      return typeof value === "string" && value.trim().length > 0;
+    });
     const assignments = filled.map(([, column]) => `${column} = ?`).join(", ");
     const updatePerson = db
       .prepare(`UPDATE ${table} SET ${assignments} WHERE id = ?`)
@@ -157,7 +160,11 @@ export async function POST(
       )
       .bind(new Date().toISOString(), targetKind, targetId, formId);
     await db.batch([updatePerson, finishForm]);
-    return Response.json({ ok: true });
+    const updates = Object.fromEntries(filled.map(([source, column]) => [
+      column === "classificacao_gt7" ? column : column.replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase()),
+      form[source],
+    ]));
+    return Response.json({ ok: true, targetKind, targetId, updates });
   }
 
   if (body.action === "nova_fila") {

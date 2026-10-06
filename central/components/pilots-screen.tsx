@@ -1210,6 +1210,13 @@ export function PilotsScreen({
           {selected?.kind === "formulario" ? (
             <PendingFormSheet
               form={selected}
+              onMerged={(kind, id, updates) => {
+                if (kind === "piloto") {
+                  setPilotos(current => current.map(person => person.id === id ? {...person, ...updates} : person));
+                } else {
+                  setFila(current => current.map(person => person.id === id ? {...person, ...updates} : person));
+                }
+              }}
               people={[...pilotos, ...fila]}
               editable={access.papel === "administrador"}
               onResolved={() => {
@@ -2357,11 +2364,13 @@ function PendingFormSheet({
   people,
   editable,
   onResolved,
+  onMerged,
 }: {
   form: PendingFormListItem;
   people: Array<PilotListItem | QueueListItem>;
   editable: boolean;
   onResolved: () => void;
+  onMerged: (kind: "piloto" | "fila", id: string, updates: Partial<Omit<PilotListItem, "kind"> & Omit<QueueListItem, "kind">>) => void;
 }) {
   const [query, setQuery] = useState("");
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
@@ -2406,11 +2415,14 @@ function PendingFormSheet({
         headers: { "content-type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const result = (await response.json()) as { error?: string };
+      const result = (await response.json()) as { error?: string; targetKind?: "piloto" | "fila"; targetId?: string; updates?: Partial<Omit<PilotListItem, "kind"> & Omit<QueueListItem, "kind">> };
       if (!response.ok) throw new Error(result.error || "Não foi possível concluir.");
       if (payload.action === "descartar") {
         onResolved();
         return;
+      }
+      if (result.targetKind && result.targetId && result.updates) {
+        onMerged(result.targetKind, result.targetId, result.updates);
       }
       setApproved(true);
       setSubmitting(false);

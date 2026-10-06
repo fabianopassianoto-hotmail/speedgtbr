@@ -140,3 +140,30 @@ test('series assignment survives reload in the current season for active and res
     assert.equal((await POST(request({serie:'B',situacao:'suplente'}),{params:Promise.resolve({id:'FIL003'})})).status,400);
   } finally {sqlite.close();}
 });
+
+
+test('merge replaces differing fields, fills missing fields and preserves blank or absent data for both record types', async()=>{
+ const {sqlite,db}=database();
+ globalThis.registrationTestDB=db;
+ const source=readFileSync(new URL('../app/api/formularios/[id]/aprovar/route.ts',import.meta.url),'utf8')
+  .replace('import { getD1Binding } from "@/db";', 'const getD1Binding = () => globalThis.registrationTestDB;')
+  .replace('import { getChatGPTUser } from "@/app/chatgpt-auth";', 'const getChatGPTUser = async () => ({email:"admin@example.com"});')
+  .replace('import { ensureCurrentUserAccess } from "@/db/access";', 'const ensureCurrentUserAccess = async () => ({papel:"administrador"});');
+ const approve=(await import(moduleUrl(source))).POST;
+ try {
+  for(const [table,kind,id] of [['pilotos','piloto','SGT001'],['fila','fila','FIL001']]) {
+   sqlite.prepare('INSERT INTO '+table+' (id,apelido,nome_completo,psn,simgrid,complemento,observacoes_adm,data_entrada) VALUES (?,?,?,?,?,?,?,?)').run(id,'Apelido antigo','Nome antigo','PSN antigo','SimGrid antigo','Casa 2','Manter histórico','2020-01-01');
+   const formId=Number(sqlite.prepare("INSERT INTO formularios_pendentes(criado_em,nome_completo,whatsapp,psn,email,simgrid,complemento,classificacao_gt7) VALUES(?,?,?,?,?,?,?,?)").run(new Date().toISOString(),'Nome novo','11912345678','PSN novo','novo@example.com','   ','','A+').lastInsertRowid);
+   const response=await approve(request({action:'aplicar',targetKind:kind,targetId:id}),{params:Promise.resolve({id:String(formId)})});
+   assert.equal(response.status,200);
+   const result=await response.json();
+   assert.equal(result.targetId,id);assert.equal(result.targetKind,kind);
+   assert.equal(result.updates.nomeCompleto,'Nome novo');assert.equal(result.updates.classificacao_gt7,'A+');
+   assert.ok(!('simgrid' in result.updates));assert.ok(!('complemento' in result.updates));
+   const saved=sqlite.prepare('SELECT * FROM '+table+' WHERE id=?').get(id);
+   assert.equal(saved.nome_completo,'Nome novo');assert.equal(saved.psn,'PSN novo');assert.equal(saved.email,'novo@example.com');
+   assert.equal(saved.simgrid,'SimGrid antigo');assert.equal(saved.complemento,'Casa 2');assert.equal(saved.apelido,'Apelido antigo');assert.equal(saved.observacoes_adm,'Manter histórico');assert.equal(saved.data_entrada,'2020-01-01');
+   assert.equal(sqlite.prepare('SELECT status FROM formularios_pendentes WHERE id=?').get(formId).status,'aplicado');
+  }
+ } finally {sqlite.close();}
+});
